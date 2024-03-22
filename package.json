@@ -9,11 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ethersproject/contracts": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@lit-protocol/lit-node-client": "^4.1.0",
+    "antd": "^5.15.3",
+    "axios": "^1.6.8",
+    "fs": "^0.0.1-security",
+    "jose": "^5.2.3",
+    "next": "14.1.4",
+    "pino-pretty": "^11.0.0",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.1.4"
+    "web3": "^4.6.0"
   },
   "devDependencies": {
+    "@types/react": "18.2.67",
     "eslint": "^8",
     "eslint-config-next": "14.1.4"
   }
