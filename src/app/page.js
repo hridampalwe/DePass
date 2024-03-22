@@ -22,16 +22,11 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 import styles from "./styles/Home.module.css";
-import axios from "axios";
 
-// const fs = require("fs");
-const JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI3MGI4MmQ5Yi02Yjc5LTQ0Y2UtOWU1Ny1kYjg2NzI5MWQzZWQiLCJlbWFpbCI6InNha3NoaWFncmF3YWwyNDQ1QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImlkIjoiRlJBMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfSx7ImlkIjoiTllDMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI5NTY2YjIwZWY0NDFjNzdiOWU5NiIsInNjb3BlZEtleVNlY3JldCI6IjFlZDVjNTVmNTAyMjM0OTI4N2I4N2MyMDA2MmE2MGNkZTY2M2IzOWViZjJkMzk0YWEzZjcyYzYzYTJiZWE4NWIiLCJpYXQiOjE3MTEwNDMyMzN9.aIpTM2c-Vn0c-iWb0ssV8TNWXkk-jrtkm8NwMjOkUSU";
-
-const contractAddress = "0xa142e36c33801dd7ffad962ca44ea98ddda3f3fe";
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 const abi = [
   "function addKey(string _ipfsHash)",
-  "function getMyKeys() view returns (tuple(uint256 id, string ipfsHash, bool isDeleted)[])",
+  "function getMyKeys() view returns (tuple(uint256 id, string ipfsHash)[])",
   "function softDeleteKey(uint256 _id)",
   "function updateKey(uint256 _id, string _ipfsHash)",
 ];
@@ -102,77 +97,68 @@ export default function Home() {
       });
     }
   };
+  const getHashes = async () => {
+    let data = await contract.getMyKeys();
+    console.log(data);
+  };
+
+  const fetchCredentials = async (_ipfsHash) => {
+    const res = await fetch(
+      `https://${process.env.NEXT_PUBLIC_API_GATEWAY}/ipfs/${_ipfsHash}`
+    );
+    console.log(await res.json());
+  };
+
+  //Using pinata API to call and store the encrypted credentials in the pinata api.
   const pinFileToIPFS = async (data) => {
-    const formData = new FormData();
-    const src = JSON.stringify(data);
-
-    // const pinataMetadata = JSON.stringify({
-    //   name: "File name",
-    // });
-    // formData.append("pinataMetadata", pinataMetadata);
-
-    const pinataOptions = JSON.stringify({
-      cidVersion: 0,
-    });
-    // formData.append("pinataOptions", pinataOptions);
-
-    // try {
-    //   const res = await axios.post(
-    //     "https://api.pinata.cloud/pinning/pinFileToIPFS",
-    //     formData,
-    //     {
-    //       maxBodyLength: "Infinity",
-    //       headers: {
-    //         "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
-    //         Authorization: `Bearer ${JWT}`,
-    //       },
-    //     }
-    //   );
     try {
+      //Using formdata to upload data to the API.
+      const formData = new FormData();
+      // API only supports working with File and Blob. Therefore converting the JSON data to blob here.
+      const blob = new Blob([JSON.stringify(data)], { type: "text/plain" });
+      console.log(blob);
+      formData.append("file", blob);
+      const options = JSON.stringify({
+        cidVersion: 0,
+      });
+      console.log(formData);
       const res = await fetch(
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        `https://${process.env.NEXT_PUBLIC_PINATA_API}/pinning/pinFileToIPFS`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${JWT}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT_KEY}`,
           },
-          body: src,
+          body: formData,
         }
       );
+      //Using post request to send the data to Pinata API.
+      const resData = await res.json();
+      console.log(resData);
+      return resData.IpfsHash;
     } catch (error) {
       console.log(error);
+      return "";
     }
   };
+
+  // This function is responsible for saving data in the blockchain contract and create the transactions.
   const handleSaveCredentials = async () => {
-    // const tx = await contract.addKey(credentials);
-    // console.log("Add Tx-->", tx.hash);
-    // setLog({
-    //   type: "info",
-    //   message: "Transaction submitted. Waiting for confirmation.",
-    //   description: tx.hash,
-    // });
-    // await tx.wait();
-    // setLog({
-    //   type: "success",
-    //   message: "Credentials saved successfully",
-    //   description: "Refreshes in 20 seconds..",
-    // });
-    // setIsAddModalOpen(false);
-    // setLoading(false);
-    console.log(JSON.stringify(credentials).toString());
+    console.log(JSON.stringify(credentials));
+    // Calling the LIT Protocol defined library to encrypt the credentials.
     let encryptedData = await Lit.encrypt(
       JSON.stringify(credentials),
       accessControlConditions
     );
-
-    // let { decryptedString } = await Lit.decrypt(
-    //   ciphertext,
-    //   dataToEncryptHash,
-    //   accessControlConditions
-    // );
-    pinFileToIPFS(encryptedData);
+    const ipfsHash = pinFileToIPFS(encryptedData);
+    // Adding the hash to the ethereum network.
+    const tx = await contract.addKey(ipfsHash);
+    console.log("Add Tx-->", tx.hash);
+    await tx.wait();
+    await getHashes();
   };
+
+  // Handling the input change to set the credential variable.
   const handleInputChange = (event) =>
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
 
