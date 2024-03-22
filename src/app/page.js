@@ -24,22 +24,64 @@ import {
 import styles from "./styles/Home.module.css";
 
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+// const abi = [
+//   "function addKey(string _ipfsHash)",
+//   "function getMyKeys() view returns (tuple(uint256 id, string ipfsHash)[])",
+//   "function softDeleteKey(uint256 _id)",
+// ];
 const abi = [
-  "function addKey(string _ipfsHash)",
-  "function getMyKeys() view returns (tuple(uint256 id, string ipfsHash)[])",
-  "function softDeleteKey(uint256 _id)",
-  "function updateKey(uint256 _id, string _ipfsHash)",
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
+    ],
+    name: "addKey",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getMyKeys",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "ipfsHash",
+            type: "string",
+          },
+        ],
+        internalType: "struct Keymanager.Key[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+    constant: true,
+  },
 ];
 
 export default function Home() {
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
+  const [credentialsArr, setCredentialsArr] = useState([]);
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [logMessage, setLogMessage] = useState("");
   const [log, setLog] = useState(null);
   const [credentials, setCredentials] = useState({});
+  const [searchInput, setSearchInput] = useState("");
 
   //ACL for the LIT Protocol for stroging the encryption over to the Blockchain.
   const accessControlConditions = [
@@ -53,6 +95,61 @@ export default function Home() {
         comparator: "=",
         value: account,
       },
+    },
+  ];
+  const columns = [
+    {
+      title: "Site",
+      key: "site",
+      // sorter: (a, b) => a.site.localeCompare(b.site),
+      ellipsis: true,
+      width: "20%",
+      render: ({ site }) => (
+        <Input
+          readOnly
+          type="text"
+          value={site}
+          // copy to clipboard on click
+          onClick={(e) => {
+            navigator.clipboard.writeText(e.target.value);
+            message.success("Site copied to clipboard");
+          }}
+        />
+      ),
+    },
+    {
+      title: "Username",
+      // sorter: (a, b) => a.username.localeCompare(b.username),
+      key: "username",
+      width: "20%",
+      render: ({ username }) => (
+        <Input
+          readOnly
+          type="text"
+          value={username}
+          onClick={(e) => {
+            navigator.clipboard.writeText(e.target.value);
+            message.success("Username copied to clipboard");
+          }}
+        />
+      ),
+    },
+    {
+      title: "Password",
+      key: "password",
+      sorter: false,
+      width: "20%",
+      render: ({ password }) => (
+        <Input.Password
+          value={password}
+          // copy to clipboard
+          onClick={(e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(password);
+            message.success("Password copied to clipboard");
+          }}
+        />
+      ),
     },
   ];
 
@@ -106,7 +203,25 @@ export default function Home() {
     const res = await fetch(
       `https://${process.env.NEXT_PUBLIC_API_GATEWAY}/ipfs/${_ipfsHash}`
     );
-    console.log(await res.json());
+    return await res.json();
+  };
+
+  const getCredentials = async () => {
+    let data = await contract.getMyKeys();
+    const credentialsArr = [];
+    for (let i of data) {
+      let { ciphertext, dataToEncryptHash } = await fetchCredentials(
+        i.ipfsHash
+      );
+      let decryptedCred = await Lit.decrypt(
+        ciphertext,
+        dataToEncryptHash,
+        accessControlConditions
+      );
+      let decryptedCredObj = await JSON.parse(decryptedCred.decryptedString);
+      credentialsArr.push({ id: Number(BigInt(i.id)), ...decryptedCredObj });
+    }
+    setCredentialsArr(credentialsArr);
   };
 
   //Using pinata API to call and store the encrypted credentials in the pinata api.
@@ -162,6 +277,10 @@ export default function Home() {
   const handleInputChange = (event) =>
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
 
+  const newArr = [
+    { site: "hello", id: 5, username: "alpda", password: "12031" },
+  ];
+
   return (
     <div className={styles.container}>
       <Head>
@@ -182,21 +301,59 @@ export default function Home() {
           Create, save, and manage your passwords securely in decentralised
           world. so you can easily sign in to sites and apps.
         </p>
-        {!provider && (
-          <Button type="primary" onClick={handleConnectWallet}>
-            Connect Wallet
-          </Button>
-        )}
         {provider && (
           <>
             <h2>My Passwords</h2>
             <Space>
+              <Input.Search
+                placeholder="Search by Ipfs Hash.."
+                value={searchInput}
+                enterButton
+                allowClear
+                loading={loading}
+                onSearch={getCredentials}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
               <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
                 Add
                 <PlusCircleOutlined />
               </Button>
+              <Button type="primary" onClick={getCredentials}>
+                Refresh
+                <SyncOutlined />
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setCredentials([]);
+                  setProvider(null);
+                }}
+              >
+                Logout
+              </Button>
             </Space>
+            <Table
+              className="table_grid"
+              columns={columns}
+              rowKey="id"
+              dataSource={credentialsArr}
+              scroll={{ x: 970 }}
+              loading={loading}
+              pagination={{
+                pageSizeOptions: [10, 25, 50, 100],
+                showSizeChanger: true,
+                defaultCurrent: 1,
+                defaultPageSize: 10,
+                size: "default",
+              }}
+              onChange={() => {}}
+            />
           </>
+        )}
+        {!provider && (
+          <Button type="primary" onClick={handleConnectWallet}>
+            Connect Wallet
+          </Button>
         )}
         <Modal
           title="Save Password"
