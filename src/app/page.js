@@ -23,12 +23,9 @@ import {
 } from "@ant-design/icons";
 import styles from "./styles/Home.module.css";
 
+//Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-// const abi = [
-//   "function addKey(string _ipfsHash)",
-//   "function getMyKeys() view returns (tuple(uint256 id, string ipfsHash)[])",
-//   "function softDeleteKey(uint256 _id)",
-// ];
+//Using the contract ABI from the compiled contract.
 const abi = [
   {
     inputs: [
@@ -83,6 +80,24 @@ export default function Home() {
   const [credentials, setCredentials] = useState({});
   const [searchInput, setSearchInput] = useState("");
 
+  //Function to use AntD notifications and set message and description
+  const handleNotification = ({ type, message, description }) => {
+    notification[type]({
+      message,
+      description,
+      placement: "topRight",
+      duration: 6,
+    });
+    setLog(null);
+  };
+
+  //Effect for loading the credentials when the contract is set.
+  useEffect(() => {
+    if (contract) {
+      getCredentials();
+    }
+  }, [contract]);
+
   //ACL for the LIT Protocol for stroging the encryption over to the Blockchain.
   const accessControlConditions = [
     {
@@ -97,6 +112,8 @@ export default function Home() {
       },
     },
   ];
+
+  //Defining columns for the Table of AntD
   const columns = [
     {
       title: "Site",
@@ -153,10 +170,11 @@ export default function Home() {
     },
   ];
 
-  //Handle the connection of wallet
+  //Handle the connection of wallet through meta mask account.
   const handleConnectWallet = async () => {
     try {
       if (window?.ethereum) {
+        setLoading(true);
         // Check for the MetaMask extension and connect to the window.ethereum class.
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
@@ -177,6 +195,7 @@ export default function Home() {
           message: "Wallet connected successfully",
           description: "",
         });
+        setLoading(false);
       } else {
         console.log("Please use Web3 enabled browser");
         setLog({
@@ -194,11 +213,8 @@ export default function Home() {
       });
     }
   };
-  const getHashes = async () => {
-    let data = await contract.getMyKeys();
-    console.log(data);
-  };
 
+  //Fetch Credentials from pinata through the IPFS Hash.
   const fetchCredentials = async (_ipfsHash) => {
     const res = await fetch(
       `https://${process.env.NEXT_PUBLIC_API_GATEWAY}/ipfs/${_ipfsHash}`
@@ -206,9 +222,13 @@ export default function Home() {
     return await res.json();
   };
 
+  //Gets credential details and fetch it to CredentialsArr
   const getCredentials = async () => {
+    setLoading(true);
+    // setCredentialsArr([]);
     let data = await contract.getMyKeys();
     const credentialsArr = [];
+    //Data is array of credentials object access the object one by one.
     for (let i of data) {
       let { ciphertext, dataToEncryptHash } = await fetchCredentials(
         i.ipfsHash
@@ -222,6 +242,7 @@ export default function Home() {
       credentialsArr.push({ id: Number(BigInt(i.id)), ...decryptedCredObj });
     }
     setCredentialsArr(credentialsArr);
+    setLoading(false);
   };
 
   //Using pinata API to call and store the encrypted credentials in the pinata api.
@@ -259,6 +280,7 @@ export default function Home() {
 
   // This function is responsible for saving data in the blockchain contract and create the transactions.
   const handleSaveCredentials = async () => {
+    setLoading(true);
     console.log(JSON.stringify(credentials));
     // Calling the LIT Protocol defined library to encrypt the credentials.
     let encryptedData = await Lit.encrypt(
@@ -271,15 +293,27 @@ export default function Home() {
     console.log("Add Tx-->", tx.hash);
     await tx.wait();
     await getHashes();
+    await getCredentials();
+    setLoading(false);
+    setIsAddModalOpen(false);
+    setLog({
+      type: "info",
+      message: "Saved",
+      description: "Credentials successfully saved to the network",
+    });
   };
 
   // Handling the input change to set the credential variable.
-  const handleInputChange = (event) =>
+  const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
+  };
 
-  const newArr = [
-    { site: "hello", id: 5, username: "alpda", password: "12031" },
-  ];
+  //Effect for handling the notifications once log is set call the notification.
+  useEffect(() => {
+    if (log) {
+      handleNotification(log);
+    }
+  }, [log]);
 
   return (
     <div className={styles.container}>
@@ -298,9 +332,9 @@ export default function Home() {
         </h3>
 
         <p className={styles.description}>
-          Create, save, and manage your passwords securely in decentralised
-          world. so you can easily sign in to sites and apps.
+          Securely save your credentials over the blockchain network.
         </p>
+
         {provider && (
           <>
             <h2>My Passwords</h2>
@@ -327,6 +361,11 @@ export default function Home() {
                 onClick={() => {
                   setCredentials([]);
                   setProvider(null);
+                  setLog({
+                    type: "info",
+                    message: "Logged Out",
+                    description: "You have been successfully logged out",
+                  });
                 }}
               >
                 Logout
@@ -351,7 +390,11 @@ export default function Home() {
           </>
         )}
         {!provider && (
-          <Button type="primary" onClick={handleConnectWallet}>
+          <Button
+            type="primary"
+            onClick={handleConnectWallet}
+            loading={loading}
+          >
             Connect Wallet
           </Button>
         )}
