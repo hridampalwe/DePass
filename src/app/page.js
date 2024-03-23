@@ -41,6 +41,37 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
+    ],
+    name: "updateKey",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
+      },
+    ],
+    name: "deleteKey",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getMyKeys",
     outputs: [
@@ -55,6 +86,11 @@ const abi = [
             internalType: "string",
             name: "ipfsHash",
             type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "isDeleted",
+            type: "bool",
           },
         ],
         internalType: "struct Keymanager.Key[]",
@@ -79,6 +115,8 @@ export default function Home() {
   const [log, setLog] = useState(null);
   const [credentials, setCredentials] = useState({});
   const [searchInput, setSearchInput] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingCredentials, setEditingCredentials] = useState("");
 
   //Function to use AntD notifications and set message and description
   const handleNotification = ({ type, message, description }) => {
@@ -91,14 +129,7 @@ export default function Home() {
     setLog(null);
   };
 
-  //Effect for loading the credentials when the contract is set.
-  useEffect(() => {
-    if (contract) {
-      getCredentials();
-    }
-  }, [contract]);
-
-  //ACL for the LIT Protocol for stroging the encryption over to the Blockchain.
+  //ACC for the LIT Protocol for stroging the encryption over to the Blockchain.
   const accessControlConditions = [
     {
       contractAddress: "",
@@ -158,6 +189,7 @@ export default function Home() {
       width: "20%",
       render: ({ password }) => (
         <Input.Password
+          readOnly
           value={password}
           // copy to clipboard
           onClick={(e) => {
@@ -166,6 +198,34 @@ export default function Home() {
             message.success("Password copied to clipboard");
           }}
         />
+      ),
+    },
+    {
+      title: "Actions",
+      width: "10%",
+      render: (row) => (
+        <Space size="small">
+          <Button
+            type="primary"
+            onClick={() => {
+              console.log("row", row);
+              setEditingCredentials(row);
+              setIsEditModalOpen(true);
+            }}
+          >
+            <EditOutlined />
+          </Button>
+          <Popconfirm
+            title="Are you sure?"
+            onConfirm={() => {
+              handleDeleteCredentials(row.id);
+            }}
+          >
+            <Button type="primary" danger>
+              <DeleteOutlined />
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
@@ -225,21 +285,23 @@ export default function Home() {
   //Gets credential details and fetch it to CredentialsArr
   const getCredentials = async () => {
     setLoading(true);
-    // setCredentialsArr([]);
+    setCredentialsArr([]);
     let data = await contract.getMyKeys();
     const credentialsArr = [];
     //Data is array of credentials object access the object one by one.
     for (let i of data) {
-      let { ciphertext, dataToEncryptHash } = await fetchCredentials(
-        i.ipfsHash
-      );
-      let decryptedCred = await Lit.decrypt(
-        ciphertext,
-        dataToEncryptHash,
-        accessControlConditions
-      );
-      let decryptedCredObj = await JSON.parse(decryptedCred.decryptedString);
-      credentialsArr.push({ id: Number(BigInt(i.id)), ...decryptedCredObj });
+      if (!i.isDeleted) {
+        let { ciphertext, dataToEncryptHash } = await fetchCredentials(
+          i.ipfsHash
+        );
+        let decryptedCred = await Lit.decrypt(
+          ciphertext,
+          dataToEncryptHash,
+          accessControlConditions
+        );
+        let decryptedCredObj = await JSON.parse(decryptedCred.decryptedString);
+        credentialsArr.push({ id: Number(BigInt(i.id)), ...decryptedCredObj });
+      }
     }
     setCredentialsArr(credentialsArr);
     setLoading(false);
@@ -292,21 +354,69 @@ export default function Home() {
     const tx = await contract.addKey(ipfsHash);
     console.log("Add Tx-->", tx.hash);
     await tx.wait();
-    await getHashes();
     await getCredentials();
     setLoading(false);
     setIsAddModalOpen(false);
     setLog({
       type: "info",
-      message: "Saved",
-      description: "Credentials successfully saved to the network",
+      message: "Updated",
+      description: "Credentials successfully saved to the network.",
     });
   };
 
-  // Handling the input change to set the credential variable.
+  //Handler function for editing the credentials and updating to the network.
+  const handleEditCredentials = async (credential) => {
+    setLoading(true);
+    let encryptedData = await Lit.encrypt(
+      JSON.stringify(credential),
+      accessControlConditions
+    );
+    const ipfsHash = pinFileToIPFS(encryptedData);
+    const tx = await contract.updateKey(credential.id, ipfsHash);
+    await tx.wait();
+    await getCredentials();
+    setLoading(false);
+    setIsEditModalOpen(false);
+    setLog({
+      type: "info",
+      message: "Saved",
+      description: "Updated credentials successfully saved to the network",
+    });
+  };
+
+  //Handler function for the deletion of the credential from the network.
+  const handleDeleteCredentials = async (rowId) => {
+    setLoading(true);
+    const tx = await contract.deleteKey(rowId);
+    await tx.wait();
+    setLoading(false);
+    await getCredentials();
+    setLog({
+      type: "info",
+      message: "Deleted",
+      description: "Credentials deleted from the network.",
+    });
+  };
+
+  // Handling the Add Modal Input change.
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
+
+  //Handling the Edit Modal text input change
+  const handleEditingInputChange = (event) => {
+    setEditingCredentials({
+      ...editingCredentials,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  //Effect for loading the credentials when the contract is set.
+  useEffect(() => {
+    if (contract) {
+      getCredentials();
+    }
+  }, [contract]);
 
   //Effect for handling the notifications once log is set call the notification.
   useEffect(() => {
@@ -437,8 +547,52 @@ export default function Home() {
               </Button>
             </Space>
           </div>
+        </Modal>
+        <Modal
+          title="Edit Password"
+          open={isEditModalOpen}
+          onCancel={() => setIsEditModalOpen(false)}
+          footer={null}
+        >
+          <div className={styles.encryptDecryptContainer}>
+            <label htmlFor="site">Site</label>
+            <Input
+              type="text"
+              name="site"
+              value={editingCredentials?.site || ""}
+              placeholder="example.com"
+              onChange={handleEditingInputChange}
+            />
+            <label htmlFor="username">Username</label>
+            <Input
+              type="text"
+              name="username"
+              value={editingCredentials?.username || ""}
+              placeholder="Username"
+              onChange={handleEditingInputChange}
+            />
+            <label htmlFor="password">Password</label>
+            <Input.Password
+              type="password"
+              name="password"
+              value={editingCredentials?.password || ""}
+              placeholder="Password"
+              onChange={handleEditingInputChange}
+            />
+            {/* generte random password button */}
+            <Space>
+              <Button
+                type="primary"
+                loading={loading}
+                onClick={() => handleEditCredentials(editingCredentials)}
+              >
+                Save
+              </Button>
+            </Space>
+          </div>
           <p>{logMessage}</p>
         </Modal>
+        <p>{logMessage}</p>
       </main>
     </div>
   );
