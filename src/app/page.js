@@ -3,44 +3,15 @@ import { useEffect, useState } from "react";
 import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { useRouter } from "next/navigation";
+import pakoda from "./pakoda";
 // import Head from "next/head";
 import Lit from "./lib/lit.js";
-import {
-  // Space,
-  // Button,
-  // Input,
-  // Popconfirm,
-  // Modal,
-  // message,
-  // Table,
-  notification,
-  // Spin,
-} from "antd";
-// import {
-//   PlusCircleOutlined,
-//   EditOutlined,
-//   DeleteOutlined,
-//   SyncOutlined,
-// } from "@ant-design/icons";
-// import styles from "./styles/Home.module.css";
-import {
-  ChakraProvider,
-  Container,
-  Heading,
-  Text,
-  Center,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Stack,
-  Button,
-  Image,
-  Box,
-  Flex,
-} from "@chakra-ui/react";
+import { notification } from "antd";
+
+import { ChakraProvider, Button } from "@chakra-ui/react";
 import Login from "./Login.js";
 import Dashboard from "./Dashboard.js";
+
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 //Using the contract ABI from the compiled contract.
@@ -443,178 +414,6 @@ export default function Home() {
       handleNotification(log);
     }
   }, [log]);
-
-  // return (
-  //   <div className={styles.container}>
-  //     <Head>
-  //       <title>DePass - Decentralised Password Manager</title>
-  //       <meta
-  //         name="description"
-  //         content="DePass - Decentralised Password Manager"
-  //       />
-  //       <link rel="icon" href="/favicon.ico" />
-  //     </Head>
-
-  //     <main className={styles.main}>
-  //       <h3 className={styles.title}>
-  //         Welcome to DePass <span> Decentralised Password Manager</span>
-  //       </h3>
-
-  //       <p className={styles.description}>
-  //         Securely save your credentials over the blockchain network.
-  //       </p>
-
-  //       {provider && (
-  //         <>
-  //           <h2>My Passwords</h2>
-  //           <Space>
-  //             <Input.Search
-  //               placeholder="Search by Ipfs Hash.."
-  //               value={searchInput}
-  //               enterButton
-  //               allowClear
-  //               loading={loading}
-  //               onSearch={getCredentials}
-  //               onChange={(e) => setSearchInput(e.target.value)}
-  //             />
-  //             <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
-  //               Add
-  //               <PlusCircleOutlined />
-  //             </Button>
-  //             <Button type="primary" onClick={getCredentials}>
-  //               Refresh
-  //               <SyncOutlined />
-  //             </Button>
-  //             <Button
-  //               type="primary"
-  //               onClick={() => {
-  //                 setCredentials([]);
-  //                 setProvider(null);
-  //                 setLog({
-  //                   type: "info",
-  //                   message: "Logged Out",
-  //                   description: "You have been successfully logged out",
-  //                 });
-  //               }}
-  //             >
-  //               Logout
-  //             </Button>
-  //           </Space>
-  //           <Table
-  //             className="table_grid"
-  //             columns={columns}
-  //             rowKey="id"
-  //             dataSource={credentialsArr}
-  //             scroll={{ x: 970 }}
-  //             loading={loading}
-  //             pagination={{
-  //               pageSizeOptions: [10, 25, 50, 100],
-  //               showSizeChanger: true,
-  //               defaultCurrent: 1,
-  //               defaultPageSize: 10,
-  //               size: "default",
-  //             }}
-  //             onChange={() => {}}
-  //           />
-  //         </>
-  //       )}
-  //       {!provider && (
-  //         <Button
-  //           type="primary"
-  //           onClick={handleConnectWallet}
-  //           loading={loading}
-  //         >
-  //           Connect Wallet
-  //         </Button>
-  //       )}
-  //       <Modal
-  //         title="Save Password"
-  //         open={isAddModalOpen}
-  //         onCancel={() => setIsAddModalOpen(false)}
-  //         footer={null}
-  //       >
-  //         <div className={styles.encryptDecryptContainer}>
-  //           <label htmlFor="site">Site</label>
-  //           <Input
-  //             type="text"
-  //             name="site"
-  //             placeholder="example.com"
-  //             onChange={handleInputChange}
-  //           />
-  //           <label htmlFor="username">Username</label>
-  //           <Input
-  //             type="text"
-  //             name="username"
-  //             placeholder="Username"
-  //             onChange={handleInputChange}
-  //           />
-  //           <label htmlFor="password">Password</label>
-  //           <Input.Password
-  //             type="password"
-  //             name="password"
-  //             value={credentials?.password}
-  //             placeholder="Password"
-  //             onChange={handleInputChange}
-  //           />
-  //           <Space>
-  //             <Button
-  //               type="primary"
-  //               loading={loading}
-  //               onClick={() => handleSaveCredentials(credentials)}
-  //             >
-  //               Save
-  //             </Button>
-  //           </Space>
-  //         </div>
-  //       </Modal>
-  //       <Modal
-  //         title="Edit Password"
-  //         open={isEditModalOpen}
-  //         onCancel={() => setIsEditModalOpen(false)}
-  //         footer={null}
-  //       >
-  //         <div className={styles.encryptDecryptContainer}>
-  //           <label htmlFor="site">Site</label>
-  //           <Input
-  //             type="text"
-  //             name="site"
-  //             value={editingCredentials?.site || ""}
-  //             placeholder="example.com"
-  //             onChange={handleEditingInputChange}
-  //           />
-  //           <label htmlFor="username">Username</label>
-  //           <Input
-  //             type="text"
-  //             name="username"
-  //             value={editingCredentials?.username || ""}
-  //             placeholder="Username"
-  //             onChange={handleEditingInputChange}
-  //           />
-  //           <label htmlFor="password">Password</label>
-  //           <Input.Password
-  //             type="password"
-  //             name="password"
-  //             value={editingCredentials?.password || ""}
-  //             placeholder="Password"
-  //             onChange={handleEditingInputChange}
-  //           />
-  //           {/* generte random password button */}
-  //           <Space>
-  //             <Button
-  //               type="primary"
-  //               loading={loading}
-  //               onClick={() => handleEditCredentials(editingCredentials)}
-  //             >
-  //               Save
-  //             </Button>
-  //           </Space>
-  //         </div>
-  //         <p>{logMessage}</p>
-  //       </Modal>
-  //       <p>{logMessage}</p>
-  //     </main>
-  //   </div>
-  // );
 
   return (
     <ChakraProvider>

@@ -1,13 +1,9 @@
 import {
-  ChakraProvider,
-  Container,
   Heading,
   Text,
   Center,
   Card,
-  CardHeader,
   CardBody,
-  CardFooter,
   Stack,
   Button,
   Image,

@@ -1,40 +1,14 @@
-import { useEffect, useState } from "react";
-import { Input as Po, Button as AButton } from "antd";
+import { Input as Po, Table, Space, Popconfirm } from "antd";
+import SimpleSidebar from "./Sidebar";
 import {
-  ChakraProvider,
   Heading,
-  Text,
-  Center,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Container,
-  Stack,
   Button,
-  Image,
   HStack,
   Box,
   InputGroup,
   InputRightElement,
   Input,
-  Flex,
-  IconButton,
-  List,
-  ListItem,
-  ListIcon,
-  Divider,
 } from "@chakra-ui/react";
-// import {
-//   Thead,
-//   Tbody,
-//   Tfoot,
-//   Tr,
-//   Th,
-//   Td,
-//   TableCaption,
-//   TableContainer,
-// } from "@chakra-ui/react";
 import {
   EditIcon,
   Search2Icon,
@@ -43,22 +17,6 @@ import {
   AddIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
-
-import {
-  Space,
-  Popconfirm,
-  Modal,
-  message,
-  Table,
-  notification,
-  Spin,
-} from "antd";
-import {
-  PlusCircleOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
 
 const credentialsArr = [
   { id: 1, site: "pakode", username: "pakdoea", password: "Blahhhh" },
@@ -160,40 +118,14 @@ export default function Dashboard({}) {
     <Box width={"100vw"} height={"100vh"} p={"20px"}>
       <Box rounded={"10px"} p={"10px"} height={"100%"} boxShadow="dark-lg">
         <HStack alignItems={"flex-start"} height={"100%"} pt={"40px"}>
-          <Box >
-            <Stack>
-              <Button
-                justifyContent="flex-start"
-                colorScheme="gray"
-                variant="outline"
-              >
-                Site
-              </Button>
-              <Button
-                justifyContent="flex-start"
-                colorScheme="gray"
-                variant="outline"
-              >
-                Secure Notes
-              </Button>
-              <Button
-                justifyContent="flex-start"
-                colorScheme="gray"
-                variant="outline"
-              >
-                Cards
-              </Button>
-              <Button
-                justifyContent="flex-start"
-                colorScheme="gray"
-                variant="outline"
-              >
-                Files
-              </Button>
-            </Stack>
-          </Box>
-          {/* <Divider borderLeftWidth={"6px"} orientation='vertical' height="1000px" /> */}
-          <Box width={"100%"} height={"100%"} borderLeft={"2px"} borderLeftColor={"gray.200"} px={"20px"}>
+          <SimpleSidebar />
+          <Box
+            width={"100%"}
+            height={"100%"}
+            px={"20px"}
+            borderLeft="2px"
+            borderLeftColor="gray.200"
+          >
             <Heading
               textAlign="center"
               size="xl"
