@@ -116,7 +116,15 @@ const columns = [
 export default function Dashboard({}) {
   return (
     <Box width={"100vw"} height={"100vh"} p={"20px"}>
-      <Box rounded={"10px"} p={"10px"} height={"100%"} boxShadow="dark-lg">
+      <Box
+        rounded={"10px"}
+        p={"10px"}
+        bg={
+          "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
+        }
+        height={"100%"}
+        boxShadow="dark-lg"
+      >
         <HStack alignItems={"flex-start"} height={"100%"} pt={"40px"}>
           <SimpleSidebar />
           <Box
@@ -169,6 +177,11 @@ export default function Dashboard({}) {
               className="table_grid"
               columns={columns}
               rowKey="id"
+              style={{
+                borderRadius: "10px",
+                border: "10px",
+                borderColor: "black",
+              }}
               dataSource={credentialsArr}
               scroll={{ x: 970 }}
               pagination={{

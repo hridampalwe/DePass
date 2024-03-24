@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { useRouter } from "next/navigation";
-import pakoda from "./pakoda";
+
 // import Head from "next/head";
 import Lit from "./lib/lit.js";
 import { notification } from "antd";
