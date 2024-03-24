@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   ChakraProvider,
   Container,
@@ -15,7 +14,7 @@ import {
   Box,
   Flex,
 } from "@chakra-ui/react";
-export default function Login() {
+export default function Login({ handleConnectWallet }) {
   return (
     <Flex
       width={"100vw"}
