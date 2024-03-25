@@ -17,6 +17,7 @@ import {
   AddIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
+import {useState} from "react";
 
 const credentialsArr = [
   { id: 1, site: "pakode", username: "pakdoea", password: "Blahhhh" },
@@ -114,6 +115,12 @@ const columns = [
 ];
 
 export default function Dashboard({}) {
+  const [isDashboardVisible, setIsDashboardVisible] = useState(true);
+
+  const toggleDashboardVisibility = () => {
+    setIsDashboardVisible((prev) => !prev);
+  };
+
   return (
     <Box width={"100vw"} height={"100vh"} p={"20px"}>
       <Box
@@ -126,8 +133,8 @@ export default function Dashboard({}) {
         boxShadow="dark-lg"
       >
         <HStack alignItems={"flex-start"} height={"100%"} pt={"40px"}>
-          <SimpleSidebar />
-          <Box
+          <SimpleSidebar toggleDashboard={toggleDashboardVisibility} isDashboardVisible={isDashboardVisible}/>
+          {isDashboardVisible && <Box
             width={"100%"}
             height={"100%"}
             px={"20px"}
@@ -193,7 +200,7 @@ export default function Dashboard({}) {
               }}
               onChange={() => {}}
             />
-          </Box>
+          </Box>}
         </HStack>
       </Box>
     </Box>
