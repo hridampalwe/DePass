@@ -58,7 +58,11 @@ const cards = [
   },
 ];
 
-export default function DebitContents() {
+export function cardAddDrawerContent() {
+  return <Heading> Hello From Debit </Heading>;
+}
+
+export function DebitContents() {
   return (
     <Box maxW="95%" px="10px">
       <Heading size="2xl">Cards</Heading>

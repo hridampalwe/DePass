@@ -119,6 +119,12 @@ export default function Home() {
     setLog(null);
   };
 
+  const test1 = (strpo) => {
+    console.log(strpo);
+  };
+  const test2 = (popo) => {
+    console.log(popo);
+  };
   //ACC for the LIT Protocol for stroging the encryption over to the Blockchain.
   const accessControlConditions = [
     {
@@ -131,92 +137,6 @@ export default function Home() {
         comparator: "=",
         value: account,
       },
-    },
-  ];
-
-  //Defining columns for the Table of AntD
-  const columns = [
-    {
-      title: "Site",
-      key: "site",
-      // sorter: (a, b) => a.site.localeCompare(b.site),
-      ellipsis: true,
-      width: "20%",
-      render: ({ site }) => (
-        <Input
-          readOnly
-          type="text"
-          value={site}
-          // copy to clipboard on click
-          onClick={(e) => {
-            navigator.clipboard.writeText(e.target.value);
-            message.success("Site copied to clipboard");
-          }}
-        />
-      ),
-    },
-    {
-      title: "Username",
-      // sorter: (a, b) => a.username.localeCompare(b.username),
-      key: "username",
-      width: "20%",
-      render: ({ username }) => (
-        <Input
-          readOnly
-          type="text"
-          value={username}
-          onClick={(e) => {
-            navigator.clipboard.writeText(e.target.value);
-            message.success("Username copied to clipboard");
-          }}
-        />
-      ),
-    },
-    {
-      title: "Password",
-      key: "password",
-      sorter: false,
-      width: "20%",
-      render: ({ password }) => (
-        <Input.Password
-          readOnly
-          value={password}
-          // copy to clipboard
-          onClick={(e) => {
-            e.preventDefault();
-            navigator.clipboard.writeText(password);
-            message.success("Password copied to clipboard");
-          }}
-        />
-      ),
-    },
-    {
-      title: "Actions",
-      width: "10%",
-      render: (row) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            onClick={() => {
-              console.log("row", row);
-              setEditingCredentials(row);
-              setIsEditModalOpen(true);
-            }}
-          >
-            <EditOutlined />
-          </Button>
-          <Popconfirm
-            title="Are you sure?"
-            onConfirm={() => {
-              handleDeleteCredentials(row.id);
-            }}
-          >
-            <Button type="primary" danger>
-              <DeleteOutlined />
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
     },
   ];
 
@@ -418,7 +338,7 @@ export default function Home() {
   return (
     <ChakraProvider>
       {!provider && <Login handleConnectWallet={handleConnectWallet} />}
-      {provider && <Dashboard />}
+      {provider && <Dashboard functions={{ test1, test2 }} />}
     </ChakraProvider>
   );
 }

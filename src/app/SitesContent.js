@@ -1,5 +1,5 @@
 import { Input as AInput, Popconfirm } from "antd";
-import {useState} from "react";
+import { useState } from "react";
 import {
   Heading,
   Button,
@@ -18,12 +18,18 @@ import {
   CardBody,
   Stack,
   StackDivider,
+  Text,
   Slide,
   Drawer,
   DrawerOverlay,
   DrawerContent,
   DrawerBody,
-  DrawerHeader
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  DrawerHeader,
+  VStack,
+  Center,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -32,6 +38,7 @@ import {
   RepeatIcon,
   AddIcon,
   ArrowForwardIcon,
+  CheckIcon,
 } from "@chakra-ui/icons";
 
 const credentialsArr = [
@@ -65,29 +72,70 @@ const credentialsArr = [
   },
 ];
 
-export default function SitesContent() {
-  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export function SiteAddDrawerContent({ functions, cred }) {
+  console.log(cred);
+  return (
+    <Box width="100%" height="100%" padding="20px">
+      <VStack width="100%" alignItems="left">
+        <Heading pt="10px" pl="5px" size="xl">
+          Details
+        </Heading>
+        <Divider borderColor="gray.200" />
+        <Box bg="gray.100" rounded="10px" p="20px">
+          <Text
+            style={{ fontWeight: "bold" }}
+            pt="10px"
+            px="10px"
+            fontSize="lg"
+          >
+            Site Name
+          </Text>
+          <Input
+            value={cred ? cred.site : ""}
+            size="lg"
+            placeholder="Enter the Site Name"
+          />
+          <Text
+            style={{ fontWeight: "bold" }}
+            pt="10px"
+            px="10px"
+            fontSize="lg"
+          >
+            Site URL
+          </Text>
+          <Input size="lg" placeholder="Enter the Site URL" />
+          <Text
+            style={{ fontWeight: "bold" }}
+            pt="10px"
+            px="10px"
+            fontSize="lg"
+          >
+            Username
+          </Text>
+          <Input size="lg" placeholder="Enter the Username" />
+          <Text
+            style={{ fontWeight: "bold" }}
+            pt="10px"
+            px="10px"
+            fontSize="lg"
+          >
+            Password
+          </Text>
+          <Input size="lg" placeholder="Enter the Password" />
+          <Center pt="20px">
+            <Button colorScheme="blue" leftIcon={<CheckIcon />}>
+              Save Credentials
+            </Button>
+          </Center>
+        </Box>
+      </VStack>
+    </Box>
+  );
+}
 
-  // const handleDrawerOpen = () => {
-  //   setIsDrawerOpen(true);
-  // };
-
-  // const handleDrawerClose = () => {
-  //   setIsDrawerOpen(false);
-  // };
-
+export const SitesContent = ({ clickTest }) => {
   return (
     <Box width={"95%"} px="10px" height={"100%"}>
-      {/* <Drawer placement="bottom" onClose={handleDrawerClose} isOpen={isDrawerOpen}>
-        <DrawerOverlay>
-          <DrawerContent>
-            <DrawerHeader borderBottomWidth="1px">Add Site</DrawerHeader>
-            <DrawerBody>
-              <p>Some text...</p>
-            </DrawerBody>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer> */}
       <Heading size="2xl">Sites</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <HStack
@@ -108,7 +156,9 @@ export default function SitesContent() {
           rightIcon={<AddIcon />}
           colorScheme={"gray"}
           variant="solid"
-          // onClick={handleDrawerOpen}
+          onClick={() => {
+            clickTest();
+          }}
         >
           Add Site
         </Button>
@@ -178,6 +228,7 @@ export default function SitesContent() {
                           onClick={() => {
                             // setEditingCredentials(row);
                             // setIsEditModalOpen(true);
+                            clickTest(cred);
                           }}
                           leftIcon={<EditIcon />}
                         >
@@ -210,4 +261,4 @@ export default function SitesContent() {
       </Box>
     </Box>
   );
-}
+};

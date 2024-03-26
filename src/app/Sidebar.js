@@ -10,6 +10,9 @@ import {
   Drawer,
   DrawerContent,
   useDisclosure,
+  Button,
+  Heading,
+  Slide,
   Image,
 } from "@chakra-ui/react";
 import {
@@ -23,22 +26,48 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { FaGlobe, FaCreditCard } from "react-icons/fa";
-import SitesContent from "./SitesContent";
-import DebitContents from "./DebitContents";
+import { SitesContent, SiteAddDrawerContent } from "./SitesContent";
+import { DebitContents, cardAddDrawerContent } from "./DebitContents";
 import SecureNotesContent from "./SecureNotesContent";
 import IdentityContent from "./IdentityContent";
 
 const LinkItems = [
-  { name: "Site", icon: FaGlobe, render: SitesContent },
-  { name: "Debit Card Info", icon: FaCreditCard, render: DebitContents },
-  { name: "Secure Notes", icon: FiBookOpen, render:SecureNotesContent},
+  {
+    name: "Site",
+    icon: FaGlobe,
+    render: SitesContent,
+    addContent: SiteAddDrawerContent,
+  },
+  {
+    name: "Debit Card Info",
+    icon: FaCreditCard,
+    render: DebitContents,
+    addContent: cardAddDrawerContent,
+  },
+  { name: "Secure Notes", icon: FiBookOpen, render: SecureNotesContent },
   { name: "Identity", icon: FiUser, render: IdentityContent },
   { name: "Favourites", icon: FiStar },
 ];
 
-export default function SimpleSidebar() {
+export default function SimpleSidebar({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [renderComponent, setRenderComponent] = useState(SitesContent);
+  const [renderComponent, setRenderComponent] = useState(
+    <SitesContent clickTest={clickTest} />
+  );
+  const [cred, setCred] = useState(null);
+  const [addComponent, setAddComponent] = useState(
+    <SiteAddDrawerContent functions={functions} cred={cred} />
+  );
+  function clickTest(credObj = { empty: true }) {
+    if (credObj.empty !== true) {
+      console.log(credObj);
+      setCred(credObj);
+    } else {
+      setCred({});
+    }
+    // console.log(credObj);
+    onOpen();
+  }
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
@@ -60,7 +89,10 @@ export default function SimpleSidebar() {
             key={link.name}
             icon={link.icon}
             onClick={() => {
-              setRenderComponent(<link.render />);
+              setRenderComponent(<link.render clickTest={clickTest} />);
+              setAddComponent(
+                <link.addContent functions={functions} cred={cred} />
+              );
             }}
           >
             {link.name}
@@ -111,19 +143,17 @@ export default function SimpleSidebar() {
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
       />
-      <Drawer
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full"
-      >
-        <DrawerContent>
-          <SidebarContent onClose={onClose} />
+      {/* <Button onClick={onOpen}>Open Drawer</Button> */}
+
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
+        <DrawerContent
+          bg={
+            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
+          }
+        >
+          {addComponent}
         </DrawerContent>
       </Drawer>
-      {/* mobilenav */}
 
       <Box
         borderLeft="2px"
