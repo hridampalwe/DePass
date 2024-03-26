@@ -1,4 +1,4 @@
-import { Input as Po, Table, Space, Popconfirm } from "antd";
+import { Input as AInput, Popconfirm } from "antd";
 import {
   Heading,
   Button,
@@ -8,6 +8,15 @@ import {
   InputRightElement,
   Divider,
   Input,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Card,
+  CardBody,
+  Stack,
+  StackDivider,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -19,98 +28,33 @@ import {
 } from "@chakra-ui/icons";
 
 const credentialsArr = [
-  { id: 1, site: "pakode", username: "pakdoea", password: "Blahhhh" },
-  { id: 2, site: "lasn", username: "pakdoea", password: "Blahhhh" },
-  { id: 3, site: "yoyo", username: "pakdoea", password: "Blahhhh" },
-  { id: 4, site: "sakshi", username: "gay", password: "Blahhhh" },
-];
-
-const columns = [
   {
-    title: "Site",
-    key: "site",
-    sorter: (a, b) => a.site.localeCompare(b.site),
-    ellipsis: true,
-    width: "20%",
-    backgroundColor: "black",
-    render: ({ site }) => (
-      <Po
-        readOnly
-        type="text"
-        size="large"
-        value={site}
-        // copy to clipboard on click
-        onClick={(e) => {
-          navigator.clipboard.writeText(e.target.value);
-          message.success("Site copied to clipboard");
-        }}
-      />
-    ),
+    id: 1,
+    url: "pakode.com",
+    site: "pakode",
+    username: "pakdoea",
+    password: "Blahhhh",
   },
   {
-    title: "Username",
-    sorter: (a, b) => a.username.localeCompare(b.username),
-    key: "username",
-    width: "20%",
-    render: ({ username }) => (
-      <Po
-        readOnly
-        type="text"
-        size="large"
-        value={username}
-        onClick={(e) => {
-          navigator.clipboard.writeText(e.target.value);
-          message.success("Username copied to clipboard");
-        }}
-      />
-    ),
+    id: 2,
+    url: "lasn.com",
+    site: "lasn",
+    username: "pakdoea",
+    password: "Blahhhh",
   },
   {
-    title: "Password",
-    key: "password",
-    sorter: false,
-    width: "20%",
-    render: ({ password }) => (
-      <Po.Password
-        readOnly
-        value={password}
-        size="large"
-        // copy to clipboard
-        onClick={(e) => {
-          e.preventDefault();
-          navigator.clipboard.writeText(password);
-          message.success("Password copied to clipboard");
-        }}
-      />
-    ),
+    id: 3,
+    url: "yoyo.com",
+    site: "yoyo",
+    username: "pakdoea",
+    password: "Blahhhh",
   },
   {
-    title: "Actions",
-    width: "10%",
-    render: (row) => (
-      <Space size="small">
-        <Button
-          type="primary"
-          onClick={() => {
-            console.log("row", row);
-            // setEditingCredentials(row);
-            // setIsEditModalOpen(true);
-          }}
-        >
-          <EditIcon />
-        </Button>
-        <Popconfirm
-          title="Are you sure?"
-          onConfirm={() => {
-            // handleDeleteCredentials(row.id);
-          }}
-        >
-          <Button colorScheme={"red"} type="primary" danger>
-            <DeleteIcon />
-          </Button>
-        </Popconfirm>
-      </Space>
-    ),
+    id: 4,
+    url: "sakshi.com",
+    site: "sakshi",
+    username: "gay",
+    password: "Blahhhh",
   },
 ];
 
@@ -134,7 +78,7 @@ export default function SitesContent() {
           </InputRightElement>
         </InputGroup>
         <Button rightIcon={<AddIcon />} colorScheme={"gray"} variant="solid">
-          Add Card
+          Add Site
         </Button>
         <Button rightIcon={<RepeatIcon />} colorScheme={"gray"} variant="solid">
           Refresh
@@ -147,22 +91,91 @@ export default function SitesContent() {
           Logout
         </Button>
       </HStack>
-      <Table
-        className="table_grid"
-        columns={columns}
-        rowKey="id"
-        style={{ backgroundColor: "b" }}
-        dataSource={credentialsArr}
-        scroll={{ x: 970 }}
-        pagination={{
-          pageSizeOptions: [10, 25, 50, 100],
-          showSizeChanger: true,
-          defaultCurrent: 1,
-          defaultPageSize: 10,
-          size: "default",
-        }}
-        onChange={() => {}}
-      />
+      <Box rounded="10px" bg="gray.200">
+        <Accordion rounded="10px" allowToggle>
+          {credentialsArr.map((cred) => (
+            <AccordionItem>
+              <h2>
+                <AccordionButton p="20px">
+                  <Heading textAlign="left" flex="1" size="md">
+                    {cred.site}
+                  </Heading>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <Card maxW="700px">
+                  <CardBody>
+                    <Stack divider={<StackDivider />} spacing="20px">
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          {" "}
+                          Site URL
+                        </Heading>
+                        <Input
+                          variant="filled"
+                          value={cred.url}
+                          readOnly="true"
+                        />
+                      </Box>
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          {" "}
+                          Username
+                        </Heading>
+                        <Input
+                          variant="filled"
+                          value={cred.username}
+                          readOnly="true"
+                        />
+                      </Box>
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          Password
+                        </Heading>
+                        <AInput.Password
+                          variant="filled"
+                          size="large"
+                          readOnly="true"
+                          value={cred.password}
+                        />
+                      </Box>
+                      <HStack justifyContent={"right"} width="100%">
+                        <Button
+                          type="primary"
+                          onClick={() => {
+                            // setEditingCredentials(row);
+                            // setIsEditModalOpen(true);
+                          }}
+                          leftIcon={<EditIcon />}
+                        >
+                          {" "}
+                          Edit
+                        </Button>
+                        <Popconfirm
+                          title="Are you sure?"
+                          onConfirm={() => {
+                            // handleDeleteCredentials(row.id);
+                          }}
+                        >
+                          <Button
+                            colorScheme={"red"}
+                            type="primary"
+                            leftIcon={<DeleteIcon />}
+                            variant="outline"
+                          >
+                            Delete
+                          </Button>
+                        </Popconfirm>
+                      </HStack>
+                    </Stack>
+                  </CardBody>
+                </Card>
+              </AccordionPanel>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Box>
     </Box>
   );
 }
