@@ -1,4 +1,5 @@
 import { Input as AInput, Popconfirm } from "antd";
+import {useState} from "react";
 import {
   Heading,
   Button,
@@ -17,6 +18,12 @@ import {
   CardBody,
   Stack,
   StackDivider,
+  Slide,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerBody,
+  DrawerHeader
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -59,9 +66,29 @@ const credentialsArr = [
 ];
 
 export default function SitesContent() {
+  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // const handleDrawerOpen = () => {
+  //   setIsDrawerOpen(true);
+  // };
+
+  // const handleDrawerClose = () => {
+  //   setIsDrawerOpen(false);
+  // };
+
   return (
     <Box width={"95%"} px="10px" height={"100%"}>
-      <Heading size="3xl">Sites</Heading>
+      {/* <Drawer placement="bottom" onClose={handleDrawerClose} isOpen={isDrawerOpen}>
+        <DrawerOverlay>
+          <DrawerContent>
+            <DrawerHeader borderBottomWidth="1px">Add Site</DrawerHeader>
+            <DrawerBody>
+              <p>Some text...</p>
+            </DrawerBody>
+          </DrawerContent>
+        </DrawerOverlay>
+      </Drawer> */}
+      <Heading size="2xl">Sites</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <HStack
         marginTop="20px"
@@ -77,7 +104,12 @@ export default function SitesContent() {
             <Button rightIcon={<Search2Icon />}>Search</Button>
           </InputRightElement>
         </InputGroup>
-        <Button rightIcon={<AddIcon />} colorScheme={"gray"} variant="solid">
+        <Button
+          rightIcon={<AddIcon />}
+          colorScheme={"gray"}
+          variant="solid"
+          // onClick={handleDrawerOpen}
+        >
           Add Site
         </Button>
         <Button rightIcon={<RepeatIcon />} colorScheme={"gray"} variant="solid">

@@ -19,17 +19,21 @@ import {
   FiStar,
   FiSettings,
   FiMenu,
+  FiBookOpen,
+  FiUser,
 } from "react-icons/fi";
 import { FaGlobe, FaCreditCard } from "react-icons/fa";
 import SitesContent from "./SitesContent";
 import DebitContents from "./DebitContents";
+import SecureNotesContent from "./SecureNotesContent";
+import IdentityContent from "./IdentityContent";
 
 const LinkItems = [
   { name: "Site", icon: FaGlobe, render: SitesContent },
   { name: "Debit Card Info", icon: FaCreditCard, render: DebitContents },
-  { name: "Explore", icon: FiCompass },
+  { name: "Secure Notes", icon: FiBookOpen, render:SecureNotesContent},
+  { name: "Identity", icon: FiUser, render: IdentityContent },
   { name: "Favourites", icon: FiStar },
-  { name: "Settings", icon: FiSettings },
 ];
 
 export default function SimpleSidebar() {
@@ -75,7 +79,7 @@ export default function SimpleSidebar() {
       >
         <Flex
           align="center"
-          p="4"
+          p="6"
           mx="4"
           borderRadius="lg"
           role="group"
@@ -89,7 +93,7 @@ export default function SimpleSidebar() {
           {icon && (
             <Icon
               mr="4"
-              fontSize="16"
+              fontSize="20"
               _groupHover={{
                 color: "white",
               }}

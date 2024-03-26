@@ -26,42 +26,48 @@ import {
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 import { Popconfirm } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
 const cards = [
   {
-    cardName: "Indian Bank Debit",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
+    Title: "Aadhaar Card",
+    Age: "22",
+    "First Name": "Sakshi",
+    "Middle Name": "",
+    "Last Name": "Agrawal",
+    "Date of Birth": "02/09/2001",
+    "Contact No.": 9302770111,
+    "E-mail Address": "sakshiagrawal2445@gmail.com",
+    Number: 655787766789,
   },
   {
-    cardName: "State Bank of India Debit",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
+    Title: "Driving License",
+    Age: "22",
+    "First Name": "Sakshi",
+    "Middle Name": "",
+    "Last Name": "Agrawal",
+    "Date of Birth": "02/09/2001",
+    "Contact No.": 9302770111,
+    "E-mail Address": "sakshiagrawal2445@gmail.com",
+    Number: 655787766789,
   },
   {
-    cardName: "Punjab Bank Debit",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
-  },
-  {
-    cardName: "HDFC Credit Card",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
+    Title: "PAN Card",
+    Age: "22",
+    "First Name": "Sakshi",
+    "Middle Name": "",
+    "Last Name": "Agrawal",
+    "Date of Birth": "02/09/2001",
+    "Contact No.": 9302770111,
+    "E-mail Address": "sakshiagrawal2445@gmail.com",
+    Number: 655787766789,
   },
 ];
 
 export default function DebitContents() {
   return (
     <Box maxW="95%" px="10px">
-      <Heading size="2xl">Cards</Heading>
+      <Heading size="2xl">Secure Notes</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <Box pt="20px">
         <HStack
@@ -72,13 +78,13 @@ export default function DebitContents() {
           marginBottom="10px"
         >
           <InputGroup size="lg">
-            <Input size="lg" placeholder="Search sites" />
+            <Input size="lg" placeholder="Search notes" />
             <InputRightElement width="120px">
               <Button rightIcon={<Search2Icon />}>Search</Button>
             </InputRightElement>
           </InputGroup>
           <Button rightIcon={<AddIcon />} colorScheme={"gray"} variant="solid">
-            Add Card
+            Add Identity
           </Button>
           <Button
             rightIcon={<RepeatIcon />}
@@ -102,7 +108,7 @@ export default function DebitContents() {
                 <h2>
                   <AccordionButton p="20px">
                     <Heading textAlign="left" flex="1" size="md">
-                      {card.cardName}
+                      {card.Title}
                     </Heading>
                     <AccordionIcon />
                   </AccordionButton>
@@ -111,50 +117,64 @@ export default function DebitContents() {
                   <Card maxW="700px">
                     <CardBody>
                       <Stack divider={<StackDivider />} spacing="20px">
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            {" "}
-                            Account Number
-                          </Heading>
-                          <Input
-                            variant="filled"
-                            value={card.accNo}
-                            readOnly="true"
-                          />
-                        </Box>
                         <HStack>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              Expiry Date
+                              {" "}
+                              First Name
                             </Heading>
                             <Input
                               variant="filled"
-                              value={card.expiry}
+                              value={card["First Name"]}
                               readOnly="true"
                             />
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              CVV
+                              {" "}
+                              Middle Name
                             </Heading>
                             <Input
                               variant="filled"
-                              value={card.cvv}
+                              value={card["Middle Name"]}
+                              readOnly="true"
+                            />
+                          </Box>
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              {" "}
+                              Last Name
+                            </Heading>
+                            <Input
+                              variant="filled"
+                              value={card["Last Name"]}
                               readOnly="true"
                             />
                           </Box>
                         </HStack>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Card Holder's Name
-                          </Heading>
-                          <Input
-                            readOnly="true"
-                            variant="filled"
-                            value={card.accholderName}
-                            textTransform="uppercase"
-                          />
-                        </Box>
+                        <HStack>
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              Age
+                            </Heading>
+                            <Input
+                              variant="filled"
+                              value={card.Age}
+                              readOnly="true"
+                            />
+                          </Box>
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              Date of Birth
+                            </Heading>
+                            <Input
+                              variant="filled"
+                              value={card["Date of Birth"]}
+                              readOnly="true"
+                              type="date"
+                            />
+                          </Box>
+                        </HStack>
                         <HStack justifyContent={"right"} width="100%">
                           <Button
                             type="primary"
