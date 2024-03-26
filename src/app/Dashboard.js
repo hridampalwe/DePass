@@ -1,7 +1,17 @@
 import SimpleSidebar from "./Sidebar";
-import { Box } from "@chakra-ui/react";
+import {
+  Box,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerBody,
+  DrawerHeader,
+  useDisclosure,
+  Button,
+} from "@chakra-ui/react";
 
-export default function Dashboard() {
+export default function Dashboard({ functions }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Box width={"100vw"} height={"100vh"} p={"20px"}>
       <Box
@@ -13,7 +23,7 @@ export default function Dashboard() {
         height={"100%"}
         boxShadow="dark-lg"
       >
-        <SimpleSidebar />
+        <SimpleSidebar functions={functions} />
       </Box>
     </Box>
   );
