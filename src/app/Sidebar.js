@@ -22,11 +22,11 @@ import {
 } from "react-icons/fi";
 import { FaGlobe, FaCreditCard } from "react-icons/fa";
 import SitesContent from "./SitesContent";
-import Debitinfo from "./Debitinfo";
+import DebitContents from "./DebitContents";
 
 const LinkItems = [
   { name: "Site", icon: FaGlobe, render: SitesContent },
-  { name: "Debit Card Info", icon: FaCreditCard, render: Debitinfo },
+  { name: "Debit Card Info", icon: FaCreditCard, render: DebitContents },
   { name: "Explore", icon: FiCompass },
   { name: "Favourites", icon: FiStar },
   { name: "Settings", icon: FiSettings },

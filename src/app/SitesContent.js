@@ -6,6 +6,7 @@ import {
   Box,
   InputGroup,
   InputRightElement,
+  Divider,
   Input,
 } from "@chakra-ui/react";
 import {
@@ -31,6 +32,7 @@ const columns = [
     sorter: (a, b) => a.site.localeCompare(b.site),
     ellipsis: true,
     width: "20%",
+    backgroundColor: "black",
     render: ({ site }) => (
       <Po
         readOnly
@@ -114,26 +116,25 @@ const columns = [
 
 export default function SitesContent() {
   return (
-    <Box width={"100%"} height={"100%"}>
-      <Heading
-        textAlign="center"
-        size="xl"
-        bgGradient="linear(to-l, #7928CA, #FF0080)"
-        bgClip="text"
+    <Box width={"95%"} px="10px" height={"100%"}>
+      <Heading size="3xl">Sites</Heading>
+      <Divider borderWidth="1px" borderColor="gray.200" />
+      <HStack
+        marginTop="20px"
+        p="3px"
+        spacing="5px"
+        rounded="10px"
+        bg="gray.200"
+        marginBottom="10px"
       >
-        DePass: Decentralised Password Manager
-      </Heading>
-      <HStack py="2%" spacing="5px">
-        <InputGroup size="md">
-          <Input size="md" placeholder="Search sites" />
-          <InputRightElement width="100px">
-            <Button size="md" rightIcon={<Search2Icon />}>
-              Search
-            </Button>
+        <InputGroup size="lg">
+          <Input size="lg" placeholder="Search sites" />
+          <InputRightElement width="120px">
+            <Button rightIcon={<Search2Icon />}>Search</Button>
           </InputRightElement>
         </InputGroup>
         <Button rightIcon={<AddIcon />} colorScheme={"gray"} variant="solid">
-          Add
+          Add Card
         </Button>
         <Button rightIcon={<RepeatIcon />} colorScheme={"gray"} variant="solid">
           Refresh
@@ -150,11 +151,7 @@ export default function SitesContent() {
         className="table_grid"
         columns={columns}
         rowKey="id"
-        style={{
-          borderRadius: "10px",
-          border: "10px",
-          borderColor: "black",
-        }}
+        style={{ backgroundColor: "b" }}
         dataSource={credentialsArr}
         scroll={{ x: 970 }}
         pagination={{
