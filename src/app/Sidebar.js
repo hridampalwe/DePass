@@ -7,11 +7,7 @@ import {
   useDisclosure,
   Image,
 } from "@chakra-ui/react";
-import {
-  FiStar,
-  FiBookOpen,
-  FiUser,
-} from "react-icons/fi";
+import { FiStar, FiBookOpen, FiUser } from "react-icons/fi";
 import { FaGlobe, FaCreditCard } from "react-icons/fa";
 import SitesContent from "./SitesContent";
 import CardsContents from "./CardsContents";
@@ -36,25 +32,23 @@ const LinkItems = [
 
 export default function SimpleSidebar({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [renderComponent, setRenderComponent] = useState(<SitesContent functions={functions} />);
+  const [renderComponent, setRenderComponent] = useState(
+    <SitesContent functions={functions} />
+  );
   const [cred, setCred] = useState(null);
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
-      <Box
-        w={{ base: "full", md: 60 }}
-        pos="fixed"
-        {...rest}
-      >
+      <Box w={{ base: "full", md: 60 }} pos="fixed" {...rest}>
         <Center>
           <Image boxSize="200px" src="blockChain.png" />
         </Center>
         {LinkItems.map((link) => (
           <NavItem
-            // key={link.name}
+            key={link.name}
             icon={link.icon}
             onClick={() => {
-              setRenderComponent(<link.render functions={functions}/>);
+              setRenderComponent(<link.render functions={functions} />);
             }}
           >
             {link.name}
@@ -111,6 +105,7 @@ export default function SimpleSidebar({ functions }) {
         height="100%"
         ml={{ base: 0, md: 60 }}
         p="10px"
+        overflow="auto"
       >
         {renderComponent}
       </Box>

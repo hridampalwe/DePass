@@ -1,5 +1,6 @@
 import { Input as AInput, Popconfirm } from "antd";
 import { useState, useEffect } from "react";
+import { filter } from "smart-array-filter";
 import {
   Heading,
   Button,
@@ -40,10 +41,13 @@ export default function SitesContent({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
+  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
+  const handleSearchChange = (event) => setSearch(event.target.value);
   // Effect for loading the credentials when the contract is set.
   useEffect(() => {
     if (credentialsArr == null) {
@@ -55,6 +59,7 @@ export default function SitesContent({ functions }) {
     setLoading(true);
     const recv = await functions.getCredentials("Sites");
     setCredentialsArr(recv);
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -184,9 +189,25 @@ export default function SitesContent({ functions }) {
         marginBottom="10px"
       >
         <InputGroup size="lg">
-          <Input size="lg" placeholder="Search sites" />
+          <Input
+            onChange={handleSearchChange}
+            size="lg"
+            placeholder="Search Filter"
+          />
           <InputRightElement width="120px">
-            <Button rightIcon={<Search2Icon />}>Search</Button>
+            <Button
+              rightIcon={<CheckIcon />}
+              onClick={() => {
+                console.log(origCredentialsArr);
+                const filteredData = filter(origCredentialsArr, {
+                  keywords: search,
+                });
+                console.log(filteredData);
+                setCredentialsArr(filteredData);
+              }}
+            >
+              Apply
+            </Button>
           </InputRightElement>
         </InputGroup>
         <Button
@@ -217,13 +238,13 @@ export default function SitesContent({ functions }) {
             functions.handleLogout();
           }}
         >
-        <Button
-          rightIcon={<ArrowForwardIcon />}
-          colorScheme={"red"}
-          variant="outline"
-        >
-          Logout
-        </Button>
+          <Button
+            rightIcon={<ArrowForwardIcon />}
+            colorScheme={"red"}
+            variant="outline"
+          >
+            Logout
+          </Button>
         </Popconfirm>
       </HStack>
       <Skeleton isLoaded={!loading}>
@@ -248,11 +269,7 @@ export default function SitesContent({ functions }) {
                             {" "}
                             Site URL
                           </Heading>
-                          <Input
-                            variant="filled"
-                            value={cred.url}
-                            readOnly="true"
-                          />
+                          <Input variant="filled" value={cred.url} readOnly />
                         </Box>
                         <Box>
                           <Heading size="xs" textTransform="uppercase">
@@ -262,7 +279,7 @@ export default function SitesContent({ functions }) {
                           <Input
                             variant="filled"
                             value={cred.username}
-                            readOnly="true"
+                            readOnly
                           />
                         </Box>
                         <Box>
@@ -272,7 +289,7 @@ export default function SitesContent({ functions }) {
                           <AInput.Password
                             variant="filled"
                             size="large"
-                            readOnly="true"
+                            readOnly
                             value={cred.password}
                           />
                         </Box>
