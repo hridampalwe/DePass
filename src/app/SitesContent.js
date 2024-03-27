@@ -1,40 +1,42 @@
 import { Input as AInput, Popconfirm } from "antd";
-import { useState, useEffect } from "react";
-import { filter } from "smart-array-filter";
 import {
-  Heading,
-  Button,
-  HStack,
-  Box,
-  InputGroup,
-  InputRightElement,
-  Divider,
-  Input,
   Accordion,
-  AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
   Card,
   CardBody,
+  Center,
+  Divider,
+  Drawer,
+  DrawerContent,
+  HStack,
+  Heading,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Skeleton,
   Stack,
   StackDivider,
   Text,
-  Drawer,
-  Skeleton,
-  DrawerContent,
   VStack,
-  Center,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import {
-  EditIcon,
-  DeleteIcon,
-  RepeatIcon,
   AddIcon,
   ArrowForwardIcon,
   CheckIcon,
+  DeleteIcon,
+  EditIcon,
+  RepeatIcon,
 } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+
+import { filter } from "smart-array-filter";
 
 export default function SitesContent({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,6 +45,7 @@ export default function SitesContent({ functions }) {
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const toast = useToast();
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
@@ -84,6 +87,17 @@ export default function SitesContent({ functions }) {
   function handleAddChange() {
     setCredentials({});
     onOpen();
+  }
+  function copyToClipboard(e) {
+    navigator.clipboard.writeText(e.target.value);
+    // message.success("Site copied to clipboard");
+    toast({
+      title: "Copied to clipboard",
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+      position: "top",
+    });
   }
 
   async function handleRefreshChange() {
@@ -216,8 +230,8 @@ export default function SitesContent({ functions }) {
       <Divider borderWidth="1px" borderColor="gray.200" />
       <HStack
         marginTop="20px"
-        p="3px"
-        spacing="5px"
+        p="5px"
+        spacing="10px"
         rounded="10px"
         bg="gray.200"
         marginBottom="10px"
@@ -226,10 +240,18 @@ export default function SitesContent({ functions }) {
           <Input
             onChange={handleSearchChange}
             size="lg"
+            variant="filled"
+            borderColor="rgba(0, 0, 0, 0.1)"
+            borderWidth="2px"
             placeholder="Search Filter"
           />
           <InputRightElement width="120px">
-            <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
+            <Button
+              size="md"
+              // variant="outline"
+              rightIcon={<CheckIcon />}
+              onClick={handleApplyChange}
+            >
               Apply
             </Button>
           </InputRightElement>
@@ -282,7 +304,12 @@ export default function SitesContent({ functions }) {
                             {" "}
                             Site URL
                           </Heading>
-                          <Input variant="filled" value={site.url} readOnly />
+                          <Input
+                            variant="filled"
+                            value={site.url}
+                            readOnly
+                            onClick={(e) => copyToClipboard(e)}
+                          />
                         </Box>
                         <Box>
                           <Heading size="xs" textTransform="uppercase">
@@ -290,6 +317,7 @@ export default function SitesContent({ functions }) {
                             Username
                           </Heading>
                           <Input
+                            onClick={(e) => copyToClipboard(e)}
                             variant="filled"
                             value={site.username}
                             readOnly
@@ -303,13 +331,16 @@ export default function SitesContent({ functions }) {
                             variant="filled"
                             size="large"
                             readOnly
+                            onClick={(e) => copyToClipboard(e)}
                             value={site.password}
                           />
                         </Box>
                         <HStack justifyContent={"right"} width="100%">
                           <Button
                             type="primary"
-                            onClick={()=>handleEditChange(site)}
+                            onClick={() => {
+                              handleEditChange(site);
+                            }}
                             leftIcon={<EditIcon />}
                           >
                             {" "}
@@ -317,7 +348,7 @@ export default function SitesContent({ functions }) {
                           </Button>
                           <Popconfirm
                             title="Are you sure?"
-                            onConfirm={()=> handleDeleteChange(site)}
+                            onConfirm={() => handleDeleteChange(site)}
                           >
                             <Button
                               colorScheme={"red"}

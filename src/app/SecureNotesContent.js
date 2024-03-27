@@ -25,6 +25,7 @@ import {
   DrawerContent,
   VStack,
   Center,
+  useToast,
   useDisclosure,
 } from "@chakra-ui/react";
 import {
@@ -37,6 +38,7 @@ import {
 } from "@chakra-ui/icons";
 
 export default function SecurenotesContent({ functions }) {
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
@@ -56,6 +58,18 @@ export default function SecurenotesContent({ functions }) {
     }
   }, [credentialsArr]);
 
+  function copyToClipboard(e) {
+    navigator.clipboard.writeText(e.target.value);
+    // message.success("Site copied to clipboard");
+    toast({
+      title: "Copied to clipboard",
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+      position: "top",
+    });
+  }
+
   async function getNotesCredentials() {
     setLoading(true);
     const recv = await functions.getCredentials("Notes");
@@ -69,7 +83,7 @@ export default function SecurenotesContent({ functions }) {
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
     } else {
-      await functions.handleSaveCredentials(credentials, "Sites");
+      await functions.handleSaveCredentials(credentials, "Notes");
     }
     onClose();
     await getNotesCredentials();
@@ -185,8 +199,8 @@ export default function SecurenotesContent({ functions }) {
       <Divider borderWidth="1px" borderColor="gray.200" />
       <Box pt="20px">
         <HStack
-          p="3px"
-          spacing="5px"
+          p="5px"
+          spacing="10px"
           rounded="10px"
           bg="gray.200"
           marginBottom="10px"
@@ -196,12 +210,12 @@ export default function SecurenotesContent({ functions }) {
               onChange={handleSearchChange}
               size="lg"
               placeholder="Search Filter"
+              variant="filled"
+              borderColor="rgba(0, 0, 0, 0.1)"
+              borderWidth="2px"
             />
             <InputRightElement width="120px">
-              <Button
-                rightIcon={<CheckIcon />}
-                onClick={handleApplyChange}
-              >
+              <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
                 Apply
               </Button>
             </InputRightElement>
@@ -222,10 +236,7 @@ export default function SecurenotesContent({ functions }) {
           >
             Refresh
           </Button>
-          <Popconfirm
-            title="Are you sure?"
-            onConfirm={handleLogoutChange}
-          >
+          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
               rightIcon={<ArrowForwardIcon />}
               colorScheme={"red"}
@@ -251,16 +262,20 @@ export default function SecurenotesContent({ functions }) {
                   <AccordionPanel pb={4}>
                     <Card maxW="700px">
                       <CardBody>
-                        <Stack divider={<StackDivider />} spacing="20px">
+                        <Stack spacing="20px">
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
                               Notes
                             </Heading>
-                            <Input
-                            variant="filled"
-                            value={note.notes}
-                            readOnly
-                          />
+                            <Box
+                              mt="5px"
+                              p="10px"
+                              rounded="10px"
+                              border="1px"
+                              bg="gray.100"
+                            >
+                              <Text>{note.notes}</Text>
+                            </Box>
                           </Box>
                           <HStack justifyContent={"right"} width="100%">
                             <Button

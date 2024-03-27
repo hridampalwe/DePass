@@ -13,6 +13,7 @@ import SitesContent from "./SitesContent";
 import CardsContents from "./CardsContents";
 import SecureNotesContent from "./SecureNotesContent";
 import IdentityContent from "./IdentityContent";
+import { Divider } from "antd";
 
 const LinkItems = [
   {
@@ -40,9 +41,10 @@ export default function SimpleSidebar({ functions }) {
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
       <Box w={{ base: "full", md: 60 }} pos="fixed" {...rest}>
-        <Center>
+        <Center py="5px">
           <Image boxSize="200px" src="blockChain.png" />
         </Center>
+        {/* <Divider /> */}
         {LinkItems.map((link) => (
           <NavItem
             key={link.name}
@@ -67,14 +69,14 @@ export default function SimpleSidebar({ functions }) {
         <Flex
           align="center"
           p="4"
-          mx="4"
-          borderRadius="lg"
-          fontSize="16"
-          fontWeight="bold"
+          me="5px"
+          rounded="5px"
+          fontSize="18"
+          fontWeight="400"
           role="group"
           cursor="pointer"
           _hover={{
-            bg: "gray.200",
+            bg: "blackAlpha.300",
             color: "black",
           }}
           {...rest}
@@ -95,7 +97,7 @@ export default function SimpleSidebar({ functions }) {
     );
   };
   return (
-    <Box height="100%" width="100%" py="30px">
+    <Box height="100%" width="100%" py="15px">
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}

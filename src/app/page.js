@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Lit from "./lib/lit.js";
 import { notification } from "antd";
 
-import { ChakraProvider, Button } from "@chakra-ui/react";
+import { ChakraProvider, useToast, Button } from "@chakra-ui/react";
 import Login from "./Login.js";
 import Dashboard from "./Dashboard.js";
 
@@ -104,30 +104,20 @@ const abi = [
 ];
 
 export default function Home() {
-  const router = useRouter();
+  const toast = useToast();
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
-  const [credentialsSitesArr, setCredentialsSitesArr] = useState([]);
-  const [credentialsCardsArr, setCredentialsCardsArr] = useState([]);
-  const [credentialsNotesArr, setCredentialsNotesArr] = useState([]);
-  const [credentialsIdentitiesArr, setCredentialsIdentitiesArr] = useState([]);
   const [account, setAccount] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [logMessage, setLogMessage] = useState("");
   const [log, setLog] = useState(null);
-  const [credentials, setCredentials] = useState({});
-  const [searchInput, setSearchInput] = useState("");
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingCredentials, setEditingCredentials] = useState("");
 
   //Function to use AntD notifications and set message and description
   const handleNotification = ({ type, message, description }) => {
-    notification[type]({
-      message,
-      description,
-      placement: "topRight",
-      duration: 6,
+    toast({
+      title: `${message}`,
+      status: type,
+      description: description,
+      isClosable: true,
+      position: "top",
     });
     setLog(null);
   };
@@ -151,7 +141,6 @@ export default function Home() {
   const handleConnectWallet = async () => {
     try {
       if (window?.ethereum) {
-        setLoading(true);
         // Check for the MetaMask extension and connect to the window.ethereum class.
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
@@ -169,10 +158,10 @@ export default function Home() {
         console.log(contract);
         setLog({
           type: "info",
-          message: "Wallet connected successfully",
-          description: "",
+          message: "Connected",
+          description: "Wallet Connected Successfully",
         });
-        setLoading(false);
+        // setLoading(false);
       } else {
         console.log("Please use Web3 enabled browser");
         setLog({
@@ -201,14 +190,8 @@ export default function Home() {
 
   //Gets credential details and fetch it to CredentialsArr
   const getCredentials = async (credentialsType) => {
-    setLoading(true);
-    // setCredentialsArr([]);
     let data = await contract.getMyKeys();
-    // console.log(data);
     const credentialsArr = [];
-    // const credentialsCardsArr = [];
-    // const credentialsNotesArr = [];
-    // const credentialsIdentitiesArr = [];
     //Data is array of credentials object access the object one by one.
     for (let i of data) {
       if (!i.isDeleted && i.credentialType === credentialsType) {
@@ -225,41 +208,8 @@ export default function Home() {
           id: Number(BigInt(i.id)),
           ...decryptedCredObj,
         });
-        // switch (credentialsType) {
-        //   case "Sites":
-        //     credentialsSitesArr.push({
-        //       id: Number(BigInt(i.id)),
-        //       ...decryptedCredObj,
-        //     });
-        //     break;
-        //   case "Cards":
-        //     credentialsCardsArr.push({
-        //       id: Number(BigInt(i.id)),
-        //       ...decryptedCredObj,
-        //     });
-        //     break;
-        //   case "Notes":
-        //     credentialsNotesArr.push({
-        //       id: Number(BigInt(i.id)),
-        //       ...decryptedCredObj,
-        //     });
-        //     break;
-        //   case "Identities":
-        //     credentialsIdentitiesArr.push({
-        //       id: Number(BigInt(i.id)),
-        //       ...decryptedCredObj,
-        //     });
-        //     break;
-        //   default:
-        //     console.log("Error");
-        // }
       }
     }
-    // setCredentialsSitesArr(credentialsSitesArr);
-    // setCredentialsCardsArr(credentialsCardsArr);
-    // setCredentialsNotesArr(credentialsNotesArr);
-    // setCredentialsIdentitiesArr(credentialsIdentitiesArr);
-    // console.log(credentialsArr);
     return credentialsArr;
   };
 
@@ -292,14 +242,11 @@ export default function Home() {
       return resData.IpfsHash;
     } catch (error) {
       console.log(error);
-      return "";
     }
   };
 
   // This function is responsible for saving data in the blockchain contract and create the transactions.
   const handleSaveCredentials = async (credentials, credentialsType) => {
-    console.log(credentials);
-    console.log(JSON.stringify(credentials));
     // Calling the LIT Protocol defined library to encrypt the credentials.
     let encryptedData = await Lit.encrypt(
       JSON.stringify(credentials),
@@ -312,18 +259,16 @@ export default function Home() {
     console.log(ipfsHash);
     await tx.wait();
     await getCredentials();
-    setLoading(false);
-    setIsAddModalOpen(false);
+
     setLog({
-      type: "info",
+      type: "success",
       message: "Updated",
-      description: "Credentials successfully saved to the network.",
+      description: "Credentials saved successfully to the network.",
     });
   };
 
   //Handler function for editing the credentials and updating to the network.
   const handleEditCredentials = async (credential) => {
-    setLoading(true);
     console.log(credential);
     let encryptedData = await Lit.encrypt(
       JSON.stringify(credential),
@@ -333,48 +278,26 @@ export default function Home() {
     const tx = await contract.updateKey(credential.id, ipfsHash);
     await tx.wait();
     await getCredentials();
-    setLoading(false);
-    setIsEditModalOpen(false);
+
     setLog({
-      type: "info",
+      type: "success",
       message: "Saved",
-      description: "Updated credentials successfully saved to the network",
+      description: "Updated successfully credentials saved to the network",
     });
   };
 
   //Handler function for the deletion of the credential from the network.
   const handleDeleteCredentials = async (rowId) => {
-    setLoading(true);
     const tx = await contract.deleteKey(rowId);
     await tx.wait();
-    setLoading(false);
+
     await getCredentials();
     setLog({
-      type: "info",
+      type: "success",
       message: "Deleted",
-      description: "Credentials deleted from the network.",
+      description: "Credentials deleted successfully from the network.",
     });
   };
-
-  // Handling the Add Modal Input change.
-  const handleInputChange = (event) => {
-    setCredentials({ ...credentials, [event.target.name]: event.target.value });
-  };
-
-  //Handling the Edit Modal text input change
-  const handleEditingInputChange = (event) => {
-    setEditingCredentials({
-      ...editingCredentials,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  //Effect for loading the credentials when the contract is set.
-  // useEffect(() => {
-  //   if (contract) {
-  //     getCredentials();
-  //   }
-  // }, [contract]);
 
   //Effect for handling the notifications once log is set call the notification.
   useEffect(() => {
@@ -383,7 +306,7 @@ export default function Home() {
     }
   }, [log]);
 
-  function handleLogout(){
+  function handleLogout() {
     setProvider(null);
   }
 
@@ -397,7 +320,7 @@ export default function Home() {
             getCredentials,
             handleEditCredentials,
             handleDeleteCredentials,
-            handleLogout
+            handleLogout,
           }}
         />
       )}
