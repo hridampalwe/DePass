@@ -228,60 +228,67 @@ export default function SitesContent({ functions }) {
       </Drawer>
       <Heading size="2xl">Sites</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
-      <HStack
-        marginTop="20px"
-        p="5px"
-        spacing="10px"
+      <VStack
         rounded="10px"
         bg="gray.200"
+        marginTop="20px"
+        p="10px"
+        spacing="20px"
         marginBottom="10px"
+        // alignItems="left"
       >
-        <InputGroup size="lg">
-          <Input
-            onChange={handleSearchChange}
-            size="lg"
-            variant="filled"
-            borderColor="rgba(0, 0, 0, 0.1)"
-            borderWidth="2px"
-            placeholder="Search Filter"
-          />
-          <InputRightElement width="120px">
-            <Button
-              size="md"
-              // variant="outline"
-              rightIcon={<CheckIcon />}
-              onClick={handleApplyChange}
-            >
-              Apply
-            </Button>
-          </InputRightElement>
-        </InputGroup>
-        <Button
-          rightIcon={<AddIcon />}
-          colorScheme={"gray"}
-          variant="solid"
-          onClick={handleAddChange}
-        >
-          Add Site
-        </Button>
-        <Button
-          rightIcon={<RepeatIcon />}
-          colorScheme={"gray"}
-          variant="solid"
-          onClick={handleRefreshChange}
-        >
-          Refresh
-        </Button>
-        <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
+        <HStack width="100%">
+          <InputGroup size="lg">
+            <Input
+              onChange={handleSearchChange}
+              size="lg"
+              variant="filled"
+              borderColor="rgba(0, 0, 0, 0.1)"
+              borderWidth="2px"
+              placeholder="Search Filter"
+            />
+            <InputRightElement width="120px">
+              <Button
+                size="md"
+                // variant="outline"
+                rightIcon={<CheckIcon />}
+                onClick={handleApplyChange}
+              >
+                Apply
+              </Button>
+            </InputRightElement>
+          </InputGroup>
           <Button
-            rightIcon={<ArrowForwardIcon />}
-            colorScheme={"red"}
-            variant="outline"
+            rightIcon={<AddIcon />}
+            colorScheme={"gray"}
+            variant="solid"
+            onClick={handleAddChange}
           >
-            Logout
+            Add Site
           </Button>
-        </Popconfirm>
-      </HStack>
+          <Button
+            rightIcon={<RepeatIcon />}
+            colorScheme={"gray"}
+            variant="solid"
+            onClick={handleRefreshChange}
+          >
+            Refresh
+          </Button>
+          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
+            <Button
+              rightIcon={<ArrowForwardIcon />}
+              colorScheme={"red"}
+              variant="outline"
+            >
+              Logout
+            </Button>
+          </Popconfirm>
+        </HStack>
+        <Heading mx="5px" fontSize="20px">
+          View, Modify, or Delete stored login details within your DePass
+          Account.
+        </Heading>
+      </VStack>
       <Skeleton isLoaded={!loading}>
         <Box rounded="10px" bg="gray.200">
           <Accordion rounded="10px" allowToggle>
