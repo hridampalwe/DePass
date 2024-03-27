@@ -1,42 +1,45 @@
 import { Input as AInput, Popconfirm } from "antd";
-import { useState, useEffect } from "react";
-import { filter } from "smart-array-filter";
 import {
-  Box,
-  Heading,
   Accordion,
-  AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
   Card,
   CardBody,
+  Center,
+  Divider,
+  Drawer,
+  DrawerContent,
+  HStack,
+  Heading,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Skeleton,
   Stack,
   StackDivider,
-  Input,
-  HStack,
-  InputGroup,
-  Divider,
-  InputRightElement,
-  Button,
-  VStack,
-  Drawer,
-  Skeleton,
-  DrawerContent,
   Text,
+  VStack,
   useDisclosure,
-  Center,
+  useToast,
 } from "@chakra-ui/react";
 import {
-  EditIcon,
-  DeleteIcon,
-  RepeatIcon,
   AddIcon,
   ArrowForwardIcon,
   CheckIcon,
+  DeleteIcon,
+  EditIcon,
+  RepeatIcon,
 } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+
+import { filter } from "smart-array-filter";
 
 export default function CardsContents({ functions }) {
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
@@ -47,8 +50,8 @@ export default function CardsContents({ functions }) {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
- 
-    // Effect for loading the credentials when the contract is set.
+
+  // Effect for loading the credentials when the contract is set.
   useEffect(() => {
     if (credentialsArr == null) {
       getCardsCredentials();
@@ -63,18 +66,29 @@ export default function CardsContents({ functions }) {
     setLoading(false);
   }
 
-  async function handleClickSaveCredentials () {
+  async function handleClickSaveCredentials() {
     setLoading(true);
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
     } else {
-      await functions.handleSaveCredentials(credentials, "Sites");
+      await functions.handleSaveCredentials(credentials, "Cards");
     }
     onClose();
     await getCardsCredentials();
   }
+  function copyToClipboard(e) {
+    navigator.clipboard.writeText(e.target.value);
+    // message.success("Site copied to clipboard");
+    toast({
+      title: "Copied to clipboard",
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+      position: "top",
+    });
+  }
 
-  function handleApplyChange () {
+  function handleApplyChange() {
     const filteredData = filter(origCredentialsArr, {
       keywords: search,
     });
@@ -86,15 +100,14 @@ export default function CardsContents({ functions }) {
     onOpen();
   }
 
-  async function handleRefreshChange(){
+  async function handleRefreshChange() {
     await getCardsCredentials();
   }
-  
-  async function handleLogoutChange () {
+
+  async function handleLogoutChange() {
     setCredentialsArr([]);
     functions.handleLogout();
   }
-
 
   async function handleEditChange(card) {
     setCredentials(card);
@@ -106,7 +119,6 @@ export default function CardsContents({ functions }) {
     await functions.handleDeleteCredentials(card.id);
     getCardsCredentials();
   }
-
 
   function cardsAddDrawerContent() {
     return (
@@ -233,8 +245,8 @@ export default function CardsContents({ functions }) {
       <Divider borderWidth="1px" borderColor="gray.200" />
       <Box pt="20px">
         <HStack
-          p="3px"
-          spacing="5px"
+          p="5px"
+          spacing="10px"
           rounded="10px"
           bg="gray.200"
           marginBottom="10px"
@@ -244,12 +256,12 @@ export default function CardsContents({ functions }) {
               size="lg"
               onChange={handleSearchChange}
               placeholder="Search Filter"
+              variant="filled"
+              borderColor="rgba(0, 0, 0, 0.1)"
+              borderWidth="2px"
             />
             <InputRightElement width="120px">
-              <Button
-                rightIcon={<CheckIcon />}
-                onClick={handleApplyChange}
-              >
+              <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
                 Apply
               </Button>
             </InputRightElement>
@@ -270,10 +282,7 @@ export default function CardsContents({ functions }) {
           >
             Refresh
           </Button>
-          <Popconfirm
-            title="Are you sure?"
-            onConfirm={handleLogoutChange}
-          >
+          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
               rightIcon={<ArrowForwardIcon />}
               colorScheme={"red"}
@@ -309,6 +318,7 @@ export default function CardsContents({ functions }) {
                               variant="filled"
                               value={card.accNo}
                               readOnly
+                              onClick={(e) => copyToClipboard(e)}
                             />
                           </Box>
                           <HStack>
@@ -320,6 +330,7 @@ export default function CardsContents({ functions }) {
                                 variant="filled"
                                 value={card.expiry}
                                 readOnly
+                                onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
                             <Box>
@@ -330,6 +341,7 @@ export default function CardsContents({ functions }) {
                                 variant="filled"
                                 value={card.cvv}
                                 readOnly
+                                onClick={(e) => copyToClipboard(e)}
                                 size="large"
                               />
                             </Box>
@@ -340,6 +352,7 @@ export default function CardsContents({ functions }) {
                             </Heading>
                             <Input
                               readOnly
+                              onClick={(e) => copyToClipboard(e)}
                               variant="filled"
                               value={card.accholderName}
                               textTransform="uppercase"
@@ -348,7 +361,7 @@ export default function CardsContents({ functions }) {
                           <HStack justifyContent={"right"} width="100%">
                             <Button
                               type="primary"
-                              onClick={()=>handleEditChange(card)}
+                              onClick={() => handleEditChange(card)}
                               leftIcon={<EditIcon />}
                             >
                               {" "}
@@ -356,7 +369,7 @@ export default function CardsContents({ functions }) {
                             </Button>
                             <Popconfirm
                               title="Are you sure?"
-                              onConfirm={()=>handleDeleteChange(card)}
+                              onConfirm={() => handleDeleteChange(card)}
                             >
                               <Button
                                 colorScheme={"red"}

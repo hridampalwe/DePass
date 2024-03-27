@@ -21,6 +21,7 @@ import {
   Button,
   Drawer,
   DrawerContent,
+  useToast,
   Skeleton,
   VStack,
   Center,
@@ -36,6 +37,7 @@ import {
 } from "@chakra-ui/icons";
 
 export default function IdentityContent({ functions }) {
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
@@ -46,7 +48,19 @@ export default function IdentityContent({ functions }) {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
-  
+
+  function copyToClipboard(e) {
+    navigator.clipboard.writeText(e.target.value);
+    // message.success("Site copied to clipboard");
+    toast({
+      title: "Copied to clipboard",
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+      position: "top",
+    });
+  }
+
   // Effect for loading the credentials when the contract is set.
   useEffect(() => {
     if (credentialsArr == null) {
@@ -62,18 +76,18 @@ export default function IdentityContent({ functions }) {
     setLoading(false);
   }
 
-  async function handleClickSaveCredentials () {
+  async function handleClickSaveCredentials() {
     setLoading(true);
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
     } else {
-      await functions.handleSaveCredentials(credentials, "Sites");
+      await functions.handleSaveCredentials(credentials, "Identities");
     }
     onClose();
     await getIdentitiesCredentials();
   }
 
-  function handleApplyChange () {
+  function handleApplyChange() {
     const filteredData = filter(origCredentialsArr, {
       keywords: search,
     });
@@ -85,15 +99,14 @@ export default function IdentityContent({ functions }) {
     onOpen();
   }
 
-  async function handleRefreshChange(){
+  async function handleRefreshChange() {
     await getIdentitiesCredentials();
   }
-  
-  async function handleLogoutChange () {
+
+  async function handleLogoutChange() {
     setCredentialsArr([]);
     functions.handleLogout();
   }
-
 
   async function handleEditChange(identity) {
     setCredentials(identity);
@@ -275,27 +288,27 @@ export default function IdentityContent({ functions }) {
           {IdentityAddDrawerContent()}
         </DrawerContent>
       </Drawer>
-      <Heading size="2xl">Identity</Heading>
+      <Heading size="2xl">Identities</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <Box pt="20px">
         <HStack
-          p="3px"
-          spacing="5px"
+          p="5px"
+          spacing="15px"
           rounded="10px"
           bg="gray.200"
           marginBottom="10px"
         >
-          <InputGroup size="lg" maxW="65%">
+          <InputGroup size="lg">
             <Input
               onChange={handleSearchChange}
               size="lg"
+              variant="filled"
+              borderColor="rgba(0, 0, 0, 0.1)"
+              borderWidth="2px"
               placeholder="Search Filter"
             />
             <InputRightElement width="120px">
-              <Button
-                rightIcon={<CheckIcon />}
-                onClick={handleApplyChange}
-              >
+              <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
                 Apply
               </Button>
             </InputRightElement>
@@ -316,10 +329,7 @@ export default function IdentityContent({ functions }) {
           >
             Refresh
           </Button>
-          <Popconfirm
-            title="Are you sure?"
-            onConfirm={handleLogoutChange}
-          >
+          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
               rightIcon={<ArrowForwardIcon />}
               colorScheme={"red"}
@@ -353,9 +363,10 @@ export default function IdentityContent({ functions }) {
                                 First Name
                               </Heading>
                               <Input
-                                variant="outline"
+                                variant="filled"
                                 value={identity.firstName}
                                 readOnly
+                                onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
                             <Box>
@@ -364,9 +375,10 @@ export default function IdentityContent({ functions }) {
                                 lastName{" "}
                               </Heading>
                               <Input
-                                variant="outline"
+                                variant="filled"
                                 value={identity.lastName}
                                 readOnly
+                                onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
                           </HStack>
@@ -376,9 +388,10 @@ export default function IdentityContent({ functions }) {
                                 Age
                               </Heading>
                               <Input
-                                variant="outline"
+                                variant="filled"
                                 value={identity.age}
                                 readOnly
+                                onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
                             <Box>
@@ -386,9 +399,10 @@ export default function IdentityContent({ functions }) {
                                 Date of Birth
                               </Heading>
                               <Input
-                                variant="outline"
                                 value={identity.dob}
                                 readOnly
+                                onClick={(e) => copyToClipboard(e)}
+                                variant="filled"
                                 type="text"
                               />
                             </Box>
@@ -398,9 +412,10 @@ export default function IdentityContent({ functions }) {
                               Contact No.
                             </Heading>
                             <Input
-                              variant="outline"
+                              variant="filled"
                               value={identity.contact}
                               readOnly
+                              onClick={(e) => copyToClipboard(e)}
                             />
                           </Box>
                           <Box>
@@ -409,9 +424,10 @@ export default function IdentityContent({ functions }) {
                               Email Address
                             </Heading>
                             <Input
-                              variant="outline"
+                              variant="filled"
                               value={identity.email}
                               readOnly
+                              onClick={(e) => copyToClipboard(e)}
                             />
                           </Box>
                           <Box>
@@ -420,9 +436,10 @@ export default function IdentityContent({ functions }) {
                               {identity.title} number
                             </Heading>
                             <Input
-                              variant="outline"
+                              variant="filled"
                               value={identity.number}
                               readOnly
+                              onClick={(e) => copyToClipboard(e)}
                             />
                           </Box>
                           <HStack justifyContent={"right"} width="100%">
@@ -436,7 +453,9 @@ export default function IdentityContent({ functions }) {
                             </Button>
                             <Popconfirm
                               title="Are you sure?"
-                              onConfirm={async () => handleDeleteChange(identity)}
+                              onConfirm={async () =>
+                                handleDeleteChange(identity)
+                              }
                             >
                               <Button
                                 colorScheme={"red"}
