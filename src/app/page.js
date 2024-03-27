@@ -204,7 +204,7 @@ export default function Home() {
     setLoading(true);
     // setCredentialsArr([]);
     let data = await contract.getMyKeys();
-    console.log(data);
+    // console.log(data);
     const credentialsArr = [];
     // const credentialsCardsArr = [];
     // const credentialsNotesArr = [];
@@ -259,7 +259,7 @@ export default function Home() {
     // setCredentialsCardsArr(credentialsCardsArr);
     // setCredentialsNotesArr(credentialsNotesArr);
     // setCredentialsIdentitiesArr(credentialsIdentitiesArr);
-    console.log(credentialsArr);
+    // console.log(credentialsArr);
     return credentialsArr;
   };
 

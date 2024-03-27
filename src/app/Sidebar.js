@@ -66,23 +66,25 @@ export default function SimpleSidebar({ functions }) {
       >
         <Flex
           align="center"
-          p="6"
+          p="4"
           mx="4"
           borderRadius="lg"
+          fontSize="16"
+          fontWeight="bold"
           role="group"
           cursor="pointer"
           _hover={{
-            bg: "cyan.400",
-            color: "white",
+            bg: "gray.200",
+            color: "black",
           }}
           {...rest}
         >
           {icon && (
             <Icon
               mr="4"
-              fontSize="20"
+              fontSize="26"
               _groupHover={{
-                color: "white",
+                color: "black",
               }}
               as={icon}
             />

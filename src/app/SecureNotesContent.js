@@ -1,5 +1,6 @@
-import { Input as AInput, Popconfirm } from "antd";
+import { Popconfirm } from "antd";
 import { useState, useEffect } from "react";
+import { filter } from "smart-array-filter";
 import {
   Box,
   Heading,
@@ -28,23 +29,25 @@ import {
 } from "@chakra-ui/react";
 import {
   EditIcon,
-  Search2Icon,
   DeleteIcon,
   RepeatIcon,
   CheckIcon,
   AddIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
-import TextArea from "antd/es/input/TextArea";
 
 export default function SecurenotesContent({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
+  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
+
+  const handleSearchChange = (event) => setSearch(event.target.value);
 
   // Effect for loading the credentials when the contract is set.
   useEffect(() => {
@@ -57,7 +60,51 @@ export default function SecurenotesContent({ functions }) {
     setLoading(true);
     const recv = await functions.getCredentials("Notes");
     setCredentialsArr(recv);
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
+  }
+
+  async function handleClickSaveCredentials() {
+    setLoading(true);
+    if (credentials?.id) {
+      await functions.handleEditCredentials(credentials);
+    } else {
+      await functions.handleSaveCredentials(credentials, "Sites");
+    }
+    onClose();
+    await getNotesCredentials();
+  }
+
+  function handleApplyChange() {
+    const filteredData = filter(origCredentialsArr, {
+      keywords: search,
+    });
+    setCredentialsArr(filteredData);
+  }
+
+  function handleAddChange() {
+    setCredentials({});
+    onOpen();
+  }
+
+  async function handleRefreshChange() {
+    await getNotesCredentials();
+  }
+
+  async function handleLogoutChange() {
+    setCredentialsArr([]);
+    functions.handleLogout();
+  }
+
+  async function handleEditChange(note) {
+    setCredentials(note);
+    onOpen();
+  }
+
+  async function handleDeleteChange(note) {
+    setLoading(true);
+    await functions.handleDeleteCredentials(note.id);
+    getNotesCredentials();
   }
 
   function notesAddDrawerContent() {
@@ -81,7 +128,7 @@ export default function SecurenotesContent({ functions }) {
               type="text"
               name="name"
               placeholder="Enter the Notes Name"
-              value={credentials?.name}
+              value={credentials?.name || ""}
               onChange={handleInputChange}
             />
             <Text
@@ -96,7 +143,7 @@ export default function SecurenotesContent({ functions }) {
               type="text"
               name="notes"
               size="lg"
-              value={credentials?.notes}
+              value={credentials?.notes || ""}
               placeholder="Enter the Notes"
               onChange={handleInputChange}
             />
@@ -106,16 +153,7 @@ export default function SecurenotesContent({ functions }) {
                 isLoading={loading}
                 loadingText="Submitting"
                 leftIcon={<CheckIcon />}
-                onClick={async () => {
-                  setLoading(true);
-                  if (credentials?.id) {
-                    await functions.handleEditCredentials(credentials);
-                  } else {
-                    await functions.handleSaveCredentials(credentials, "Notes");
-                  }
-                  onClose();
-                  await getNotesCredentials();
-                }}
+                onClick={handleClickSaveCredentials}
               >
                 Save Credentials
               </Button>
@@ -154,19 +192,25 @@ export default function SecurenotesContent({ functions }) {
           marginBottom="10px"
         >
           <InputGroup size="lg">
-            <Input size="lg" placeholder="Search notes" />
+            <Input
+              onChange={handleSearchChange}
+              size="lg"
+              placeholder="Search Filter"
+            />
             <InputRightElement width="120px">
-              <Button rightIcon={<Search2Icon />}>Search</Button>
+              <Button
+                rightIcon={<CheckIcon />}
+                onClick={handleApplyChange}
+              >
+                Apply
+              </Button>
             </InputRightElement>
           </InputGroup>
           <Button
             rightIcon={<AddIcon />}
             colorScheme={"gray"}
             variant="solid"
-            onClick={() => {
-              setCredentials({});
-              onOpen();
-            }}
+            onClick={handleAddChange}
           >
             Add notes
           </Button>
@@ -174,18 +218,13 @@ export default function SecurenotesContent({ functions }) {
             rightIcon={<RepeatIcon />}
             colorScheme={"gray"}
             variant="solid"
-            onClick={async () => {
-              await getNotesCredentials();
-            }}
+            onClick={handleRefreshChange}
           >
             Refresh
           </Button>
           <Popconfirm
             title="Are you sure?"
-            onConfirm={async () => {
-              setCredentialsArr([]);
-              functions.handleLogout();
-            }}
+            onConfirm={handleLogoutChange}
           >
             <Button
               rightIcon={<ArrowForwardIcon />}
@@ -199,12 +238,12 @@ export default function SecurenotesContent({ functions }) {
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion py="" allowToggle>
-              {credentialsArr?.map((card) => (
-                <AccordionItem key={card.id}>
+              {credentialsArr?.map((note) => (
+                <AccordionItem key={note.id}>
                   <h2>
                     <AccordionButton p="20px">
                       <Heading textAlign="left" flex="1" size="md">
-                        {card.name}
+                        {note.name}
                       </Heading>
                       <AccordionIcon />
                     </AccordionButton>
@@ -217,15 +256,16 @@ export default function SecurenotesContent({ functions }) {
                             <Heading size="xs" textTransform="uppercase">
                               Notes
                             </Heading>
-                            <TextArea isReadOnly value={card.notes} />
+                            <Input
+                            variant="filled"
+                            value={note.notes}
+                            readOnly
+                          />
                           </Box>
                           <HStack justifyContent={"right"} width="100%">
                             <Button
                               type="primary"
-                              onClick={() => {
-                                setCredentials(card);
-                                onOpen();
-                              }}
+                              onClick={() => handleEditChange(note)}
                               leftIcon={<EditIcon />}
                             >
                               {" "}
@@ -233,13 +273,7 @@ export default function SecurenotesContent({ functions }) {
                             </Button>
                             <Popconfirm
                               title="Are you sure?"
-                              onConfirm={async () => {
-                                setLoading(true);
-                                await functions.handleDeleteCredentials(
-                                  card.id
-                                );
-                                getNotesCredentials();
-                              }}
+                              onConfirm={async () => handleDeleteChange(note)}
                             >
                               <Button
                                 colorScheme={"red"}
