@@ -1,3 +1,4 @@
+import { Input as AInput, Popconfirm } from "antd";
 import {
   Box,
   Heading,
@@ -16,6 +17,14 @@ import {
   Divider,
   InputRightElement,
   Button,
+  VStack,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  Text,
+  useDisclosure,
+  Center,
+  DrawerBody,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -24,8 +33,9 @@ import {
   RepeatIcon,
   AddIcon,
   ArrowForwardIcon,
+  CheckIcon,
 } from "@chakra-ui/icons";
-import { Popconfirm } from "antd";
+import { useState } from "react";
 
 const cards = [
   {
@@ -58,10 +68,127 @@ const cards = [
   },
 ];
 
-
 export default function DebitContents() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [credentials, setCredentials] = useState(null);
+  const handleInputChange = (event) => {
+    setCredentials({ ...credentials, [event.target.name]: event.target.value });
+  };
+  function debitAddDrawerContent() {
+    return (
+      <Box width="100%" height="100%" padding="20px">
+        <VStack width="100%" alignItems="left">
+          <Heading pt="10px" pl="5px" size="xl">
+            Details
+          </Heading>
+          <Divider borderColor="gray.200" />
+          <Box bg="gray.100" rounded="10px" p="20px">
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Card Name
+            </Text>
+            <Input
+              type="text"
+              name="cardName"
+              placeholder="Enter the Card Name"
+              value={credentials?.cardName}
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Account Number
+            </Text>
+            <Input
+              size="lg"
+              type="text"
+              name="accNo"
+              value={credentials?.accNo}
+              placeholder="Enter the Card Account Number"
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Expiry
+            </Text>
+            <Input
+              size="lg"
+              type="text"
+              name="expiry"
+              value={credentials?.expiry}
+              placeholder="Enter the expiry date on the card"
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              CVV
+            </Text>
+            <AInput.Password
+              size="large"
+              name="cvv"
+              value={credentials?.cvv}
+              placeholder="Enter the CVV"
+              onChange={handleInputChange}
+              variant="filled"
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Account Holder's Name
+            </Text>
+            <Input
+              type="text"
+              name="accholderName"
+              size="lg"
+              value={credentials?.accholderName}
+              placeholder="Enter the expiry date on the card"
+              onChange={handleInputChange}
+            />
+            <Center pt="20px">
+              <Button colorScheme="blue" leftIcon={<CheckIcon />}>
+                Save Credentials
+              </Button>
+            </Center>
+          </Box>
+        </VStack>
+      </Box>
+    );
+  }
   return (
     <Box maxW="95%" px="10px">
+      <Drawer
+        trapFocus="true"
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        size="sm"
+      >
+        <DrawerContent
+          bg={
+            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
+          }
+        >
+          {debitAddDrawerContent()}
+        </DrawerContent>
+      </Drawer>
       <Heading size="2xl">Cards</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <Box pt="20px">
@@ -78,7 +205,15 @@ export default function DebitContents() {
               <Button rightIcon={<Search2Icon />}>Search</Button>
             </InputRightElement>
           </InputGroup>
-          <Button rightIcon={<AddIcon />} colorScheme={"gray"} variant="solid">
+          <Button
+            rightIcon={<AddIcon />}
+            onClick={() => {
+              setCredentials({});
+              onOpen();
+            }}
+            colorScheme={"gray"}
+            variant="solid"
+          >
             Add Card
           </Button>
           <Button
@@ -160,8 +295,8 @@ export default function DebitContents() {
                           <Button
                             type="primary"
                             onClick={() => {
-                              // setEditingCredentials(row);
-                              // setIsEditModalOpen(true);
+                              setCredentials(card);
+                              onOpen();
                             }}
                             leftIcon={<EditIcon />}
                           >

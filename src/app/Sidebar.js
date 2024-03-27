@@ -26,7 +26,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { FaGlobe, FaCreditCard } from "react-icons/fa";
-import SitesContent  from "./SitesContent";
+import SitesContent from "./SitesContent";
 import DebitContents from "./DebitContents";
 import SecureNotesContent from "./SecureNotesContent";
 import IdentityContent from "./IdentityContent";
@@ -49,30 +49,12 @@ const LinkItems = [
 
 export default function SimpleSidebar({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [renderComponent, setRenderComponent] = useState(
-    <SitesContent />
-  );
+  const [renderComponent, setRenderComponent] = useState(<SitesContent />);
   const [cred, setCred] = useState(null);
-  // const [addComponent, setAddComponent] = useState(
-  //   // <SiteAddDrawerContent functions={functions} cred={cred} />
-  // );
-  // function clickTest(credObj = { empty: true }) {
-  //   if (credObj.empty !== true) {
-  //     console.log(credObj);
-  //     setCred(credObj);
-  //   } else {
-  //     setCred({});
-  //   }
-  //   // console.log(credObj);
-  //   onOpen();
-  // }
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
       <Box
-        // bg={useColorModeValue("white", "gray.900")}
-        //   borderRight="1px"
-        //   borderRightColor={useColorModeValue("gray.200", "gray.700")}
         w={{ base: "full", md: 60 }}
         pos="fixed"
         //   h="full"
@@ -138,17 +120,6 @@ export default function SimpleSidebar({ functions }) {
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
       />
-      {/* <Button onClick={onOpen}>Open Drawer</Button> */}
-
-      {/* <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
-        <DrawerContent
-          bg={
-            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
-          }
-        >
-          {addComponent}
-        </DrawerContent>
-      </Drawer> */}
 
       <Box
         borderLeft="2px"
