@@ -22,6 +22,7 @@ export default function Dashboard({ functions }) {
         }
         height={"100%"}
         boxShadow="dark-lg"
+        overflow="hidden"
       >
         <SimpleSidebar functions={functions} />
       </Box>

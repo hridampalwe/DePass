@@ -181,88 +181,90 @@ export default function SecurenotesContent({ functions }) {
             Refresh
           </Button>
           <Popconfirm
-          title="Are you sure?"
-          onConfirm={async () => {
-            setCredentialsArr([]);
-            functions.handleLogout();
-          }}
-        >
-        <Button
-          rightIcon={<ArrowForwardIcon />}
-          colorScheme={"red"}
-          variant="outline"
-        >
-          Logout
-        </Button>
-        </Popconfirm>
+            title="Are you sure?"
+            onConfirm={async () => {
+              setCredentialsArr([]);
+              functions.handleLogout();
+            }}
+          >
+            <Button
+              rightIcon={<ArrowForwardIcon />}
+              colorScheme={"red"}
+              variant="outline"
+            >
+              Logout
+            </Button>
+          </Popconfirm>
         </HStack>
         <Skeleton isLoaded={!loading}>
-        <Box rounded="10px" bg="gray.200">
-          <Accordion py="" allowToggle>
-            {credentialsArr?.map((card) => (
-              <AccordionItem>
-                <h2>
-                  <AccordionButton p="20px">
-                    <Heading textAlign="left" flex="1" size="md">
-                      {card.name}
-                    </Heading>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                  <Card maxW="700px">
-                    <CardBody>
-                      <Stack divider={<StackDivider />} spacing="20px">
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Notes
-                          </Heading>
-                          <TextArea isReadOnly value={card.notes} />
-                        </Box>
-                        <HStack justifyContent={"right"} width="100%">
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              setCredentials(card);
-                              onOpen();
-                            }}
-                            leftIcon={<EditIcon />}
-                          >
-                            {" "}
-                            Edit
-                          </Button>
-                          <Popconfirm
-                            title="Are you sure?"
-                            onConfirm={async () => {
-                              setLoading(true);
-                              await functions.handleDeleteCredentials(card.id);
-                              getNotesCredentials();
-                            }}
-                          >
+          <Box rounded="10px" bg="gray.200">
+            <Accordion py="" allowToggle>
+              {credentialsArr?.map((card) => (
+                <AccordionItem key={card.id}>
+                  <h2>
+                    <AccordionButton p="20px">
+                      <Heading textAlign="left" flex="1" size="md">
+                        {card.name}
+                      </Heading>
+                      <AccordionIcon />
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel pb={4}>
+                    <Card maxW="700px">
+                      <CardBody>
+                        <Stack divider={<StackDivider />} spacing="20px">
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              Notes
+                            </Heading>
+                            <TextArea isReadOnly value={card.notes} />
+                          </Box>
+                          <HStack justifyContent={"right"} width="100%">
                             <Button
-                              colorScheme={"red"}
                               type="primary"
-                              leftIcon={<DeleteIcon />}
-                              variant="outline"
+                              onClick={() => {
+                                setCredentials(card);
+                                onOpen();
+                              }}
+                              leftIcon={<EditIcon />}
                             >
-                              Delete
+                              {" "}
+                              Edit
                             </Button>
-                          </Popconfirm>
-                        </HStack>
-                      </Stack>
-                    </CardBody>
-                  </Card>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </Box>
+                            <Popconfirm
+                              title="Are you sure?"
+                              onConfirm={async () => {
+                                setLoading(true);
+                                await functions.handleDeleteCredentials(
+                                  card.id
+                                );
+                                getNotesCredentials();
+                              }}
+                            >
+                              <Button
+                                colorScheme={"red"}
+                                type="primary"
+                                leftIcon={<DeleteIcon />}
+                                variant="outline"
+                              >
+                                Delete
+                              </Button>
+                            </Popconfirm>
+                          </HStack>
+                        </Stack>
+                      </CardBody>
+                    </Card>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Box>
         </Skeleton>
         <Stack>
-        <Skeleton isLoaded={!loading} height="20px" />
-        <Skeleton isLoaded={!loading} height="20px" />
-        <Skeleton isLoaded={!loading} height="20px" />
-      </Stack>
+          <Skeleton isLoaded={!loading} height="20px" />
+          <Skeleton isLoaded={!loading} height="20px" />
+          <Skeleton isLoaded={!loading} height="20px" />
+        </Stack>
       </Box>
     </Box>
   );

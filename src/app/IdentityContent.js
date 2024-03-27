@@ -36,7 +36,7 @@ import {
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 
-export default function IdentityContent({functions}) {
+export default function IdentityContent({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
@@ -278,26 +278,26 @@ export default function IdentityContent({functions}) {
             Refresh
           </Button>
           <Popconfirm
-          title="Are you sure?"
-          onConfirm={async () => {
-            setCredentialsArr([]);
-            functions.handleLogout();
-          }}
-        >
-        <Button
-          rightIcon={<ArrowForwardIcon />}
-          colorScheme={"red"}
-          variant="outline"
-        >
-          Logout
-        </Button>
-        </Popconfirm>
+            title="Are you sure?"
+            onConfirm={async () => {
+              setCredentialsArr([]);
+              functions.handleLogout();
+            }}
+          >
+            <Button
+              rightIcon={<ArrowForwardIcon />}
+              colorScheme={"red"}
+              variant="outline"
+            >
+              Logout
+            </Button>
+          </Popconfirm>
         </HStack>
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
-            <Accordion allowToggle>
+            <Accordion maxWidth="100%" allowToggle>
               {credentialsArr?.map((card) => (
-                <AccordionItem>
+                <AccordionItem key={card.id}>
                   <h2>
                     <AccordionButton p="20px">
                       <Heading textAlign="left" flex="1" size="md">
@@ -319,7 +319,7 @@ export default function IdentityContent({functions}) {
                               <Input
                                 variant="outline"
                                 value={card.firstName}
-                                readOnly="true"
+                                readOnly
                               />
                             </Box>
                             <Box>
@@ -330,7 +330,7 @@ export default function IdentityContent({functions}) {
                               <Input
                                 variant="outline"
                                 value={card.lastName}
-                                readOnly="true"
+                                readOnly
                               />
                             </Box>
                           </HStack>
@@ -342,7 +342,7 @@ export default function IdentityContent({functions}) {
                               <Input
                                 variant="outline"
                                 value={card.age}
-                                readOnly="true"
+                                readOnly
                               />
                             </Box>
                             <Box>
@@ -352,7 +352,7 @@ export default function IdentityContent({functions}) {
                               <Input
                                 variant="outline"
                                 value={card.dob}
-                                readOnly="true"
+                                readOnly
                                 type="date"
                               />
                             </Box>
@@ -364,7 +364,7 @@ export default function IdentityContent({functions}) {
                             <Input
                               variant="outline"
                               value={card.contact}
-                              readOnly="true"
+                              readOnly
                             />
                           </Box>
                           <Box>
@@ -375,7 +375,7 @@ export default function IdentityContent({functions}) {
                             <Input
                               variant="outline"
                               value={card.email}
-                              readOnly="true"
+                              readOnly
                             />
                           </Box>
                           <Box>
@@ -386,7 +386,7 @@ export default function IdentityContent({functions}) {
                             <Input
                               variant="outline"
                               value={card.number}
-                              readOnly="true"
+                              readOnly
                             />
                           </Box>
                           <HStack justifyContent={"right"} width="100%">

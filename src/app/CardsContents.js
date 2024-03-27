@@ -226,127 +226,129 @@ export default function CardsContents({ functions }) {
             Refresh
           </Button>
           <Popconfirm
-          title="Are you sure?"
-          onConfirm={async () => {
-            setCredentialsArr([]);
-            functions.handleLogout();
-          }}
-        >
-        <Button
-          rightIcon={<ArrowForwardIcon />}
-          colorScheme={"red"}
-          variant="outline"
-        >
-          Logout
-        </Button>
-        </Popconfirm>
+            title="Are you sure?"
+            onConfirm={async () => {
+              setCredentialsArr([]);
+              functions.handleLogout();
+            }}
+          >
+            <Button
+              rightIcon={<ArrowForwardIcon />}
+              colorScheme={"red"}
+              variant="outline"
+            >
+              Logout
+            </Button>
+          </Popconfirm>
         </HStack>
         <Skeleton isLoaded={!loading}>
-        <Box rounded="10px" bg="gray.200">
-          <Accordion py="" allowToggle>
-            {credentialsArr?.map((card) => (
-              <AccordionItem>
-                <h2>
-                  <AccordionButton p="20px">
-                    <Heading textAlign="left" flex="1" size="md">
-                      {card.cardName}
-                    </Heading>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                  <Card maxW="700px">
-                    <CardBody>
-                      <Stack divider={<StackDivider />} spacing="20px">
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            {" "}
-                            Account Number
-                          </Heading>
-                          <Input
-                            variant="filled"
-                            value={card.accNo}
-                            readOnly="true"
-                          />
-                        </Box>
-                        <HStack>
+          <Box rounded="10px" bg="gray.200">
+            <Accordion py="" allowToggle>
+              {credentialsArr?.map((card) => (
+                <AccordionItem key={card.id}>
+                  <h2>
+                    <AccordionButton p="20px">
+                      <Heading textAlign="left" flex="1" size="md">
+                        {card.cardName}
+                      </Heading>
+                      <AccordionIcon />
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel pb={4}>
+                    <Card maxW="700px">
+                      <CardBody>
+                        <Stack divider={<StackDivider />} spacing="20px">
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              Expiry Date
+                              {" "}
+                              Account Number
                             </Heading>
                             <Input
                               variant="filled"
-                              value={card.expiry}
-                              readOnly="true"
+                              value={card.accNo}
+                              readOnly
                             />
                           </Box>
+                          <HStack>
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                Expiry Date
+                              </Heading>
+                              <Input
+                                variant="filled"
+                                value={card.expiry}
+                                readOnly
+                              />
+                            </Box>
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                CVV
+                              </Heading>
+                              <AInput.Password
+                                variant="filled"
+                                value={card.cvv}
+                                readOnly
+                                size="large"
+                              />
+                            </Box>
+                          </HStack>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              CVV
+                              Card Holder's Name
                             </Heading>
-                            <AInput.Password
+                            <Input
+                              readOnly
                               variant="filled"
-                              value={card.cvv}
-                              readOnly="true"
-                              size="large"
+                              value={card.accholderName}
+                              textTransform="uppercase"
                             />
                           </Box>
-                        </HStack>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Card Holder's Name
-                          </Heading>
-                          <Input
-                            readOnly="true"
-                            variant="filled"
-                            value={card.accholderName}
-                            textTransform="uppercase"
-                          />
-                        </Box>
-                        <HStack justifyContent={"right"} width="100%">
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              setCredentials(card);
-                              onOpen();
-                            }}
-                            leftIcon={<EditIcon />}
-                          >
-                            {" "}
-                            Edit
-                          </Button>
-                          <Popconfirm
-                            title="Are you sure?"
-                            onConfirm={async () => {
-                              setLoading(true);
-                              await functions.handleDeleteCredentials(card.id);
-                              getCardsCredentials();
-                            }}
-                          >
+                          <HStack justifyContent={"right"} width="100%">
                             <Button
-                              colorScheme={"red"}
                               type="primary"
-                              leftIcon={<DeleteIcon />}
-                              variant="outline"
+                              onClick={() => {
+                                setCredentials(card);
+                                onOpen();
+                              }}
+                              leftIcon={<EditIcon />}
                             >
-                              Delete
+                              {" "}
+                              Edit
                             </Button>
-                          </Popconfirm>
-                        </HStack>
-                      </Stack>
-                    </CardBody>
-                  </Card>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </Box>
+                            <Popconfirm
+                              title="Are you sure?"
+                              onConfirm={async () => {
+                                setLoading(true);
+                                await functions.handleDeleteCredentials(
+                                  card.id
+                                );
+                                getCardsCredentials();
+                              }}
+                            >
+                              <Button
+                                colorScheme={"red"}
+                                type="primary"
+                                leftIcon={<DeleteIcon />}
+                                variant="outline"
+                              >
+                                Delete
+                              </Button>
+                            </Popconfirm>
+                          </HStack>
+                        </Stack>
+                      </CardBody>
+                    </Card>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Box>
         </Skeleton>
         <Stack>
-        <Skeleton isLoaded={!loading} height="20px" />
-        <Skeleton isLoaded={!loading} height="20px" />
-        <Skeleton isLoaded={!loading} height="20px" />
-      </Stack>
+          <Skeleton isLoaded={!loading} height="20px" />
+          <Skeleton isLoaded={!loading} height="20px" />
+          <Skeleton isLoaded={!loading} height="20px" />
+        </Stack>
       </Box>
     </Box>
   );
