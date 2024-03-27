@@ -1,4 +1,5 @@
 import { Input as AInput, Popconfirm } from "antd";
+import { useState, useEffect } from "react";
 import {
   Box,
   Heading,
@@ -19,12 +20,11 @@ import {
   Button,
   VStack,
   Drawer,
-  DrawerOverlay,
+  Skeleton,
   DrawerContent,
   Text,
   useDisclosure,
   Center,
-  DrawerBody,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -35,46 +35,30 @@ import {
   ArrowForwardIcon,
   CheckIcon,
 } from "@chakra-ui/icons";
-import { useState } from "react";
 
-const cards = [
-  {
-    cardName: "Indian Bank Debit",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
-  },
-  {
-    cardName: "State Bank of India Debit",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
-  },
-  {
-    cardName: "Punjab Bank Debit",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
-  },
-  {
-    cardName: "HDFC Credit Card",
-    accNo: "9812 1231 1231 3123",
-    expiry: "5/2027",
-    cvv: "322",
-    accholderName: "Hridam Palwe",
-  },
-];
-
-export default function DebitContents() {
+export default function CardsContents({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
+  const [credentialsArr, setCredentialsArr] = useState(null);
+  const [loading, setLoading] = useState(false);
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
-  function debitAddDrawerContent() {
+
+  useEffect(() => {
+    if (credentialsArr == null) {
+      getCardsCredentials();
+    }
+  }, [credentialsArr]);
+
+  async function getCardsCredentials() {
+    setLoading(true);
+    const recv = await functions.getCredentials("Cards");
+    setCredentialsArr(recv);
+    setLoading(false);
+  }
+
+  function cardsAddDrawerContent() {
     return (
       <Box width="100%" height="100%" padding="20px">
         <VStack width="100%" alignItems="left">
@@ -163,7 +147,22 @@ export default function DebitContents() {
               onChange={handleInputChange}
             />
             <Center pt="20px">
-              <Button colorScheme="blue" leftIcon={<CheckIcon />}>
+              <Button
+                colorScheme="blue"
+                isLoading={loading}
+                loadingText="Submitting"
+                leftIcon={<CheckIcon />}
+                onClick={async () => {
+                  setLoading(true);
+                  if (credentials?.id) {
+                    await functions.handleEditCredentials(credentials);
+                  } else {
+                    await functions.handleSaveCredentials(credentials, "Cards");
+                  }
+                  onClose();
+                  await getCardsCredentials();
+                }}
+              >
                 Save Credentials
               </Button>
             </Center>
@@ -186,7 +185,7 @@ export default function DebitContents() {
             "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
           }
         >
-          {debitAddDrawerContent()}
+          {cardsAddDrawerContent()}
         </DrawerContent>
       </Drawer>
       <Heading size="2xl">Cards</Heading>
@@ -220,20 +219,32 @@ export default function DebitContents() {
             rightIcon={<RepeatIcon />}
             colorScheme={"gray"}
             variant="solid"
+            onClick={async () => {
+              await getCardsCredentials();
+            }}
           >
             Refresh
           </Button>
-          <Button
-            rightIcon={<ArrowForwardIcon />}
-            colorScheme={"red"}
-            variant="outline"
-          >
-            Logout
-          </Button>
+          <Popconfirm
+          title="Are you sure?"
+          onConfirm={async () => {
+            setCredentialsArr([]);
+            functions.handleLogout();
+          }}
+        >
+        <Button
+          rightIcon={<ArrowForwardIcon />}
+          colorScheme={"red"}
+          variant="outline"
+        >
+          Logout
+        </Button>
+        </Popconfirm>
         </HStack>
+        <Skeleton isLoaded={!loading}>
         <Box rounded="10px" bg="gray.200">
           <Accordion py="" allowToggle>
-            {cards.map((card) => (
+            {credentialsArr?.map((card) => (
               <AccordionItem>
                 <h2>
                   <AccordionButton p="20px">
@@ -273,10 +284,11 @@ export default function DebitContents() {
                             <Heading size="xs" textTransform="uppercase">
                               CVV
                             </Heading>
-                            <Input
+                            <AInput.Password
                               variant="filled"
                               value={card.cvv}
                               readOnly="true"
+                              size="large"
                             />
                           </Box>
                         </HStack>
@@ -305,8 +317,10 @@ export default function DebitContents() {
                           </Button>
                           <Popconfirm
                             title="Are you sure?"
-                            onConfirm={() => {
-                              // handleDeleteCredentials(row.id);
+                            onConfirm={async () => {
+                              setLoading(true);
+                              await functions.handleDeleteCredentials(card.id);
+                              getCardsCredentials();
                             }}
                           >
                             <Button
@@ -327,6 +341,12 @@ export default function DebitContents() {
             ))}
           </Accordion>
         </Box>
+        </Skeleton>
+        <Stack>
+        <Skeleton isLoaded={!loading} height="20px" />
+        <Skeleton isLoaded={!loading} height="20px" />
+        <Skeleton isLoaded={!loading} height="20px" />
+      </Stack>
       </Box>
     </Box>
   );

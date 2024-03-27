@@ -383,6 +383,10 @@ export default function Home() {
     }
   }, [log]);
 
+  function handleLogout(){
+    setProvider(null);
+  }
+
   return (
     <ChakraProvider>
       {!provider && <Login handleConnectWallet={handleConnectWallet} />}
@@ -393,6 +397,7 @@ export default function Home() {
             getCredentials,
             handleEditCredentials,
             handleDeleteCredentials,
+            handleLogout
           }}
         />
       )}
