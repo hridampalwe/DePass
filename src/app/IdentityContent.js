@@ -1,3 +1,5 @@
+import { Input as AInput, Popconfirm } from "antd";
+import { useState, useEffect } from "react";
 import {
   Box,
   Heading,
@@ -19,6 +21,7 @@ import {
   Button,
   Drawer,
   DrawerContent,
+  Skeleton,
   VStack,
   Center,
   useDisclosure,
@@ -32,49 +35,29 @@ import {
   AddIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
-import { useState } from "react";
-import { Popconfirm } from "antd";
 
-const cards = [
-  {
-    title: "Aadhaar Card",
-    age: "22",
-    firstName: "Sakshi",
-    lastName: "Agrawal",
-    dob: "02/09/2001",
-    contact: 9302770111,
-    email: "sakshiagrawal2445@gmail.com",
-    number: 655787766789,
-  },
-  {
-    title: "Driving License",
-    age: "22",
-    firstName: "Sakshi",
-    lastName: "Agrawal",
-    dob: "02/09/2001",
-    contact: 9302770111,
-    email: "sakshiagrawal2445@gmail.com",
-    number: 655787766789,
-  },
-  {
-    title: "PAN Card",
-    age: "22",
-    firstName: "Sakshi",
-    lastName: "Agrawal",
-    dob: "02/09/2001",
-    contact: 9302770111,
-    email: "sakshiagrawal2445@gmail.com",
-    number: 655787766789,
-  },
-];
-
-export default function IdentityContent() {
+export default function IdentityContent({functions}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  const [credential, setCredential] = useState(null);
+  const [credentialsArr, setCredentialsArr] = useState(null);
+  const [loading, setLoading] = useState(false);
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
+
+  // Effect for loading the credentials when the contract is set.
+  useEffect(() => {
+    if (credentialsArr == null) {
+      getIdentitiesCredentials();
+    }
+  }, [credentialsArr]);
+
+  async function getIdentitiesCredentials() {
+    setLoading(true);
+    const recv = await functions.getCredentials("Identities");
+    setCredentialsArr(recv);
+    setLoading(false);
+  }
 
   function IdentityAddDrawerContent() {
     return (
@@ -212,7 +195,25 @@ export default function IdentityContent() {
               onChange={handleInputChange}
             />
             <Center pt="20px">
-              <Button colorScheme="blue" leftIcon={<CheckIcon />}>
+              <Button
+                colorScheme="blue"
+                isLoading={loading}
+                loadingText="Submitting"
+                leftIcon={<CheckIcon />}
+                onClick={async () => {
+                  setLoading(true);
+                  if (credentials?.id) {
+                    await functions.handleEditCredentials(credentials);
+                  } else {
+                    await functions.handleSaveCredentials(
+                      credentials,
+                      "Identities"
+                    );
+                  }
+                  onClose();
+                  await getIdentitiesCredentials();
+                }}
+              >
                 Save Credentials
               </Button>
             </Center>
@@ -270,148 +271,170 @@ export default function IdentityContent() {
             rightIcon={<RepeatIcon />}
             colorScheme={"gray"}
             variant="solid"
+            onClick={async () => {
+              await getIdentitiesCredentials();
+            }}
           >
             Refresh
           </Button>
-          <Button
-            rightIcon={<ArrowForwardIcon />}
-            colorScheme={"red"}
-            variant="outline"
-          >
-            Logout
-          </Button>
+          <Popconfirm
+          title="Are you sure?"
+          onConfirm={async () => {
+            setCredentialsArr([]);
+            functions.handleLogout();
+          }}
+        >
+        <Button
+          rightIcon={<ArrowForwardIcon />}
+          colorScheme={"red"}
+          variant="outline"
+        >
+          Logout
+        </Button>
+        </Popconfirm>
         </HStack>
-        <Box rounded="10px" bg="gray.200">
-          <Accordion py="" allowToggle>
-            {cards.map((card) => (
-              <AccordionItem>
-                <h2>
-                  <AccordionButton p="20px">
-                    <Heading textAlign="left" flex="1" size="md">
-                      {card.title}
-                    </Heading>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                  <Card maxW="700px">
-                    <CardBody>
-                      <Stack spacing="20px">
-                        <HStack>
+        <Skeleton isLoaded={!loading}>
+          <Box rounded="10px" bg="gray.200">
+            <Accordion allowToggle>
+              {credentialsArr?.map((card) => (
+                <AccordionItem>
+                  <h2>
+                    <AccordionButton p="20px">
+                      <Heading textAlign="left" flex="1" size="md">
+                        {card.title}
+                      </Heading>
+                      <AccordionIcon />
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel pb={4}>
+                    <Card maxW="700px">
+                      <CardBody>
+                        <Stack spacing="20px">
+                          <HStack>
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                {" "}
+                                First Name
+                              </Heading>
+                              <Input
+                                variant="outline"
+                                value={card.firstName}
+                                readOnly="true"
+                              />
+                            </Box>
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                {" "}
+                                lastName{" "}
+                              </Heading>
+                              <Input
+                                variant="outline"
+                                value={card.lastName}
+                                readOnly="true"
+                              />
+                            </Box>
+                          </HStack>
+                          <HStack>
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                age
+                              </Heading>
+                              <Input
+                                variant="outline"
+                                value={card.age}
+                                readOnly="true"
+                              />
+                            </Box>
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                Date of Birth
+                              </Heading>
+                              <Input
+                                variant="outline"
+                                value={card.dob}
+                                readOnly="true"
+                                type="date"
+                              />
+                            </Box>
+                          </HStack>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              {" "}
-                              First Name
+                              Contact No.
                             </Heading>
                             <Input
                               variant="outline"
-                              value={card.firstName}
+                              value={card.contact}
                               readOnly="true"
                             />
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
                               {" "}
-                              lastName{" "}
+                              Email Address
                             </Heading>
                             <Input
                               variant="outline"
-                              value={card.lastName}
-                              readOnly="true"
-                            />
-                          </Box>
-                        </HStack>
-                        <HStack>
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              age
-                            </Heading>
-                            <Input
-                              variant="outline"
-                              value={card.age}
+                              value={card.email}
                               readOnly="true"
                             />
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              Date of Birth
+                              {" "}
+                              {card.title} number
                             </Heading>
                             <Input
                               variant="outline"
-                              value={card.dob}
+                              value={card.number}
                               readOnly="true"
-                              type="date"
                             />
                           </Box>
-                        </HStack>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Contact No.
-                          </Heading>
-                          <Input
-                            variant="outline"
-                            value={card.contact}
-                            readOnly="true"
-                          />
-                        </Box>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            {" "}
-                            Email Address
-                          </Heading>
-                          <Input
-                            variant="outline"
-                            value={card.email}
-                            readOnly="true"
-                          />
-                        </Box>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            {" "}
-                            {card.title} number
-                          </Heading>
-                          <Input
-                            variant="outline"
-                            value={card.number}
-                            readOnly="true"
-                          />
-                        </Box>
-                        <HStack justifyContent={"right"} width="100%">
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              setCredentials(card);
-                              onOpen();
-                            }}
-                            leftIcon={<EditIcon />}
-                          >
-                            {" "}
-                            Edit
-                          </Button>
-                          <Popconfirm
-                            title="Are you sure?"
-                            onConfirm={() => {
-                              // handleDeleteCredentials(row.id);
-                            }}
-                          >
+                          <HStack justifyContent={"right"} width="100%">
                             <Button
-                              colorScheme={"red"}
                               type="primary"
-                              leftIcon={<DeleteIcon />}
-                              variant="outline"
+                              onClick={() => {
+                                setCredentials(card);
+                                onOpen();
+                              }}
+                              leftIcon={<EditIcon />}
                             >
-                              Delete
+                              {" "}
+                              Edit
                             </Button>
-                          </Popconfirm>
-                        </HStack>
-                      </Stack>
-                    </CardBody>
-                  </Card>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </Box>
+                            <Popconfirm
+                              title="Are you sure?"
+                              onConfirm={async () => {
+                                setLoading(true);
+                                await functions.handleDeleteCredentials(
+                                  card.id
+                                );
+                                getIdentitiesCredentials();
+                              }}
+                            >
+                              <Button
+                                colorScheme={"red"}
+                                type="primary"
+                                leftIcon={<DeleteIcon />}
+                                variant="outline"
+                              >
+                                Delete
+                              </Button>
+                            </Popconfirm>
+                          </HStack>
+                        </Stack>
+                      </CardBody>
+                    </Card>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Box>
+        </Skeleton>
+        <Stack>
+          <Skeleton isLoaded={!loading} height="20px" />
+          <Skeleton isLoaded={!loading} height="20px" />
+          <Skeleton isLoaded={!loading} height="20px" />
+        </Stack>
       </Box>
     </Box>
   );

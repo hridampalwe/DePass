@@ -14,23 +14,23 @@ import {
 } from "react-icons/fi";
 import { FaGlobe, FaCreditCard } from "react-icons/fa";
 import SitesContent from "./SitesContent";
-import DebitContents from "./DebitContents";
+import CardsContents from "./CardsContents";
 import SecureNotesContent from "./SecureNotesContent";
 import IdentityContent from "./IdentityContent";
 
 const LinkItems = [
   {
-    name: "Site",
+    name: "Sites",
     icon: FaGlobe,
     render: SitesContent,
   },
   {
-    name: "Debit Card Info",
+    name: "Cards",
     icon: FaCreditCard,
-    render: DebitContents,
+    render: CardsContents,
   },
   { name: "Secure Notes", icon: FiBookOpen, render: SecureNotesContent },
-  { name: "Identity", icon: FiUser, render: IdentityContent },
+  { name: "Identities", icon: FiUser, render: IdentityContent },
   { name: "Favourites", icon: FiStar },
 ];
 
@@ -51,7 +51,7 @@ export default function SimpleSidebar({ functions }) {
         </Center>
         {LinkItems.map((link) => (
           <NavItem
-            key={link.name}
+            // key={link.name}
             icon={link.icon}
             onClick={() => {
               setRenderComponent(<link.render functions={functions}/>);

@@ -25,7 +25,6 @@ import {
   VStack,
   Center,
   useDisclosure,
-  SkeletonCircle,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -36,37 +35,6 @@ import {
   ArrowForwardIcon,
   CheckIcon,
 } from "@chakra-ui/icons";
-
-// const credentialsArr = [
-//   {
-//     id: 1,
-//     url: "pakode.com",
-//     site: "pakode",
-//     username: "pakdoea",
-//     password: "Blahhhh",
-//   },
-//   {
-//     id: 2,
-//     url: "lasn.com",
-//     site: "lasn",
-//     username: "pakdoea",
-//     password: "Blahhhh",
-//   },
-//   {
-//     id: 3,
-//     url: "yoyo.com",
-//     site: "yoyo",
-//     username: "pakdoea",
-//     password: "Blahhhh",
-//   },
-//   {
-//     id: 4,
-//     url: "sakshi.com",
-//     site: "sakshi",
-//     username: "gay",
-//     password: "Blahhhh",
-//   },
-// ];
 
 export default function SitesContent({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -242,6 +210,13 @@ export default function SitesContent({ functions }) {
         >
           Refresh
         </Button>
+        <Popconfirm
+          title="Are you sure?"
+          onConfirm={async () => {
+            setCredentialsArr([]);
+            functions.handleLogout();
+          }}
+        >
         <Button
           rightIcon={<ArrowForwardIcon />}
           colorScheme={"red"}
@@ -249,8 +224,8 @@ export default function SitesContent({ functions }) {
         >
           Logout
         </Button>
+        </Popconfirm>
       </HStack>
-
       <Skeleton isLoaded={!loading}>
         <Box rounded="10px" bg="gray.200">
           <Accordion rounded="10px" allowToggle>
