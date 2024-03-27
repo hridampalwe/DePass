@@ -73,7 +73,7 @@ const credentialsArr = [
   },
 ];
 
-export default function SitesContent () {
+export default function SitesContent() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credential, setCredential] = useState(null);
@@ -81,14 +81,14 @@ export default function SitesContent () {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
 
-  function testClick(credObj = { empty: true }) {
-    if (credObj.empty !== true) {
-      setCredential(credObj);
-    } else {
-      setCredential(null);
-    }
-    onOpen();
-  }
+  // function testClick(credObj = { empty: true }) {
+  //   if (credObj.empty !== true) {
+  //     setCredential(credObj);
+  //   } else {
+  //     setCredential(null);
+  //   }
+  //   onOpen();
+  // }
 
   function SiteAddDrawerContent() {
     return (
@@ -111,7 +111,7 @@ export default function SitesContent () {
               type="text"
               name="site"
               placeholder="Enter the Site Name"
-              value={credentials? credentials.site:''}
+              value={credentials?.site}
               onChange={handleInputChange}
             />
             <Text
@@ -122,7 +122,14 @@ export default function SitesContent () {
             >
               Site URL
             </Text>
-            <Input size="lg" placeholder="Enter the Site URL" />
+            <Input
+              type="text"
+              name="url"
+              size="lg"
+              value={credentials?.url}
+              placeholder="Enter the Site URL"
+              onChange={handleInputChange}
+            />
             <Text
               style={{ fontWeight: "bold" }}
               pt="10px"
@@ -131,7 +138,14 @@ export default function SitesContent () {
             >
               Username
             </Text>
-            <Input size="lg" placeholder="Enter the Username" />
+            <Input
+              size="lg"
+              type="text"
+              name="username"
+              value={credentials?.username}
+              placeholder="Enter the Username"
+              onChange={handleInputChange}
+            />
             <Text
               style={{ fontWeight: "bold" }}
               pt="10px"
@@ -140,7 +154,15 @@ export default function SitesContent () {
             >
               Password
             </Text>
-            <Input size="lg" placeholder="Enter the Password" />
+            <AInput.Password
+              size="large"
+              type="text"
+              name="password"
+              value={credentials?.password}
+              placeholder="Enter the Password"
+              onChange={handleInputChange}
+              variant="filled"
+            />
             <Center pt="20px">
               <Button colorScheme="blue" leftIcon={<CheckIcon />}>
                 Save Credentials
@@ -153,13 +175,19 @@ export default function SitesContent () {
   }
   return (
     <Box width={"95%"} px="10px" height={"100%"}>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
+      <Drawer
+        trapFocus="true"
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        size="sm"
+      >
         <DrawerContent
           bg={
             "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
           }
         >
-          <SiteAddDrawerContent />
+          {SiteAddDrawerContent()}
         </DrawerContent>
       </Drawer>
       <Heading size="2xl">Sites</Heading>
@@ -183,7 +211,8 @@ export default function SitesContent () {
           colorScheme={"gray"}
           variant="solid"
           onClick={() => {
-            testClick();
+            setCredentials({});
+            onOpen();
           }}
         >
           Add Site
@@ -252,10 +281,8 @@ export default function SitesContent () {
                         <Button
                           type="primary"
                           onClick={() => {
-                            // setEditingCredentials(row);
-                            // setIsEditModalOpen(true);
-                            // clickTest(cred);
-                            testClick(cred);
+                            setCredentials(cred);
+                            onOpen();
                           }}
                           leftIcon={<EditIcon />}
                         >
@@ -288,4 +315,4 @@ export default function SitesContent () {
       </Box>
     </Box>
   );
-};
+}
