@@ -11,7 +11,6 @@ import { notification } from "antd";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import Login from "./Login.js";
 import Dashboard from "./Dashboard.js";
-import { isPageStatic } from "next/dist/build/utils.js";
 
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -22,6 +21,11 @@ const abi = [
       {
         internalType: "string",
         name: "_ipfsHash",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_credentialType",
         type: "string",
       },
     ],
@@ -74,6 +78,11 @@ const abi = [
           },
           {
             internalType: "string",
+            name: "credentialType",
+            type: "string",
+          },
+          {
+            internalType: "string",
             name: "ipfsHash",
             type: "string",
           },
@@ -98,7 +107,10 @@ export default function Home() {
   const router = useRouter();
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
-  const [credentialsArr, setCredentialsArr] = useState([]);
+  const [credentialsSitesArr, setCredentialsSitesArr] = useState([]);
+  const [credentialsCardsArr, setCredentialsCardsArr] = useState([]);
+  const [credentialsNotesArr, setCredentialsNotesArr] = useState([]);
+  const [credentialsIdentitiesArr, setCredentialsIdentitiesArr] = useState([]);
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -188,14 +200,18 @@ export default function Home() {
   };
 
   //Gets credential details and fetch it to CredentialsArr
-  const getCredentials = async () => {
+  const getCredentials = async (credentialsType) => {
     setLoading(true);
-    setCredentialsArr([]);
+    // setCredentialsArr([]);
     let data = await contract.getMyKeys();
+    console.log(data);
     const credentialsArr = [];
+    // const credentialsCardsArr = [];
+    // const credentialsNotesArr = [];
+    // const credentialsIdentitiesArr = [];
     //Data is array of credentials object access the object one by one.
     for (let i of data) {
-      if (!i.isDeleted) {
+      if (!i.isDeleted && i.credentialType === credentialsType) {
         let { ciphertext, dataToEncryptHash } = await fetchCredentials(
           i.ipfsHash
         );
@@ -205,11 +221,46 @@ export default function Home() {
           accessControlConditions
         );
         let decryptedCredObj = await JSON.parse(decryptedCred.decryptedString);
-        credentialsArr.push({ id: Number(BigInt(i.id)), ...decryptedCredObj });
+        credentialsArr.push({
+          id: Number(BigInt(i.id)),
+          ...decryptedCredObj,
+        });
+        // switch (credentialsType) {
+        //   case "Sites":
+        //     credentialsSitesArr.push({
+        //       id: Number(BigInt(i.id)),
+        //       ...decryptedCredObj,
+        //     });
+        //     break;
+        //   case "Cards":
+        //     credentialsCardsArr.push({
+        //       id: Number(BigInt(i.id)),
+        //       ...decryptedCredObj,
+        //     });
+        //     break;
+        //   case "Notes":
+        //     credentialsNotesArr.push({
+        //       id: Number(BigInt(i.id)),
+        //       ...decryptedCredObj,
+        //     });
+        //     break;
+        //   case "Identities":
+        //     credentialsIdentitiesArr.push({
+        //       id: Number(BigInt(i.id)),
+        //       ...decryptedCredObj,
+        //     });
+        //     break;
+        //   default:
+        //     console.log("Error");
+        // }
       }
     }
-    setCredentialsArr(credentialsArr);
-    setLoading(false);
+    // setCredentialsSitesArr(credentialsSitesArr);
+    // setCredentialsCardsArr(credentialsCardsArr);
+    // setCredentialsNotesArr(credentialsNotesArr);
+    // setCredentialsIdentitiesArr(credentialsIdentitiesArr);
+    console.log(credentialsArr);
+    return credentialsArr;
   };
 
   //Using pinata API to call and store the encrypted credentials in the pinata api.
@@ -246,10 +297,8 @@ export default function Home() {
   };
 
   // This function is responsible for saving data in the blockchain contract and create the transactions.
-  const handleSaveCredentials = async (credentials) => {
-    // console.log("Hellooooo");
-    // console.log(obj);
-    setLoading(true);
+  const handleSaveCredentials = async (credentials, credentialsType) => {
+    console.log(credentials);
     console.log(JSON.stringify(credentials));
     // Calling the LIT Protocol defined library to encrypt the credentials.
     let encryptedData = await Lit.encrypt(
@@ -258,23 +307,24 @@ export default function Home() {
     );
     const ipfsHash = pinFileToIPFS(encryptedData);
     // Adding the hash to the ethereum network.
-    const tx = await contract.addKey(ipfsHash);
+    const tx = await contract.addKey(ipfsHash, credentialsType);
     console.log("Add Tx-->", tx.hash);
     console.log(ipfsHash);
     await tx.wait();
     await getCredentials();
     setLoading(false);
-    // setIsAddModalOpen(false);
-    // setLog({
-    //   type: "info",
-    //   message: "Updated",
-    //   description: "Credentials successfully saved to the network.",
-    // });
+    setIsAddModalOpen(false);
+    setLog({
+      type: "info",
+      message: "Updated",
+      description: "Credentials successfully saved to the network.",
+    });
   };
 
   //Handler function for editing the credentials and updating to the network.
   const handleEditCredentials = async (credential) => {
     setLoading(true);
+    console.log(credential);
     let encryptedData = await Lit.encrypt(
       JSON.stringify(credential),
       accessControlConditions
@@ -320,11 +370,11 @@ export default function Home() {
   };
 
   //Effect for loading the credentials when the contract is set.
-  useEffect(() => {
-    if (contract) {
-      getCredentials();
-    }
-  }, [contract]);
+  // useEffect(() => {
+  //   if (contract) {
+  //     getCredentials();
+  //   }
+  // }, [contract]);
 
   //Effect for handling the notifications once log is set call the notification.
   useEffect(() => {
@@ -336,7 +386,16 @@ export default function Home() {
   return (
     <ChakraProvider>
       {!provider && <Login handleConnectWallet={handleConnectWallet} />}
-      {provider && <Dashboard functions={{handleSaveCredentials}} />}
+      {provider && (
+        <Dashboard
+          functions={{
+            handleSaveCredentials,
+            getCredentials,
+            handleEditCredentials,
+            handleDeleteCredentials,
+          }}
+        />
+      )}
     </ChakraProvider>
   );
 }
