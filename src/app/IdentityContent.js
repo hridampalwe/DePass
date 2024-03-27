@@ -1,5 +1,6 @@
-import { Input as AInput, Popconfirm } from "antd";
+import { Popconfirm } from "antd";
 import { useState, useEffect } from "react";
+import { filter } from "smart-array-filter";
 import {
   Box,
   Heading,
@@ -11,7 +12,6 @@ import {
   Card,
   CardBody,
   Stack,
-  StackDivider,
   Input,
   HStack,
   InputGroup,
@@ -28,7 +28,6 @@ import {
 } from "@chakra-ui/react";
 import {
   EditIcon,
-  Search2Icon,
   DeleteIcon,
   CheckIcon,
   RepeatIcon,
@@ -40,11 +39,14 @@ export default function IdentityContent({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
+  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
-
+  const handleSearchChange = (event) => setSearch(event.target.value);
+  
   // Effect for loading the credentials when the contract is set.
   useEffect(() => {
     if (credentialsArr == null) {
@@ -56,7 +58,52 @@ export default function IdentityContent({ functions }) {
     setLoading(true);
     const recv = await functions.getCredentials("Identities");
     setCredentialsArr(recv);
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
+  }
+
+  async function handleClickSaveCredentials () {
+    setLoading(true);
+    if (credentials?.id) {
+      await functions.handleEditCredentials(credentials);
+    } else {
+      await functions.handleSaveCredentials(credentials, "Sites");
+    }
+    onClose();
+    await getIdentitiesCredentials();
+  }
+
+  function handleApplyChange () {
+    const filteredData = filter(origCredentialsArr, {
+      keywords: search,
+    });
+    setCredentialsArr(filteredData);
+  }
+
+  function handleAddChange() {
+    setCredentials({});
+    onOpen();
+  }
+
+  async function handleRefreshChange(){
+    await getIdentitiesCredentials();
+  }
+  
+  async function handleLogoutChange () {
+    setCredentialsArr([]);
+    functions.handleLogout();
+  }
+
+
+  async function handleEditChange(identity) {
+    setCredentials(identity);
+    onOpen();
+  }
+
+  async function handleDeleteChange(identity) {
+    setLoading(true);
+    await functions.handleDeleteCredentials(identity.id);
+    getIdentitiesCredentials();
   }
 
   function IdentityAddDrawerContent() {
@@ -80,7 +127,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="title"
               size="lg"
-              value={credentials?.title}
+              value={credentials?.title || ""}
               placeholder={`Enter the Identity Name`}
               onChange={handleInputChange}
             />
@@ -96,7 +143,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="firstName"
               placeholder="Enter the First Name"
-              value={credentials?.firstName}
+              value={credentials?.firstName || ""}
               onChange={handleInputChange}
             />
             <Text
@@ -111,7 +158,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="lastName"
               size="lg"
-              value={credentials?.lastName}
+              value={credentials?.lastName || ""}
               placeholder="Enter the Last Name"
               onChange={handleInputChange}
             />
@@ -127,7 +174,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="age"
               placeholder="Enter the age"
-              value={credentials?.age}
+              value={credentials?.age || ""}
               onChange={handleInputChange}
             />
             <Text
@@ -142,7 +189,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="dob"
               size="lg"
-              value={credentials?.dob}
+              value={credentials?.dob || ""}
               placeholder="Enter the Date of Birth"
               onChange={handleInputChange}
             />
@@ -158,7 +205,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="contact"
               size="lg"
-              value={credentials?.contact}
+              value={credentials?.contact || ""}
               placeholder="Enter the Contact No."
               onChange={handleInputChange}
             />
@@ -174,7 +221,7 @@ export default function IdentityContent({ functions }) {
               type="text"
               name="email"
               size="lg"
-              value={credentials?.email}
+              value={credentials?.email || ""}
               placeholder="Enter the E-mail ID"
               onChange={handleInputChange}
             />
@@ -184,14 +231,14 @@ export default function IdentityContent({ functions }) {
               px="10px"
               fontSize="lg"
             >
-              {credentials?.title} Number
+              {credentials?.title || ""} Number
             </Text>
             <Input
               type="text"
               name="number"
               size="lg"
-              value={credentials?.number}
-              placeholder={`Enter the ${credentials?.title} Number`}
+              value={credentials?.number || ""}
+              placeholder={`Enter the ${credentials?.title || ""} Number`}
               onChange={handleInputChange}
             />
             <Center pt="20px">
@@ -200,19 +247,7 @@ export default function IdentityContent({ functions }) {
                 isLoading={loading}
                 loadingText="Submitting"
                 leftIcon={<CheckIcon />}
-                onClick={async () => {
-                  setLoading(true);
-                  if (credentials?.id) {
-                    await functions.handleEditCredentials(credentials);
-                  } else {
-                    await functions.handleSaveCredentials(
-                      credentials,
-                      "Identities"
-                    );
-                  }
-                  onClose();
-                  await getIdentitiesCredentials();
-                }}
+                onClick={handleClickSaveCredentials}
               >
                 Save Credentials
               </Button>
@@ -250,20 +285,26 @@ export default function IdentityContent({ functions }) {
           bg="gray.200"
           marginBottom="10px"
         >
-          <InputGroup size="lg">
-            <Input size="lg" placeholder="Search notes" />
+          <InputGroup size="lg" maxW="65%">
+            <Input
+              onChange={handleSearchChange}
+              size="lg"
+              placeholder="Search Filter"
+            />
             <InputRightElement width="120px">
-              <Button rightIcon={<Search2Icon />}>Search</Button>
+              <Button
+                rightIcon={<CheckIcon />}
+                onClick={handleApplyChange}
+              >
+                Apply
+              </Button>
             </InputRightElement>
           </InputGroup>
           <Button
             rightIcon={<AddIcon />}
             colorScheme={"gray"}
             variant="solid"
-            onClick={() => {
-              setCredentials({});
-              onOpen();
-            }}
+            onClick={handleAddChange}
           >
             Add Identity
           </Button>
@@ -271,18 +312,13 @@ export default function IdentityContent({ functions }) {
             rightIcon={<RepeatIcon />}
             colorScheme={"gray"}
             variant="solid"
-            onClick={async () => {
-              await getIdentitiesCredentials();
-            }}
+            onClick={handleRefreshChange}
           >
             Refresh
           </Button>
           <Popconfirm
             title="Are you sure?"
-            onConfirm={async () => {
-              setCredentialsArr([]);
-              functions.handleLogout();
-            }}
+            onConfirm={handleLogoutChange}
           >
             <Button
               rightIcon={<ArrowForwardIcon />}
@@ -296,12 +332,12 @@ export default function IdentityContent({ functions }) {
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion maxWidth="100%" allowToggle>
-              {credentialsArr?.map((card) => (
-                <AccordionItem key={card.id}>
+              {credentialsArr?.map((identity) => (
+                <AccordionItem key={identity.id}>
                   <h2>
                     <AccordionButton p="20px">
                       <Heading textAlign="left" flex="1" size="md">
-                        {card.title}
+                        {identity.title}
                       </Heading>
                       <AccordionIcon />
                     </AccordionButton>
@@ -318,7 +354,7 @@ export default function IdentityContent({ functions }) {
                               </Heading>
                               <Input
                                 variant="outline"
-                                value={card.firstName}
+                                value={identity.firstName}
                                 readOnly
                               />
                             </Box>
@@ -329,7 +365,7 @@ export default function IdentityContent({ functions }) {
                               </Heading>
                               <Input
                                 variant="outline"
-                                value={card.lastName}
+                                value={identity.lastName}
                                 readOnly
                               />
                             </Box>
@@ -337,11 +373,11 @@ export default function IdentityContent({ functions }) {
                           <HStack>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                age
+                                Age
                               </Heading>
                               <Input
                                 variant="outline"
-                                value={card.age}
+                                value={identity.age}
                                 readOnly
                               />
                             </Box>
@@ -351,9 +387,9 @@ export default function IdentityContent({ functions }) {
                               </Heading>
                               <Input
                                 variant="outline"
-                                value={card.dob}
+                                value={identity.dob}
                                 readOnly
-                                type="date"
+                                type="text"
                               />
                             </Box>
                           </HStack>
@@ -363,7 +399,7 @@ export default function IdentityContent({ functions }) {
                             </Heading>
                             <Input
                               variant="outline"
-                              value={card.contact}
+                              value={identity.contact}
                               readOnly
                             />
                           </Box>
@@ -374,28 +410,25 @@ export default function IdentityContent({ functions }) {
                             </Heading>
                             <Input
                               variant="outline"
-                              value={card.email}
+                              value={identity.email}
                               readOnly
                             />
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
                               {" "}
-                              {card.title} number
+                              {identity.title} number
                             </Heading>
                             <Input
                               variant="outline"
-                              value={card.number}
+                              value={identity.number}
                               readOnly
                             />
                           </Box>
                           <HStack justifyContent={"right"} width="100%">
                             <Button
                               type="primary"
-                              onClick={() => {
-                                setCredentials(card);
-                                onOpen();
-                              }}
+                              onClick={() => handleEditChange(identity)}
                               leftIcon={<EditIcon />}
                             >
                               {" "}
@@ -403,13 +436,7 @@ export default function IdentityContent({ functions }) {
                             </Button>
                             <Popconfirm
                               title="Are you sure?"
-                              onConfirm={async () => {
-                                setLoading(true);
-                                await functions.handleDeleteCredentials(
-                                  card.id
-                                );
-                                getIdentitiesCredentials();
-                              }}
+                              onConfirm={async () => handleDeleteChange(identity)}
                             >
                               <Button
                                 colorScheme={"red"}

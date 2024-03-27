@@ -29,7 +29,6 @@ import {
 } from "@chakra-ui/react";
 import {
   EditIcon,
-  Search2Icon,
   DeleteIcon,
   RepeatIcon,
   AddIcon,
@@ -48,6 +47,7 @@ export default function SitesContent({ functions }) {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
+
   // Effect for loading the credentials when the contract is set.
   useEffect(() => {
     if (credentialsArr == null) {
@@ -61,6 +61,49 @@ export default function SitesContent({ functions }) {
     setCredentialsArr(recv);
     setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
+  }
+
+  async function handleClickSaveCredentials() {
+    setLoading(true);
+    if (credentials?.id) {
+      await functions.handleEditCredentials(credentials);
+    } else {
+      await functions.handleSaveCredentials(credentials, "Sites");
+    }
+    onClose();
+    await getSitesCredentials();
+  }
+
+  function handleApplyChange() {
+    const filteredData = filter(origCredentialsArr, {
+      keywords: search,
+    });
+    setCredentialsArr(filteredData);
+  }
+
+  function handleAddChange() {
+    setCredentials({});
+    onOpen();
+  }
+
+  async function handleRefreshChange() {
+    await getSitesCredentials();
+  }
+
+  async function handleLogoutChange() {
+    setCredentialsArr([]);
+    functions.handleLogout();
+  }
+
+  async function handleEditChange(site) {
+    setCredentials(site);
+    onOpen();
+  }
+
+  async function handleDeleteChange(site) {
+    setLoading(true);
+    await functions.handleDeleteCredentials(site.id);
+    getSitesCredentials();
   }
 
   function SiteAddDrawerContent() {
@@ -84,7 +127,7 @@ export default function SitesContent({ functions }) {
               type="text"
               name="site"
               placeholder="Enter the Site Name"
-              value={credentials?.site}
+              value={credentials?.site || ""}
               onChange={handleInputChange}
             />
             <Text
@@ -99,7 +142,7 @@ export default function SitesContent({ functions }) {
               type="text"
               name="url"
               size="lg"
-              value={credentials?.url}
+              value={credentials?.url || ""}
               placeholder="Enter the Site URL"
               onChange={handleInputChange}
             />
@@ -115,7 +158,7 @@ export default function SitesContent({ functions }) {
               size="lg"
               type="text"
               name="username"
-              value={credentials?.username}
+              value={credentials?.username || ""}
               placeholder="Enter the Username"
               onChange={handleInputChange}
             />
@@ -131,7 +174,7 @@ export default function SitesContent({ functions }) {
               size="large"
               type="text"
               name="password"
-              value={credentials?.password}
+              value={credentials?.password || ""}
               placeholder="Enter the Password"
               onChange={handleInputChange}
               variant="filled"
@@ -142,16 +185,7 @@ export default function SitesContent({ functions }) {
                 isLoading={loading}
                 loadingText="Submitting"
                 leftIcon={<CheckIcon />}
-                onClick={async () => {
-                  setLoading(true);
-                  if (credentials?.id) {
-                    await functions.handleEditCredentials(credentials);
-                  } else {
-                    await functions.handleSaveCredentials(credentials, "Sites");
-                  }
-                  onClose();
-                  await getSitesCredentials();
-                }}
+                onClick={handleClickSaveCredentials}
               >
                 Save Credentials
               </Button>
@@ -195,17 +229,7 @@ export default function SitesContent({ functions }) {
             placeholder="Search Filter"
           />
           <InputRightElement width="120px">
-            <Button
-              rightIcon={<CheckIcon />}
-              onClick={() => {
-                console.log(origCredentialsArr);
-                const filteredData = filter(origCredentialsArr, {
-                  keywords: search,
-                });
-                console.log(filteredData);
-                setCredentialsArr(filteredData);
-              }}
-            >
+            <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
               Apply
             </Button>
           </InputRightElement>
@@ -214,10 +238,7 @@ export default function SitesContent({ functions }) {
           rightIcon={<AddIcon />}
           colorScheme={"gray"}
           variant="solid"
-          onClick={() => {
-            setCredentials({});
-            onOpen();
-          }}
+          onClick={handleAddChange}
         >
           Add Site
         </Button>
@@ -225,19 +246,11 @@ export default function SitesContent({ functions }) {
           rightIcon={<RepeatIcon />}
           colorScheme={"gray"}
           variant="solid"
-          onClick={async () => {
-            await getSitesCredentials();
-          }}
+          onClick={handleRefreshChange}
         >
           Refresh
         </Button>
-        <Popconfirm
-          title="Are you sure?"
-          onConfirm={async () => {
-            setCredentialsArr([]);
-            functions.handleLogout();
-          }}
-        >
+        <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
           <Button
             rightIcon={<ArrowForwardIcon />}
             colorScheme={"red"}
@@ -250,12 +263,12 @@ export default function SitesContent({ functions }) {
       <Skeleton isLoaded={!loading}>
         <Box rounded="10px" bg="gray.200">
           <Accordion rounded="10px" allowToggle>
-            {credentialsArr?.map((cred) => (
-              <AccordionItem>
+            {credentialsArr?.map((site) => (
+              <AccordionItem key={site.id}>
                 <h2>
                   <AccordionButton p="20px">
                     <Heading textAlign="left" flex="1" size="md">
-                      {cred.site}
+                      {site.site}
                     </Heading>
                     <AccordionIcon />
                   </AccordionButton>
@@ -269,7 +282,7 @@ export default function SitesContent({ functions }) {
                             {" "}
                             Site URL
                           </Heading>
-                          <Input variant="filled" value={cred.url} readOnly />
+                          <Input variant="filled" value={site.url} readOnly />
                         </Box>
                         <Box>
                           <Heading size="xs" textTransform="uppercase">
@@ -278,7 +291,7 @@ export default function SitesContent({ functions }) {
                           </Heading>
                           <Input
                             variant="filled"
-                            value={cred.username}
+                            value={site.username}
                             readOnly
                           />
                         </Box>
@@ -290,16 +303,13 @@ export default function SitesContent({ functions }) {
                             variant="filled"
                             size="large"
                             readOnly
-                            value={cred.password}
+                            value={site.password}
                           />
                         </Box>
                         <HStack justifyContent={"right"} width="100%">
                           <Button
                             type="primary"
-                            onClick={() => {
-                              setCredentials(cred);
-                              onOpen();
-                            }}
+                            onClick={()=>handleEditChange(site)}
                             leftIcon={<EditIcon />}
                           >
                             {" "}
@@ -307,11 +317,7 @@ export default function SitesContent({ functions }) {
                           </Button>
                           <Popconfirm
                             title="Are you sure?"
-                            onConfirm={async () => {
-                              setLoading(true);
-                              await functions.handleDeleteCredentials(cred.id);
-                              getSitesCredentials();
-                            }}
+                            onConfirm={()=> handleDeleteChange(site)}
                           >
                             <Button
                               colorScheme={"red"}

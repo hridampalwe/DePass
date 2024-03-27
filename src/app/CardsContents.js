@@ -1,5 +1,6 @@
 import { Input as AInput, Popconfirm } from "antd";
 import { useState, useEffect } from "react";
+import { filter } from "smart-array-filter";
 import {
   Box,
   Heading,
@@ -28,7 +29,6 @@ import {
 } from "@chakra-ui/react";
 import {
   EditIcon,
-  Search2Icon,
   DeleteIcon,
   RepeatIcon,
   AddIcon,
@@ -41,10 +41,14 @@ export default function CardsContents({ functions }) {
   const [credentials, setCredentials] = useState(null);
   const [credentialsArr, setCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
+  const [search, setSearch] = useState("");
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
-
+  const handleSearchChange = (event) => setSearch(event.target.value);
+ 
+    // Effect for loading the credentials when the contract is set.
   useEffect(() => {
     if (credentialsArr == null) {
       getCardsCredentials();
@@ -55,8 +59,54 @@ export default function CardsContents({ functions }) {
     setLoading(true);
     const recv = await functions.getCredentials("Cards");
     setCredentialsArr(recv);
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
+
+  async function handleClickSaveCredentials () {
+    setLoading(true);
+    if (credentials?.id) {
+      await functions.handleEditCredentials(credentials);
+    } else {
+      await functions.handleSaveCredentials(credentials, "Sites");
+    }
+    onClose();
+    await getCardsCredentials();
+  }
+
+  function handleApplyChange () {
+    const filteredData = filter(origCredentialsArr, {
+      keywords: search,
+    });
+    setCredentialsArr(filteredData);
+  }
+
+  function handleAddChange() {
+    setCredentials({});
+    onOpen();
+  }
+
+  async function handleRefreshChange(){
+    await getCardsCredentials();
+  }
+  
+  async function handleLogoutChange () {
+    setCredentialsArr([]);
+    functions.handleLogout();
+  }
+
+
+  async function handleEditChange(card) {
+    setCredentials(card);
+    onOpen();
+  }
+
+  async function handleDeleteChange(card) {
+    setLoading(true);
+    await functions.handleDeleteCredentials(card.id);
+    getCardsCredentials();
+  }
+
 
   function cardsAddDrawerContent() {
     return (
@@ -79,7 +129,7 @@ export default function CardsContents({ functions }) {
               type="text"
               name="cardName"
               placeholder="Enter the Card Name"
-              value={credentials?.cardName}
+              value={credentials?.cardName || ""}
               onChange={handleInputChange}
             />
             <Text
@@ -94,7 +144,7 @@ export default function CardsContents({ functions }) {
               size="lg"
               type="text"
               name="accNo"
-              value={credentials?.accNo}
+              value={credentials?.accNo || ""}
               placeholder="Enter the Card Account Number"
               onChange={handleInputChange}
             />
@@ -110,7 +160,7 @@ export default function CardsContents({ functions }) {
               size="lg"
               type="text"
               name="expiry"
-              value={credentials?.expiry}
+              value={credentials?.expiry || ""}
               placeholder="Enter the expiry date on the card"
               onChange={handleInputChange}
             />
@@ -125,7 +175,7 @@ export default function CardsContents({ functions }) {
             <AInput.Password
               size="large"
               name="cvv"
-              value={credentials?.cvv}
+              value={credentials?.cvv || ""}
               placeholder="Enter the CVV"
               onChange={handleInputChange}
               variant="filled"
@@ -142,7 +192,7 @@ export default function CardsContents({ functions }) {
               type="text"
               name="accholderName"
               size="lg"
-              value={credentials?.accholderName}
+              value={credentials?.accholderName || ""}
               placeholder="Enter the expiry date on the card"
               onChange={handleInputChange}
             />
@@ -152,16 +202,7 @@ export default function CardsContents({ functions }) {
                 isLoading={loading}
                 loadingText="Submitting"
                 leftIcon={<CheckIcon />}
-                onClick={async () => {
-                  setLoading(true);
-                  if (credentials?.id) {
-                    await functions.handleEditCredentials(credentials);
-                  } else {
-                    await functions.handleSaveCredentials(credentials, "Cards");
-                  }
-                  onClose();
-                  await getCardsCredentials();
-                }}
+                onClick={handleClickSaveCredentials}
               >
                 Save Credentials
               </Button>
@@ -199,17 +240,23 @@ export default function CardsContents({ functions }) {
           marginBottom="10px"
         >
           <InputGroup size="lg">
-            <Input size="lg" placeholder="Search sites" />
+            <Input
+              size="lg"
+              onChange={handleSearchChange}
+              placeholder="Search Filter"
+            />
             <InputRightElement width="120px">
-              <Button rightIcon={<Search2Icon />}>Search</Button>
+              <Button
+                rightIcon={<CheckIcon />}
+                onClick={handleApplyChange}
+              >
+                Apply
+              </Button>
             </InputRightElement>
           </InputGroup>
           <Button
             rightIcon={<AddIcon />}
-            onClick={() => {
-              setCredentials({});
-              onOpen();
-            }}
+            onClick={handleAddChange}
             colorScheme={"gray"}
             variant="solid"
           >
@@ -219,18 +266,13 @@ export default function CardsContents({ functions }) {
             rightIcon={<RepeatIcon />}
             colorScheme={"gray"}
             variant="solid"
-            onClick={async () => {
-              await getCardsCredentials();
-            }}
+            onClick={handleRefreshChange}
           >
             Refresh
           </Button>
           <Popconfirm
             title="Are you sure?"
-            onConfirm={async () => {
-              setCredentialsArr([]);
-              functions.handleLogout();
-            }}
+            onConfirm={handleLogoutChange}
           >
             <Button
               rightIcon={<ArrowForwardIcon />}
@@ -306,10 +348,7 @@ export default function CardsContents({ functions }) {
                           <HStack justifyContent={"right"} width="100%">
                             <Button
                               type="primary"
-                              onClick={() => {
-                                setCredentials(card);
-                                onOpen();
-                              }}
+                              onClick={()=>handleEditChange(card)}
                               leftIcon={<EditIcon />}
                             >
                               {" "}
@@ -317,13 +356,7 @@ export default function CardsContents({ functions }) {
                             </Button>
                             <Popconfirm
                               title="Are you sure?"
-                              onConfirm={async () => {
-                                setLoading(true);
-                                await functions.handleDeleteCredentials(
-                                  card.id
-                                );
-                                getCardsCredentials();
-                              }}
+                              onConfirm={()=>handleDeleteChange(card)}
                             >
                               <Button
                                 colorScheme={"red"}
