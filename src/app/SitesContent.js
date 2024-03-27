@@ -30,6 +30,7 @@ import {
   DrawerHeader,
   VStack,
   Center,
+  useDisclosure,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -72,70 +73,95 @@ const credentialsArr = [
   },
 ];
 
-export function SiteAddDrawerContent({ functions, cred }) {
-  console.log(cred);
-  return (
-    <Box width="100%" height="100%" padding="20px">
-      <VStack width="100%" alignItems="left">
-        <Heading pt="10px" pl="5px" size="xl">
-          Details
-        </Heading>
-        <Divider borderColor="gray.200" />
-        <Box bg="gray.100" rounded="10px" p="20px">
-          <Text
-            style={{ fontWeight: "bold" }}
-            pt="10px"
-            px="10px"
-            fontSize="lg"
-          >
-            Site Name
-          </Text>
-          <Input
-            value={cred ? cred.site : ""}
-            size="lg"
-            placeholder="Enter the Site Name"
-          />
-          <Text
-            style={{ fontWeight: "bold" }}
-            pt="10px"
-            px="10px"
-            fontSize="lg"
-          >
-            Site URL
-          </Text>
-          <Input size="lg" placeholder="Enter the Site URL" />
-          <Text
-            style={{ fontWeight: "bold" }}
-            pt="10px"
-            px="10px"
-            fontSize="lg"
-          >
-            Username
-          </Text>
-          <Input size="lg" placeholder="Enter the Username" />
-          <Text
-            style={{ fontWeight: "bold" }}
-            pt="10px"
-            px="10px"
-            fontSize="lg"
-          >
-            Password
-          </Text>
-          <Input size="lg" placeholder="Enter the Password" />
-          <Center pt="20px">
-            <Button colorScheme="blue" leftIcon={<CheckIcon />}>
-              Save Credentials
-            </Button>
-          </Center>
-        </Box>
-      </VStack>
-    </Box>
-  );
-}
+export default function SitesContent () {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [credentials, setCredentials] = useState(null);
+  const [credential, setCredential] = useState(null);
+  const handleInputChange = (event) => {
+    setCredentials({ ...credentials, [event.target.name]: event.target.value });
+  };
 
-export const SitesContent = ({ clickTest }) => {
+  function testClick(credObj = { empty: true }) {
+    if (credObj.empty !== true) {
+      setCredential(credObj);
+    } else {
+      setCredential(null);
+    }
+    onOpen();
+  }
+
+  function SiteAddDrawerContent() {
+    return (
+      <Box width="100%" height="100%" padding="20px">
+        <VStack width="100%" alignItems="left">
+          <Heading pt="10px" pl="5px" size="xl">
+            Details
+          </Heading>
+          <Divider borderColor="gray.200" />
+          <Box bg="gray.100" rounded="10px" p="20px">
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Site Name
+            </Text>
+            <Input
+              type="text"
+              name="site"
+              placeholder="Enter the Site Name"
+              value={credentials? credentials.site:''}
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Site URL
+            </Text>
+            <Input size="lg" placeholder="Enter the Site URL" />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Username
+            </Text>
+            <Input size="lg" placeholder="Enter the Username" />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Password
+            </Text>
+            <Input size="lg" placeholder="Enter the Password" />
+            <Center pt="20px">
+              <Button colorScheme="blue" leftIcon={<CheckIcon />}>
+                Save Credentials
+              </Button>
+            </Center>
+          </Box>
+        </VStack>
+      </Box>
+    );
+  }
   return (
     <Box width={"95%"} px="10px" height={"100%"}>
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
+        <DrawerContent
+          bg={
+            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
+          }
+        >
+          <SiteAddDrawerContent />
+        </DrawerContent>
+      </Drawer>
       <Heading size="2xl">Sites</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <HStack
@@ -157,7 +183,7 @@ export const SitesContent = ({ clickTest }) => {
           colorScheme={"gray"}
           variant="solid"
           onClick={() => {
-            clickTest();
+            testClick();
           }}
         >
           Add Site
@@ -228,7 +254,8 @@ export const SitesContent = ({ clickTest }) => {
                           onClick={() => {
                             // setEditingCredentials(row);
                             // setIsEditModalOpen(true);
-                            clickTest(cred);
+                            // clickTest(cred);
+                            testClick(cred);
                           }}
                           leftIcon={<EditIcon />}
                         >
