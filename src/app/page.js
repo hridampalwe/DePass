@@ -11,6 +11,7 @@ import { notification } from "antd";
 import { ChakraProvider, Button } from "@chakra-ui/react";
 import Login from "./Login.js";
 import Dashboard from "./Dashboard.js";
+import { isPageStatic } from "next/dist/build/utils.js";
 
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -119,12 +120,6 @@ export default function Home() {
     setLog(null);
   };
 
-  const test1 = (strpo) => {
-    console.log(strpo);
-  };
-  const test2 = (popo) => {
-    console.log(popo);
-  };
   //ACC for the LIT Protocol for stroging the encryption over to the Blockchain.
   const accessControlConditions = [
     {
@@ -251,7 +246,9 @@ export default function Home() {
   };
 
   // This function is responsible for saving data in the blockchain contract and create the transactions.
-  const handleSaveCredentials = async () => {
+  const handleSaveCredentials = async (credentials) => {
+    // console.log("Hellooooo");
+    // console.log(obj);
     setLoading(true);
     console.log(JSON.stringify(credentials));
     // Calling the LIT Protocol defined library to encrypt the credentials.
@@ -263,15 +260,16 @@ export default function Home() {
     // Adding the hash to the ethereum network.
     const tx = await contract.addKey(ipfsHash);
     console.log("Add Tx-->", tx.hash);
+    console.log(ipfsHash);
     await tx.wait();
     await getCredentials();
     setLoading(false);
-    setIsAddModalOpen(false);
-    setLog({
-      type: "info",
-      message: "Updated",
-      description: "Credentials successfully saved to the network.",
-    });
+    // setIsAddModalOpen(false);
+    // setLog({
+    //   type: "info",
+    //   message: "Updated",
+    //   description: "Credentials successfully saved to the network.",
+    // });
   };
 
   //Handler function for editing the credentials and updating to the network.
@@ -338,7 +336,7 @@ export default function Home() {
   return (
     <ChakraProvider>
       {!provider && <Login handleConnectWallet={handleConnectWallet} />}
-      {provider && <Dashboard functions={{ test1, test2 }} />}
+      {provider && <Dashboard functions={{handleSaveCredentials}} />}
     </ChakraProvider>
   );
 }

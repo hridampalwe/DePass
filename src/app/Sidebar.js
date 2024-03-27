@@ -1,27 +1,14 @@
 import React, { ReactNode, useState } from "react";
 import {
   Box,
-  CloseButton,
   Center,
   Flex,
   Icon,
-  useColorModeValue,
-  Text,
-  Drawer,
-  DrawerContent,
   useDisclosure,
-  Button,
-  Heading,
-  Slide,
   Image,
 } from "@chakra-ui/react";
 import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
   FiStar,
-  FiSettings,
-  FiMenu,
   FiBookOpen,
   FiUser,
 } from "react-icons/fi";
@@ -49,7 +36,7 @@ const LinkItems = [
 
 export default function SimpleSidebar({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [renderComponent, setRenderComponent] = useState(<SitesContent />);
+  const [renderComponent, setRenderComponent] = useState(<SitesContent functions={functions} />);
   const [cred, setCred] = useState(null);
 
   const SidebarContent = ({ onClose, ...rest }) => {
@@ -57,19 +44,17 @@ export default function SimpleSidebar({ functions }) {
       <Box
         w={{ base: "full", md: 60 }}
         pos="fixed"
-        //   h="full"
         {...rest}
       >
         <Center>
           <Image boxSize="200px" src="blockChain.png" />
         </Center>
-        {/* <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} /> */}
         {LinkItems.map((link) => (
           <NavItem
             key={link.name}
             icon={link.icon}
             onClick={() => {
-              setRenderComponent(<link.render />);
+              setRenderComponent(<link.render functions={functions}/>);
             }}
           >
             {link.name}
@@ -81,7 +66,6 @@ export default function SimpleSidebar({ functions }) {
   const NavItem = ({ icon, children, onClick, ...rest }) => {
     return (
       <Box
-        // as="button"
         onClick={onClick}
         style={{ textDecoration: "none" }}
         _focus={{ boxShadow: "none" }}
@@ -128,7 +112,6 @@ export default function SimpleSidebar({ functions }) {
         ml={{ base: 0, md: 60 }}
         p="10px"
       >
-        {/* Content */}
         {renderComponent}
       </Box>
     </Box>

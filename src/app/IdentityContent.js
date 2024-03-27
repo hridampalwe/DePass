@@ -14,60 +14,232 @@ import {
   HStack,
   InputGroup,
   Divider,
+  Text,
   InputRightElement,
   Button,
+  Drawer,
+  DrawerContent,
+  VStack,
+  Center,
+  useDisclosure,
 } from "@chakra-ui/react";
 import {
   EditIcon,
   Search2Icon,
   DeleteIcon,
+  CheckIcon,
   RepeatIcon,
   AddIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
+import { useState } from "react";
 import { Popconfirm } from "antd";
-import TextArea from "antd/es/input/TextArea";
 
 const cards = [
   {
-    Title: "Aadhaar Card",
-    Age: "22",
-    "First Name": "Sakshi",
-    "Middle Name": "",
-    "Last Name": "Agrawal",
-    "Date of Birth": "02/09/2001",
-    "Contact No.": 9302770111,
-    "E-mail Address": "sakshiagrawal2445@gmail.com",
-    Number: 655787766789,
+    title: "Aadhaar Card",
+    age: "22",
+    firstName: "Sakshi",
+    lastName: "Agrawal",
+    dob: "02/09/2001",
+    contact: 9302770111,
+    email: "sakshiagrawal2445@gmail.com",
+    number: 655787766789,
   },
   {
-    Title: "Driving License",
-    Age: "22",
-    "First Name": "Sakshi",
-    "Middle Name": "",
-    "Last Name": "Agrawal",
-    "Date of Birth": "02/09/2001",
-    "Contact No.": 9302770111,
-    "E-mail Address": "sakshiagrawal2445@gmail.com",
-    Number: 655787766789,
+    title: "Driving License",
+    age: "22",
+    firstName: "Sakshi",
+    lastName: "Agrawal",
+    dob: "02/09/2001",
+    contact: 9302770111,
+    email: "sakshiagrawal2445@gmail.com",
+    number: 655787766789,
   },
   {
-    Title: "PAN Card",
-    Age: "22",
-    "First Name": "Sakshi",
-    "Middle Name": "",
-    "Last Name": "Agrawal",
-    "Date of Birth": "02/09/2001",
-    "Contact No.": 9302770111,
-    "E-mail Address": "sakshiagrawal2445@gmail.com",
-    Number: 655787766789,
+    title: "PAN Card",
+    age: "22",
+    firstName: "Sakshi",
+    lastName: "Agrawal",
+    dob: "02/09/2001",
+    contact: 9302770111,
+    email: "sakshiagrawal2445@gmail.com",
+    number: 655787766789,
   },
 ];
 
-export default function DebitContents() {
+export default function IdentityContent() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [credentials, setCredentials] = useState(null);
+  const [credential, setCredential] = useState(null);
+  const handleInputChange = (event) => {
+    setCredentials({ ...credentials, [event.target.name]: event.target.value });
+  };
+
+  function IdentityAddDrawerContent() {
+    return (
+      <Box width="100%" height="100%" padding="20px">
+        <VStack width="100%" alignItems="left">
+          <Heading pt="10px" pl="5px" size="xl">
+            Details
+          </Heading>
+          <Divider borderColor="gray.200" />
+          <Box bg="gray.100" rounded="10px" p="20px">
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Identity Name
+            </Text>
+            <Input
+              type="text"
+              name="title"
+              size="lg"
+              value={credentials?.title}
+              placeholder={`Enter the Identity Name`}
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              First Name
+            </Text>
+            <Input
+              type="text"
+              name="firstName"
+              placeholder="Enter the First Name"
+              value={credentials?.firstName}
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Last Name{" "}
+            </Text>
+            <Input
+              type="text"
+              name="lastName"
+              size="lg"
+              value={credentials?.lastName}
+              placeholder="Enter the Last Name"
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Age
+            </Text>
+            <Input
+              type="text"
+              name="age"
+              placeholder="Enter the age"
+              value={credentials?.age}
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Date of Birth
+            </Text>
+            <Input
+              type="text"
+              name="dob"
+              size="lg"
+              value={credentials?.dob}
+              placeholder="Enter the Date of Birth"
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              Contact No.
+            </Text>
+            <Input
+              type="text"
+              name="contact"
+              size="lg"
+              value={credentials?.contact}
+              placeholder="Enter the Contact No."
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              E-mail Address
+            </Text>
+            <Input
+              type="text"
+              name="email"
+              size="lg"
+              value={credentials?.email}
+              placeholder="Enter the E-mail ID"
+              onChange={handleInputChange}
+            />
+            <Text
+              style={{ fontWeight: "bold" }}
+              pt="10px"
+              px="10px"
+              fontSize="lg"
+            >
+              {credentials?.title} Number
+            </Text>
+            <Input
+              type="text"
+              name="number"
+              size="lg"
+              value={credentials?.number}
+              placeholder={`Enter the ${credentials?.title} Number`}
+              onChange={handleInputChange}
+            />
+            <Center pt="20px">
+              <Button colorScheme="blue" leftIcon={<CheckIcon />}>
+                Save Credentials
+              </Button>
+            </Center>
+          </Box>
+        </VStack>
+      </Box>
+    );
+  }
+
   return (
     <Box maxW="95%" px="10px">
-      <Heading size="2xl">Secure Notes</Heading>
+      <Drawer
+        trapFocus="true"
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        size="sm"
+      >
+        <DrawerContent
+          bg={
+            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
+          }
+        >
+          {IdentityAddDrawerContent()}
+        </DrawerContent>
+      </Drawer>
+      <Heading size="2xl">Identity</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <Box pt="20px">
         <HStack
@@ -83,7 +255,15 @@ export default function DebitContents() {
               <Button rightIcon={<Search2Icon />}>Search</Button>
             </InputRightElement>
           </InputGroup>
-          <Button rightIcon={<AddIcon />} colorScheme={"gray"} variant="solid">
+          <Button
+            rightIcon={<AddIcon />}
+            colorScheme={"gray"}
+            variant="solid"
+            onClick={() => {
+              setCredentials({});
+              onOpen();
+            }}
+          >
             Add Identity
           </Button>
           <Button
@@ -108,7 +288,7 @@ export default function DebitContents() {
                 <h2>
                   <AccordionButton p="20px">
                     <Heading textAlign="left" flex="1" size="md">
-                      {card.Title}
+                      {card.title}
                     </Heading>
                     <AccordionIcon />
                   </AccordionButton>
@@ -116,7 +296,7 @@ export default function DebitContents() {
                 <AccordionPanel pb={4}>
                   <Card maxW="700px">
                     <CardBody>
-                      <Stack divider={<StackDivider />} spacing="20px">
+                      <Stack spacing="20px">
                         <HStack>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
@@ -124,30 +304,19 @@ export default function DebitContents() {
                               First Name
                             </Heading>
                             <Input
-                              variant="filled"
-                              value={card["First Name"]}
+                              variant="outline"
+                              value={card.firstName}
                               readOnly="true"
                             />
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
                               {" "}
-                              Middle Name
+                              lastName{" "}
                             </Heading>
                             <Input
-                              variant="filled"
-                              value={card["Middle Name"]}
-                              readOnly="true"
-                            />
-                          </Box>
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              {" "}
-                              Last Name
-                            </Heading>
-                            <Input
-                              variant="filled"
-                              value={card["Last Name"]}
+                              variant="outline"
+                              value={card.lastName}
                               readOnly="true"
                             />
                           </Box>
@@ -155,11 +324,11 @@ export default function DebitContents() {
                         <HStack>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              Age
+                              age
                             </Heading>
                             <Input
-                              variant="filled"
-                              value={card.Age}
+                              variant="outline"
+                              value={card.age}
                               readOnly="true"
                             />
                           </Box>
@@ -168,19 +337,51 @@ export default function DebitContents() {
                               Date of Birth
                             </Heading>
                             <Input
-                              variant="filled"
-                              value={card["Date of Birth"]}
+                              variant="outline"
+                              value={card.dob}
                               readOnly="true"
                               type="date"
                             />
                           </Box>
                         </HStack>
+                        <Box>
+                          <Heading size="xs" textTransform="uppercase">
+                            Contact No.
+                          </Heading>
+                          <Input
+                            variant="outline"
+                            value={card.contact}
+                            readOnly="true"
+                          />
+                        </Box>
+                        <Box>
+                          <Heading size="xs" textTransform="uppercase">
+                            {" "}
+                            Email Address
+                          </Heading>
+                          <Input
+                            variant="outline"
+                            value={card.email}
+                            readOnly="true"
+                          />
+                        </Box>
+                        <Box>
+                          <Heading size="xs" textTransform="uppercase">
+                            {" "}
+                            {card.title} number
+                          </Heading>
+                          <Input
+                            variant="outline"
+                            value={card.number}
+                            readOnly="true"
+                          />
+                        </Box>
                         <HStack justifyContent={"right"} width="100%">
                           <Button
                             type="primary"
                             onClick={() => {
-                              // setEditingCredentials(row);
-                              // setIsEditModalOpen(true);
+                              setCredentials(card);
+                              onOpen();
                             }}
                             leftIcon={<EditIcon />}
                           >

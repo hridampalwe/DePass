@@ -19,15 +19,8 @@ import {
   Stack,
   StackDivider,
   Text,
-  Slide,
   Drawer,
-  DrawerOverlay,
   DrawerContent,
-  DrawerBody,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  DrawerHeader,
   VStack,
   Center,
   useDisclosure,
@@ -73,22 +66,13 @@ const credentialsArr = [
   },
 ];
 
-export default function SitesContent() {
+export default function SitesContent({functions}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [credential, setCredential] = useState(null);
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
-
-  // function testClick(credObj = { empty: true }) {
-  //   if (credObj.empty !== true) {
-  //     setCredential(credObj);
-  //   } else {
-  //     setCredential(null);
-  //   }
-  //   onOpen();
-  // }
 
   function SiteAddDrawerContent() {
     return (
@@ -212,6 +196,9 @@ export default function SitesContent() {
           variant="solid"
           onClick={() => {
             setCredentials({});
+            functions.handleSaveCredentials({object:"sakshi"});
+            // console.log(handleSaveCredentials);
+            // handleSaveCredentials;
             onOpen();
           }}
         >
@@ -292,7 +279,6 @@ export default function SitesContent() {
                         <Popconfirm
                           title="Are you sure?"
                           onConfirm={() => {
-                            // handleDeleteCredentials(row.id);
                           }}
                         >
                           <Button
