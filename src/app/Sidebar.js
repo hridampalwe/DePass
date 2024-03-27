@@ -1,19 +1,20 @@
-import React, { ReactNode, useState } from "react";
 import {
   Box,
   Center,
   Flex,
   Icon,
-  useDisclosure,
   Image,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { FiStar, FiBookOpen, FiUser } from "react-icons/fi";
-import { FaGlobe, FaCreditCard } from "react-icons/fa";
-import SitesContent from "./SitesContent";
+import { FaCreditCard, FaGlobe } from "react-icons/fa";
+import { FiBookOpen, FiInfo, FiUser } from "react-icons/fi";
+import React, { useState } from "react";
+
+import AccDetails from "./Info";
 import CardsContents from "./CardsContents";
-import SecureNotesContent from "./SecureNotesContent";
 import IdentityContent from "./IdentityContent";
-import { Divider } from "antd";
+import SecureNotesContent from "./SecureNotesContent";
+import SitesContent from "./SitesContent";
 
 const LinkItems = [
   {
@@ -28,7 +29,7 @@ const LinkItems = [
   },
   { name: "Secure Notes", icon: FiBookOpen, render: SecureNotesContent },
   { name: "Identities", icon: FiUser, render: IdentityContent },
-  { name: "Favourites", icon: FiStar },
+  { name: "Info", icon: FiInfo, render: AccDetails },
 ];
 
 export default function SimpleSidebar({ functions }) {

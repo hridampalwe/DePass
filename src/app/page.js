@@ -1,16 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Web3Provider } from "@ethersproject/providers";
-import { Contract } from "@ethersproject/contracts";
-import { useRouter } from "next/navigation";
 
+import { Button, ChakraProvider, useToast } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+
+import { Contract } from "@ethersproject/contracts";
+import Dashboard from "./Dashboard.js";
 // import Head from "next/head";
 import Lit from "./lib/lit.js";
-import { notification } from "antd";
-
-import { ChakraProvider, useToast, Button } from "@chakra-ui/react";
 import Login from "./Login.js";
-import Dashboard from "./Dashboard.js";
+import { Web3Provider } from "@ethersproject/providers";
+import { notification } from "antd";
+import { useRouter } from "next/navigation";
 
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -137,6 +137,13 @@ export default function Home() {
     },
   ];
 
+  const connectionInfo = () => {
+    return {
+      account,
+      contractAddress,
+      // chainId: web3.eth.getChainId(),
+    };
+  };
   //Handle the connection of wallet through meta mask account.
   const handleConnectWallet = async () => {
     try {
@@ -321,6 +328,7 @@ export default function Home() {
             handleEditCredentials,
             handleDeleteCredentials,
             handleLogout,
+            connectionInfo,
           }}
         />
       )}
