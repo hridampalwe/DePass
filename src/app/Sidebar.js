@@ -32,9 +32,16 @@ export default function SimpleSidebar({ functions }) {
   const [isEdited, setIsEdited] = useState(false);
   const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
 
-  async function changeEditVal() {
-    setIsEdited(true);
-  }
+  // 1. stateVariable OBJ = { site :[] , card : [] , notes : [] , identities: []}
+  // 2. <SitesContent credentialsArr={credentialsArr} />  =>  < ... redentialsArr={OBJ.type} />
+  // 3. getSitesCredentials() => getSitesCredentials("type")
+  // 4. setCredentialsArr(recv) => setOBJ({...OBJ , type : [...recv]});
+  // 5. const [currentComponent, setCurrentComponent] = useState(SitesContent);
+  // 6. const [componentType, setComponentType] = useState("Sites");
+  // 7. setRenderComponent( <SitesContent ... /> ==> <currentComponent credentialsArr = OBJ[componentType]/>
+  // 8. first UseEffect  [credentialsArr.length]); => [OBJ[componentType].length]
+  // 9. getSitesCredentials() => getSitesCredentials("componentType")
+  // 10. When mapping the nav items add the setVariable for componentType and currentComponent
 
   useEffect(() => {
     if (credentialsArr.length == 0) {
@@ -45,19 +52,20 @@ export default function SimpleSidebar({ functions }) {
   async function getSitesCredentials() {
     // setLoading(true);
     const recv = await functions.getCredentials("Sites");
+    setIsEdited(true);
     setCredentialsArr(recv);
-    console.log(recv);
-
     // setLoading(false);
   }
 
   useEffect(() => {
     console.log(credentialsArr);
-    setRenderComponent(
-      <SitesContent functions={functions} credentialsArr={credentialsArr} />
-    );
+    if (isEdited == true) {
+      setRenderComponent(
+        <SitesContent functions={functions} credentialsArr={credentialsArr} />
+      );
+    }
     setIsEdited(false);
-  }, [credentialsArr.length, isEdited]);
+  }, [isEdited]);
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
