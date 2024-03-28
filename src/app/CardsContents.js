@@ -41,7 +41,6 @@ import { filter } from "smart-array-filter";
 export default function CardsContents({ functions, credArr }) {
   console.log(credArr);
 
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   // const [credentialsArr, setCredentialsArr] = useState(null);
@@ -54,16 +53,13 @@ export default function CardsContents({ functions, credArr }) {
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
 
-  // Effect for loading the credentials when the contract is set.
-  // useEffect(() => {
-  //   if (credentialsArr == null) {
-  //     getCardsCredentials();
-  //   }
-  // }, [credentialsArr]);
+  useEffect(() => {
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
+  }, []);
 
   async function getCardsCredentials() {
     setLoading(true);
-    functions.getSitesCredentials("Cards");
+    await functions.getSitesCredentials("Cards");
     // const recv = await functions.getCredentials("Cards");
     // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
@@ -92,12 +88,12 @@ export default function CardsContents({ functions, credArr }) {
     });
   }
 
-  function handleApplyChange() {
-    const filteredData = filter(origCredentialsArr, {
-      keywords: search,
-    });
-    // setCredentialsArr(filteredData);
-  }
+  // function handleApplyChange() {
+  //   const filteredData = filter(origCredentialsArr, {
+  //     keywords: search,
+  //   });
+  //   // setCredentialsArr(filteredData);
+  // }
 
   function handleAddChange() {
     setCredentials({});
@@ -247,15 +243,16 @@ export default function CardsContents({ functions, credArr }) {
       </Drawer>
       <Heading size="2xl">Cards</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
-      <Box pt="20px">
-        <HStack
-          p="5px"
-          spacing="10px"
+      <Box>
+        <VStack
           rounded="10px"
           bg="gray.200"
+          marginTop="20px"
+          p="10px"
+          spacing="20px"
           marginBottom="10px"
         >
-          <InputGroup size="lg">
+          <HStack width="100%">
             <Input
               size="lg"
               onChange={handleSearchChange}
@@ -264,42 +261,47 @@ export default function CardsContents({ functions, credArr }) {
               borderColor="rgba(0, 0, 0, 0.1)"
               borderWidth="2px"
             />
-            <InputRightElement width="120px">
-              <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
-                Apply
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <Button
-            rightIcon={<AddIcon />}
-            onClick={handleAddChange}
-            colorScheme={"gray"}
-            variant="solid"
-          >
-            Add Card
-          </Button>
-          <Button
-            rightIcon={<RepeatIcon />}
-            colorScheme={"gray"}
-            variant="solid"
-            onClick={handleRefreshChange}
-          >
-            Refresh
-          </Button>
-          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
-              rightIcon={<ArrowForwardIcon />}
-              colorScheme={"red"}
-              variant="outline"
+              rightIcon={<AddIcon />}
+              size="lg"
+              onClick={handleAddChange}
+              colorScheme={"gray"}
+              variant="solid"
             >
-              Logout
+              Add Card
             </Button>
-          </Popconfirm>
-        </HStack>
+            <Button
+              rightIcon={<RepeatIcon />}
+              colorScheme={"gray"}
+              size="lg"
+              variant="solid"
+              onClick={handleRefreshChange}
+            >
+              Refresh
+            </Button>
+            <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
+              <Button
+                rightIcon={<ArrowForwardIcon />}
+                colorScheme={"red"}
+                size="lg"
+                variant="outline"
+              >
+                Logout
+              </Button>
+            </Popconfirm>
+          </HStack>
+          <Text mx="5px" fontSize="18px">
+            Welcome to your digital cardholder, where every card is securely
+            stored and easily accessible.
+          </Text>
+        </VStack>
+
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion py="" allowToggle>
-              {credArr?.map((card) => (
+              {filter(credArr, {
+                keywords: search,
+              })?.map((card) => (
                 <AccordionItem key={card.id}>
                   <h2>
                     <AccordionButton p="20px">

@@ -31,22 +31,15 @@ export default function SimpleSidebar({ functions }) {
     Cards: [],
     Notes: [],
     Identities: [],
+    Info: [{}],
   });
 
   const [componentType, setComponentType] = useState("Sites");
-  const [CurrentComponent, setCurrentComponent] = useState(
-    <SitesContent funtions={functions} credArr={obj[componentType]} />
-  );
-  functions.getSitesCredentials = getSitesCredentials;
-  // functions.getCredentialsForCards = () => getSitesCredentials("Cards");
-  // functions.getCredentialsForNotes = () => getSitesCredentials("Notes");
-  // functions.getCredentialsForIdentities = () =>
-  //   getSitesCredentials("Identities");
-
   const [credentialsArr, setCredentialsArr] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
   const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  functions.getSitesCredentials = getSitesCredentials;
 
   // 1. stateVariable OBJ = { site :[] , card : [] , notes : [] , identities: []}
   // 2. <SitesContent credentialsArr={credentialsArr} />  =>  < ... redentialsArr={OBJ.type} />
@@ -71,37 +64,37 @@ export default function SimpleSidebar({ functions }) {
     setIsEdited(true);
     setObj((prevState) => ({ ...prevState, [compType]: recv }));
     setRenderComponent(
-              <SitesContent functions={functions} credArr={obj[componentType]} />
-            );
+      <SitesContent functions={functions} credArr={obj[componentType]} />
+    );
     // setLoading(false);
   }
 
-  // useEffect(() => {
-  //   // console.log(credentialsArr);
-  //   if (isEdited === true) {
-  //     if (componentType === "Sites") {
-  //       setRenderComponent(
-  //         <SitesContent functions={functions} credArr={obj[componentType]} />
-  //       );
-  //     } else if (componentType === "Cards") {
-  //       setRenderComponent(
-  //         <CardsContents functions={functions} credArr={obj[componentType]} />
-  //       );
-  //     } else if (componentType === "Notes") {
-  //       setRenderComponent(
-  //         <SecureNotesContent
-  //           functions={functions}
-  //           credArr={obj[componentType]}
-  //         />
-  //       );
-  //     } else if (componentType === "Identities") {
-  //       setRenderComponent(
-  //         <IdentityContent functions={functions} credArr={obj[componentType]} />
-  //       );
-  //     }
-  //   }
-  //   setIsEdited(false);
-  // }, [isEdited]);
+  useEffect(() => {
+    // console.log(credentialsArr);
+    if (isEdited === true) {
+      if (componentType === "Sites") {
+        setRenderComponent(
+          <SitesContent functions={functions} credArr={obj[componentType]} />
+        );
+      } else if (componentType === "Cards") {
+        setRenderComponent(
+          <CardsContents functions={functions} credArr={obj[componentType]} />
+        );
+      } else if (componentType === "Notes") {
+        setRenderComponent(
+          <SecureNotesContent
+            functions={functions}
+            credArr={obj[componentType]}
+          />
+        );
+      } else if (componentType === "Identities") {
+        setRenderComponent(
+          <IdentityContent functions={functions} credArr={obj[componentType]} />
+        );
+      }
+    }
+    setIsEdited(false);
+  }, [isEdited]);
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
@@ -116,12 +109,8 @@ export default function SimpleSidebar({ functions }) {
             icon={link.icon}
             onClick={() => {
               setComponentType(link.name);
-              setCurrentComponent(link.render);
               setRenderComponent(
-                <link.render
-                  functions={functions}
-                  credArr={obj[componentType]}
-                />
+                <link.render functions={functions} credArr={obj[link.name]} />
               );
             }}
           >

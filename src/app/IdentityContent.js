@@ -1,43 +1,43 @@
-import { Popconfirm } from "antd";
-import { useState, useEffect } from "react";
-import { filter } from "smart-array-filter";
 import {
-  Box,
-  Heading,
   Accordion,
-  AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
   Card,
   CardBody,
-  Stack,
-  Input,
-  HStack,
-  InputGroup,
+  Center,
   Divider,
-  Text,
-  InputRightElement,
-  Button,
   Drawer,
   DrawerContent,
-  useToast,
+  HStack,
+  Heading,
+  Input,
+  InputGroup,
+  InputRightElement,
   Skeleton,
+  Stack,
+  Text,
   VStack,
-  Center,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import {
-  EditIcon,
-  DeleteIcon,
-  CheckIcon,
-  RepeatIcon,
   AddIcon,
   ArrowForwardIcon,
+  CheckIcon,
+  DeleteIcon,
+  EditIcon,
+  RepeatIcon,
 } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+
+import { Popconfirm } from "antd";
+import { filter } from "smart-array-filter";
 
 export default function IdentityContent({ functions, credArr }) {
-
   console.log(credArr);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
@@ -45,7 +45,7 @@ export default function IdentityContent({ functions, credArr }) {
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-    const toast = useToast();
+  const toast = useToast();
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
@@ -63,19 +63,14 @@ export default function IdentityContent({ functions, credArr }) {
     });
   }
 
-  // Effect for loading the credentials when the contract is set.
-  // useEffect(() => {
-  //   if (credentialsArr == null) {
-  //     getIdentitiesCredentials();
-  //   }
-  // }, [credentialsArr]);
+  useEffect(() => {
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
+  }, []);
 
   async function getIdentitiesCredentials() {
     setLoading(true);
-    functions.getSitesCredentials("Identities");
-    // const recv = await functions.getCredentials("Identities");
-    // setCredentialsArr(recv);
-    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
+    await functions.getSitesCredentials("Identities");
+
     setLoading(false);
   }
 
@@ -90,12 +85,11 @@ export default function IdentityContent({ functions, credArr }) {
     await getIdentitiesCredentials();
   }
 
-  function handleApplyChange() {
-    const filteredData = filter(origCredentialsArr, {
-      keywords: search,
-    });
-    // setCredentialsArr(filteredData);
-  }
+  // function handleApplyChange() {
+  //   const filteredData = filter(origCredentialsArr, {
+  //     keywords: search,
+  //   });
+  // }
 
   function handleAddChange() {
     setCredentials({});
@@ -293,15 +287,16 @@ export default function IdentityContent({ functions, credArr }) {
       </Drawer>
       <Heading size="2xl">Identities</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
-      <Box pt="20px">
-        <HStack
-          p="5px"
-          spacing="15px"
+      <Box>
+        <VStack
           rounded="10px"
           bg="gray.200"
+          marginTop="20px"
+          p="10px"
+          spacing="20px"
           marginBottom="10px"
         >
-          <InputGroup size="lg">
+          <HStack width="100%">
             <Input
               onChange={handleSearchChange}
               size="lg"
@@ -310,42 +305,46 @@ export default function IdentityContent({ functions, credArr }) {
               borderWidth="2px"
               placeholder="Search Filter"
             />
-            <InputRightElement width="120px">
-              <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
-                Apply
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <Button
-            rightIcon={<AddIcon />}
-            colorScheme={"gray"}
-            variant="solid"
-            onClick={handleAddChange}
-          >
-            Add Identity
-          </Button>
-          <Button
-            rightIcon={<RepeatIcon />}
-            colorScheme={"gray"}
-            variant="solid"
-            onClick={handleRefreshChange}
-          >
-            Refresh
-          </Button>
-          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
-              rightIcon={<ArrowForwardIcon />}
-              colorScheme={"red"}
-              variant="outline"
+              rightIcon={<AddIcon />}
+              colorScheme={"gray"}
+              size="lg"
+              variant="solid"
+              onClick={handleAddChange}
             >
-              Logout
+              Add Identity
             </Button>
-          </Popconfirm>
-        </HStack>
+            <Button
+              rightIcon={<RepeatIcon />}
+              colorScheme={"gray"}
+              size="lg"
+              variant="solid"
+              onClick={handleRefreshChange}
+            >
+              Refresh
+            </Button>
+            <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
+              <Button
+                rightIcon={<ArrowForwardIcon />}
+                colorScheme={"red"}
+                variant="outline"
+                size="lg"
+              >
+                Logout
+              </Button>
+            </Popconfirm>
+          </HStack>
+          <Text mx="5px" fontSize="18px">
+            Welcome to our secure identity repository - your digital guardian
+            for safeguarding personal information.
+          </Text>
+        </VStack>
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion maxWidth="100%" allowToggle>
-              {credArr?.map((identity) => (
+              {filter(credArr, {
+                keywords: search,
+              })?.map((identity) => (
                 <AccordionItem key={identity.id}>
                   <h2>
                     <AccordionButton p="20px">
