@@ -38,31 +38,35 @@ import { useEffect, useState } from "react";
 
 import { filter } from "smart-array-filter";
 
-export default function CardsContents({ functions }) {
-  const toast = useToast();
+export default function CardsContents({ functions, credArr }) {
+  console.log(credArr);
+
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  const [credentialsArr, setCredentialsArr] = useState(null);
+  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(null);
+  const toast = useToast();
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
 
   // Effect for loading the credentials when the contract is set.
-  useEffect(() => {
-    if (credentialsArr == null) {
-      getCardsCredentials();
-    }
-  }, [credentialsArr]);
+  // useEffect(() => {
+  //   if (credentialsArr == null) {
+  //     getCardsCredentials();
+  //   }
+  // }, [credentialsArr]);
 
   async function getCardsCredentials() {
     setLoading(true);
-    const recv = await functions.getCredentials("Cards");
-    setCredentialsArr(recv);
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
+    functions.getCredentialsForCards();
+    // const recv = await functions.getCredentials("Cards");
+    // setCredentialsArr(recv);
+    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -92,7 +96,7 @@ export default function CardsContents({ functions }) {
     const filteredData = filter(origCredentialsArr, {
       keywords: search,
     });
-    setCredentialsArr(filteredData);
+    // setCredentialsArr(filteredData);
   }
 
   function handleAddChange() {
@@ -105,7 +109,7 @@ export default function CardsContents({ functions }) {
   }
 
   async function handleLogoutChange() {
-    setCredentialsArr([]);
+    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
@@ -295,7 +299,7 @@ export default function CardsContents({ functions }) {
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion py="" allowToggle>
-              {credentialsArr?.map((card) => (
+              {credArr?.map((card) => (
                 <AccordionItem key={card.id}>
                   <h2>
                     <AccordionButton p="20px">

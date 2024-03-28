@@ -36,14 +36,16 @@ import {
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 
-export default function IdentityContent({ functions }) {
-  const toast = useToast();
+export default function IdentityContent({ functions, credArr }) {
+
+  console.log(credArr);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  const [credentialsArr, setCredentialsArr] = useState(null);
+  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+    const toast = useToast();
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
@@ -62,17 +64,18 @@ export default function IdentityContent({ functions }) {
   }
 
   // Effect for loading the credentials when the contract is set.
-  useEffect(() => {
-    if (credentialsArr == null) {
-      getIdentitiesCredentials();
-    }
-  }, [credentialsArr]);
+  // useEffect(() => {
+  //   if (credentialsArr == null) {
+  //     getIdentitiesCredentials();
+  //   }
+  // }, [credentialsArr]);
 
   async function getIdentitiesCredentials() {
     setLoading(true);
-    const recv = await functions.getCredentials("Identities");
-    setCredentialsArr(recv);
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
+    functions.getCredentialsForIdentities();
+    // const recv = await functions.getCredentials("Identities");
+    // setCredentialsArr(recv);
+    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -91,7 +94,7 @@ export default function IdentityContent({ functions }) {
     const filteredData = filter(origCredentialsArr, {
       keywords: search,
     });
-    setCredentialsArr(filteredData);
+    // setCredentialsArr(filteredData);
   }
 
   function handleAddChange() {
@@ -104,7 +107,7 @@ export default function IdentityContent({ functions }) {
   }
 
   async function handleLogoutChange() {
-    setCredentialsArr([]);
+    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
@@ -342,7 +345,7 @@ export default function IdentityContent({ functions }) {
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion maxWidth="100%" allowToggle>
-              {credentialsArr?.map((identity) => (
+              {credArr?.map((identity) => (
                 <AccordionItem key={identity.id}>
                   <h2>
                     <AccordionButton p="20px">
