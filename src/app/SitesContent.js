@@ -38,8 +38,8 @@ import { useEffect, useState } from "react";
 
 import { filter } from "smart-array-filter";
 
-export default function SitesContent({ functions, credentialsArr }) {
-  console.log(credentialsArr);
+export default function SitesContent({ functions, credArr }) {
+  console.log(credArr);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
 
@@ -63,7 +63,7 @@ export default function SitesContent({ functions, credentialsArr }) {
   async function getSitesCredentials() {
     setLoading(true);
     // functions.changeEditVal();
-    await functions.getCredentialsThroughSidebar();
+    await functions.getCredentialsForSites();
     // const recv = await functions.getCredentials("Sites");
     // // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
@@ -281,7 +281,7 @@ export default function SitesContent({ functions, credentialsArr }) {
       <Skeleton isLoaded={!loading}>
         <Box rounded="10px" bg="gray.200">
           <Accordion rounded="10px" allowToggle>
-            {credentialsArr?.map((site) => (
+            {credArr?.map((site) => (
               <AccordionItem key={site.id}>
                 <h2>
                   <AccordionButton p="20px">

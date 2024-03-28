@@ -26,7 +26,22 @@ const LinkItems = [
 ];
 
 export default function SimpleSidebar({ functions }) {
-  functions.getCredentialsThroughSidebar = getSitesCredentials;
+  const [obj, setObj] = useState({
+    Sites: [],
+    Cards: [],
+    "Secure Notes": [],
+    Identities: [],
+  });
+
+  const [componentType, setComponentType] = useState("Sites");
+  const [CurrentComponent, setCurrentComponent] = useState(
+    <SitesContent funtions={functions} credArr={obj[componentType]} />
+  );
+  functions.getCredentialsForSites = () => getSitesCredentials("Sites");
+  functions.getCredentialsForCards = () => getSitesCredentials("Cards");
+  functions.getCredentialsForNotes = () => getSitesCredentials("Secure Notes");
+  functions.getCredentialsForIdentities = () =>
+    getSitesCredentials("Identities");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentialsArr, setCredentialsArr] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
@@ -44,25 +59,42 @@ export default function SimpleSidebar({ functions }) {
   // 10. When mapping the nav items add the setVariable for componentType and currentComponent
 
   useEffect(() => {
-    if (credentialsArr.length == 0) {
-      getSitesCredentials();
+    if (obj[componentType].length === 0) {
+      getSitesCredentials(componentType);
     }
-  }, [credentialsArr.length]);
+  }, [obj[componentType].length]);
 
-  async function getSitesCredentials() {
+  async function getSitesCredentials(compType) {
     // setLoading(true);
-    const recv = await functions.getCredentials("Sites");
+    const recv = await functions.getCredentials(compType);
     setIsEdited(true);
-    setCredentialsArr(recv);
+    setObj((prevState) => ({ ...prevState, [compType]: recv }));
     // setLoading(false);
   }
 
   useEffect(() => {
-    console.log(credentialsArr);
-    if (isEdited == true) {
-      setRenderComponent(
-        <SitesContent functions={functions} credentialsArr={credentialsArr} />
-      );
+    // console.log(credentialsArr);
+    if (isEdited === true) {
+      if (componentType === "Sites") {
+        setRenderComponent(
+          <SitesContent functions={functions} credArr={obj[componentType]} />
+        );
+      } else if (componentType === "Cards") {
+        setRenderComponent(
+          <CardsContents functions={functions} credArr={obj[componentType]} />
+        );
+      } else if (componentType === "Secure Notes") {
+        setRenderComponent(
+          <SecureNotesContent
+            functions={functions}
+            credArr={obj[componentType]}
+          />
+        );
+      } else if (componentType === "Identities") {
+        setRenderComponent(
+          <IdentityContent functions={functions} credArr={obj[componentType]} />
+        );
+      }
     }
     setIsEdited(false);
   }, [isEdited]);
@@ -79,10 +111,12 @@ export default function SimpleSidebar({ functions }) {
             key={link.name}
             icon={link.icon}
             onClick={() => {
+              setComponentType(link.name);
+              setCurrentComponent(link.render);
               setRenderComponent(
-                <link.render
+                <CurrentComponent
                   functions={functions}
-                  credentialsArr={credentialsArr}
+                  credArr={obj[componentType]}
                 />
               );
             }}

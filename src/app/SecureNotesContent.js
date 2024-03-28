@@ -37,14 +37,16 @@ import {
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 
-export default function SecurenotesContent({ functions }) {
-  const toast = useToast();
+export default function SecurenotesContent({ functions, credArr }) {
+  console.log(credArr);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  const [credentialsArr, setCredentialsArr] = useState(null);
+  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const toast = useToast();
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
@@ -52,11 +54,11 @@ export default function SecurenotesContent({ functions }) {
   const handleSearchChange = (event) => setSearch(event.target.value);
 
   // Effect for loading the credentials when the contract is set.
-  useEffect(() => {
-    if (credentialsArr == null) {
-      getNotesCredentials();
-    }
-  }, [credentialsArr]);
+  // useEffect(() => {
+  //   if (credentialsArr == null) {
+  //     getNotesCredentials();
+  //   }
+  // }, [credentialsArr]);
 
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
@@ -72,9 +74,10 @@ export default function SecurenotesContent({ functions }) {
 
   async function getNotesCredentials() {
     setLoading(true);
-    const recv = await functions.getCredentials("Notes");
-    setCredentialsArr(recv);
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
+    await functions.getCredentialsForNotes();
+    // const recv = await functions.getCredentials("Notes");
+    // setCredentialsArr(recv);
+    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -93,7 +96,7 @@ export default function SecurenotesContent({ functions }) {
     const filteredData = filter(origCredentialsArr, {
       keywords: search,
     });
-    setCredentialsArr(filteredData);
+    // setCredentialsArr(filteredData);
   }
 
   function handleAddChange() {
@@ -106,7 +109,7 @@ export default function SecurenotesContent({ functions }) {
   }
 
   async function handleLogoutChange() {
-    setCredentialsArr([]);
+    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
@@ -249,7 +252,7 @@ export default function SecurenotesContent({ functions }) {
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion py="" allowToggle>
-              {credentialsArr?.map((note) => (
+              {credArr?.map((note) => (
                 <AccordionItem key={note.id}>
                   <h2>
                     <AccordionButton p="20px">

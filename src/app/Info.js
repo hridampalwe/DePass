@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-export default function AccDetails({ functions }) {
+export default function AccDetails({ functions,credArr }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
