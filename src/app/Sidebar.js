@@ -8,11 +8,12 @@ import {
 } from "@chakra-ui/react";
 import { FaCreditCard, FaGlobe } from "react-icons/fa";
 import { FiBookOpen, FiInfo, FiUser } from "react-icons/fi";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AccDetails from "./Info";
 import CardsContents from "./CardsContents";
 import IdentityContent from "./IdentityContent";
+import LoadingScreen from "./LoadingScreen";
 import SecureNotesContent from "./SecureNotesContent";
 import SitesContent from "./SitesContent";
 
@@ -34,10 +35,23 @@ const LinkItems = [
 
 export default function SimpleSidebar({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [renderComponent, setRenderComponent] = useState(
-    <SitesContent functions={functions} />
-  );
-  const [cred, setCred] = useState(null);
+  const [credentialsArr, setCredentialsArr] = useState([]);
+  const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
+  useEffect(() => {
+    if (credentialsArr.length == 0) {
+      getSitesCredentials();
+    }
+  }, [credentialsArr]);
+
+  async function getSitesCredentials() {
+    // setLoading(true);
+    const recv = await functions.getCredentials("Sites");
+    setCredentialsArr(recv);
+    setRenderComponent(
+      <SitesContent functions={functions} credentialsArr={recv} />
+    );
+    // setLoading(false);
+  }
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
@@ -51,7 +65,12 @@ export default function SimpleSidebar({ functions }) {
             key={link.name}
             icon={link.icon}
             onClick={() => {
-              setRenderComponent(<link.render functions={functions} />);
+              setRenderComponent(
+                <link.render
+                  functions={functions}
+                  credentialsArr={credentialsArr}
+                />
+              );
             }}
           >
             {link.name}

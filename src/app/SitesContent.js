@@ -38,10 +38,11 @@ import { useEffect, useState } from "react";
 
 import { filter } from "smart-array-filter";
 
-export default function SitesContent({ functions }) {
+export default function SitesContent({ functions, credentialsArr }) {
+  console.log(credentialsArr);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  const [credentialsArr, setCredentialsArr] = useState(null);
+  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -52,17 +53,17 @@ export default function SitesContent({ functions }) {
   const handleSearchChange = (event) => setSearch(event.target.value);
 
   // Effect for loading the credentials when the contract is set.
-  useEffect(() => {
-    if (credentialsArr == null) {
-      getSitesCredentials();
-    }
-  }, [credentialsArr]);
+  // useEffect(() => {
+  //   if (credentialsArr == null) {
+  //     getSitesCredentials();
+  //   }
+  // }, [credentialsArr]);
 
   async function getSitesCredentials() {
     setLoading(true);
-    const recv = await functions.getCredentials("Sites");
-    setCredentialsArr(recv);
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
+    // const recv = await functions.getCredentials("Sites");
+    // // setCredentialsArr(recv);
+    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -81,7 +82,7 @@ export default function SitesContent({ functions }) {
     const filteredData = filter(origCredentialsArr, {
       keywords: search,
     });
-    setCredentialsArr(filteredData);
+    // setCredentialsArr(filteredData);
   }
 
   function handleAddChange() {
