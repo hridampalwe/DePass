@@ -63,7 +63,7 @@ export default function CardsContents({ functions, credArr }) {
 
   async function getCardsCredentials() {
     setLoading(true);
-    functions.getCredentialsForCards();
+    functions.getSitesCredentials("Cards");
     // const recv = await functions.getCredentials("Cards");
     // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));

@@ -72,7 +72,7 @@ export default function IdentityContent({ functions, credArr }) {
 
   async function getIdentitiesCredentials() {
     setLoading(true);
-    functions.getCredentialsForIdentities();
+    functions.getSitesCredentials("Identities");
     // const recv = await functions.getCredentials("Identities");
     // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
