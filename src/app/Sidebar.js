@@ -18,16 +18,8 @@ import SecureNotesContent from "./SecureNotesContent";
 import SitesContent from "./SitesContent";
 
 const LinkItems = [
-  {
-    name: "Sites",
-    icon: FaGlobe,
-    render: SitesContent,
-  },
-  {
-    name: "Cards",
-    icon: FaCreditCard,
-    render: CardsContents,
-  },
+  { name: "Sites", icon: FaGlobe, render: SitesContent },
+  { name: "Cards", icon: FaCreditCard, render: CardsContents },
   { name: "Secure Notes", icon: FiBookOpen, render: SecureNotesContent },
   { name: "Identities", icon: FiUser, render: IdentityContent },
   { name: "Info", icon: FiInfo, render: AccDetails },
@@ -37,21 +29,30 @@ export default function SimpleSidebar({ functions }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentialsArr, setCredentialsArr] = useState([]);
   const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
+
   useEffect(() => {
     if (credentialsArr.length == 0) {
       getSitesCredentials();
     }
-  }, [credentialsArr]);
+  }, [credentialsArr.length]);
 
   async function getSitesCredentials() {
     // setLoading(true);
     const recv = await functions.getCredentials("Sites");
     setCredentialsArr(recv);
-    setRenderComponent(
-      <SitesContent functions={functions} credentialsArr={recv} />
-    );
+    console.log(recv);
+    
     // setLoading(false);
   }
+
+  useEffect(()=> {
+    if(credentialsArr.length !== 0){
+      console.log(credentialsArr);
+      setRenderComponent(
+        <SitesContent functions={functions} credentialsArr={credentialsArr} />
+      );
+    }
+  },[credentialsArr.length]);
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (

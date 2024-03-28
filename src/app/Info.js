@@ -1,29 +1,26 @@
 import {
   Box,
-  Button,
+  Input,
+  Heading,
+  Divider,
   Card,
   CardBody,
-  Center,
-  Divider,
-  HStack,
-  Heading,
-  Input,
   Stack,
   StackDivider,
-  Text,
-  VStack,
-  useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 export default function AccDetails({ functions }) {
   const [data, setData] = useState(null);
+
   useEffect(() => {
-    if (data == null) {
-      setData(functions.connectionInfo);
-    }
-  }, [data]);
+    const fetchData = async () => {
+      const connectionData = await functions.connectionInfo();
+      setData(connectionData);
+    };
+
+    fetchData();
+  }, [functions]);
 
   return (
     <Box>
@@ -37,7 +34,11 @@ export default function AccDetails({ functions }) {
                 <Heading size="xs" textTransform="uppercase">
                   Account
                 </Heading>
-                <Input variant="filled" value={data?.account} readOnly />
+                <Input
+                  variant="filled"
+                  value={data ? data.account : ""}
+                  readOnly
+                />
               </Box>
               <Box>
                 <Heading size="xs" textTransform="uppercase">
@@ -45,7 +46,7 @@ export default function AccDetails({ functions }) {
                 </Heading>
                 <Input
                   variant="filled"
-                  value={data?.contractAddress}
+                  value={data ? data.contractAddress : ""}
                   readOnly
                 />
               </Box>
@@ -53,7 +54,31 @@ export default function AccDetails({ functions }) {
                 <Heading size="xs" textTransform="uppercase">
                   Chain ID
                 </Heading>
-                <Input variant="filled" value={"1337"} readOnly />
+                <Input
+                  variant="filled"
+                  value={data ? Number(BigInt(data.chainId)) : ""}
+                  readOnly
+                />
+              </Box>
+              <Box>
+                <Heading size="xs" textTransform="uppercase">
+                  Balance
+                </Heading>
+                <Input
+                  variant="filled"
+                  value={data ? Number(BigInt(data.balance))*0.000000000000000001 : ""}
+                  readOnly
+                />
+              </Box>
+              <Box>
+                <Heading size="xs" textTransform="uppercase">
+                  Transaction Count
+                </Heading>
+                <Input
+                  variant="filled"
+                  value={data ? Number(BigInt(data.count)) : ""}
+                  readOnly
+                />
               </Box>
             </Stack>
           </CardBody>
