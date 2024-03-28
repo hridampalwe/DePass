@@ -11,6 +11,7 @@ import Login from "./Login.js";
 import { Web3Provider } from "@ethersproject/providers";
 import { notification } from "antd";
 import { useRouter } from "next/navigation";
+import Web3 from "web3";
 
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -137,11 +138,18 @@ export default function Home() {
     },
   ];
 
-  const connectionInfo = () => {
+  const connectionInfo = async () => {
+    // const web3 = new Web3(window.ethereum);
+    const web3 = new Web3(window.ethereum);
+    const chainId = await web3.eth.getChainId();
+    const balance = await web3.eth.getBalance(account);
+    const count = await web3.eth.getTransactionCount(account);
     return {
       account,
       contractAddress,
-      // chainId: web3.eth.getChainId(),
+      chainId,
+      balance,
+      count,
     };
   };
   //Handle the connection of wallet through meta mask account.
@@ -198,6 +206,7 @@ export default function Home() {
   //Gets credential details and fetch it to CredentialsArr
   const getCredentials = async (credentialsType) => {
     let data = await contract.getMyKeys();
+    console.log(data);
     const credentialsArr = [];
     //Data is array of credentials object access the object one by one.
     for (let i of data) {

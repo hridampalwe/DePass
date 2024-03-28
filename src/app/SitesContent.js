@@ -35,7 +35,6 @@ import {
   RepeatIcon,
 } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-
 import { filter } from "smart-array-filter";
 
 export default function SitesContent({ functions, credentialsArr }) {
