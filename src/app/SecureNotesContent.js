@@ -74,7 +74,7 @@ export default function SecurenotesContent({ functions, credArr }) {
 
   async function getNotesCredentials() {
     setLoading(true);
-    await functions.getCredentialsForNotes();
+    await functions.getSitesCredentials("Notes");
     // const recv = await functions.getCredentials("Notes");
     // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));

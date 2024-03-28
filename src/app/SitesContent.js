@@ -63,7 +63,7 @@ export default function SitesContent({ functions, credArr }) {
   async function getSitesCredentials() {
     setLoading(true);
     // functions.changeEditVal();
-    await functions.getCredentialsForSites();
+    await functions.getSitesCredentials("Sites");
     // const recv = await functions.getCredentials("Sites");
     // // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
