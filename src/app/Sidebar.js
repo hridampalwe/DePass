@@ -100,7 +100,7 @@ export default function SimpleSidebar({ functions }) {
     return (
       <Box w={{ base: "full", md: 60 }} pos="fixed" {...rest}>
         <Center py="5px">
-          <Image boxSize="200px" src="blockChain.png" />
+          <Image boxSize="200px" src="DePass_LOGO.png" />
         </Center>
         {/* <Divider /> */}
         {LinkItems.map((link) => (

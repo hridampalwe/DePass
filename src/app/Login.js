@@ -1,14 +1,14 @@
 import {
-  Heading,
-  Text,
-  Center,
+  Box,
+  Button,
   Card,
   CardBody,
-  Stack,
-  Button,
-  Image,
-  Box,
+  Center,
   Flex,
+  Heading,
+  Image,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
 export default function Login({ handleConnectWallet }) {
   return (
@@ -32,8 +32,8 @@ export default function Login({ handleConnectWallet }) {
           <Image
             objectFit="cover"
             maxW={{ base: "100%", sm: "300px" }}
-            src="blockChain.png"
-            alt="Caffe Latte"
+            src="DePass_LOGO.svg"
+            alt="DePass Logo"
           />
           <Stack>
             <CardBody py="10">
