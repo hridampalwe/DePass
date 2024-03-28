@@ -35,12 +35,14 @@ import {
   RepeatIcon,
 } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
+
 import { filter } from "smart-array-filter";
 
 export default function SitesContent({ functions, credentialsArr }) {
   console.log(credentialsArr);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
+
   // const [credentialsArr, setCredentialsArr] = useState(null);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,6 +62,7 @@ export default function SitesContent({ functions, credentialsArr }) {
 
   async function getSitesCredentials() {
     setLoading(true);
+    await functions.getCredentialsThroughSidebar();
     // const recv = await functions.getCredentials("Sites");
     // // setCredentialsArr(recv);
     // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
@@ -105,7 +108,7 @@ export default function SitesContent({ functions, credentialsArr }) {
   }
 
   async function handleLogoutChange() {
-    setCredentialsArr([]);
+    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
@@ -211,21 +214,6 @@ export default function SitesContent({ functions, credentialsArr }) {
   }
   return (
     <Box width={"95%"} px="10px" height={"100%"}>
-      <Drawer
-        trapFocus="true"
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        size="sm"
-      >
-        <DrawerContent
-          bg={
-            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
-          }
-        >
-          {SiteAddDrawerContent()}
-        </DrawerContent>
-      </Drawer>
       <Heading size="2xl">Sites</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
       <VStack
@@ -381,6 +369,21 @@ export default function SitesContent({ functions, credentialsArr }) {
         <Skeleton isLoaded={!loading} height="20px" />
         <Skeleton isLoaded={!loading} height="20px" />
       </Stack>
+      <Drawer
+        trapFocus="true"
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        size="sm"
+      >
+        <DrawerContent
+          bg={
+            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
+          }
+        >
+          {SiteAddDrawerContent()}
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 }
