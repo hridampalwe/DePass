@@ -53,6 +53,10 @@ export default function SitesContent({ functions, credArr }) {
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
 
+  useEffect(() => {
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
+  }, []);
+
   // Effect for loading the credentials when the contract is set.
   // useEffect(() => {
   //   if (credentialsArr == null) {
@@ -81,12 +85,14 @@ export default function SitesContent({ functions, credArr }) {
     await getSitesCredentials();
   }
 
-  function handleApplyChange() {
-    const filteredData = filter(origCredentialsArr, {
-      keywords: search,
-    });
-    // setCredentialsArr(filteredData);
-  }
+  // function handleApplyChange() {
+  //   const filteredData = filter(credArr, {
+  //     keywords: search,
+  //   });
+  //   console.log(filteredData);
+  //   setOrigCredentialsArr(filteredData);
+  //   // setCredentialsArr(filteredData);
+  // }
 
   function handleAddChange() {
     setCredentials({});
@@ -227,16 +233,15 @@ export default function SitesContent({ functions, credArr }) {
         // alignItems="left"
       >
         <HStack width="100%">
-          <InputGroup size="lg">
-            <Input
-              onChange={handleSearchChange}
-              size="lg"
-              variant="filled"
-              borderColor="rgba(0, 0, 0, 0.1)"
-              borderWidth="2px"
-              placeholder="Search Filter"
-            />
-            <InputRightElement width="120px">
+          <Input
+            onChange={handleSearchChange}
+            size="lg"
+            variant="filled"
+            borderColor="rgba(0, 0, 0, 0.1)"
+            borderWidth="2px"
+            placeholder="Search Filter"
+          />
+          {/* <InputRightElement width="120px">
               <Button
                 size="md"
                 // variant="outline"
@@ -245,12 +250,12 @@ export default function SitesContent({ functions, credArr }) {
               >
                 Apply
               </Button>
-            </InputRightElement>
-          </InputGroup>
+            </InputRightElement> */}
           <Button
             rightIcon={<AddIcon />}
             colorScheme={"gray"}
             variant="solid"
+            size="lg"
             onClick={handleAddChange}
           >
             Add Site
@@ -258,6 +263,7 @@ export default function SitesContent({ functions, credArr }) {
           <Button
             rightIcon={<RepeatIcon />}
             colorScheme={"gray"}
+            size="lg"
             variant="solid"
             onClick={handleRefreshChange}
           >
@@ -266,6 +272,7 @@ export default function SitesContent({ functions, credArr }) {
           <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
               rightIcon={<ArrowForwardIcon />}
+              size="lg"
               colorScheme={"red"}
               variant="outline"
             >
@@ -273,15 +280,17 @@ export default function SitesContent({ functions, credArr }) {
             </Button>
           </Popconfirm>
         </HStack>
-        <Heading mx="5px" fontSize="20px">
-          View, Modify, or Delete stored login details within your DePass
-          Account.
-        </Heading>
+        <Text mx="5px" fontSize="18px">
+          Welcome to our secure login information page, your digital vault for
+          storing access keys to your online world.
+        </Text>
       </VStack>
       <Skeleton isLoaded={!loading}>
         <Box rounded="10px" bg="gray.200">
           <Accordion rounded="10px" allowToggle>
-            {credArr?.map((site) => (
+            {filter(credArr, {
+              keywords: search,
+            })?.map((site) => (
               <AccordionItem key={site.id}>
                 <h2>
                   <AccordionButton p="20px">

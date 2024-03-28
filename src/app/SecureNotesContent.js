@@ -1,41 +1,42 @@
-import { Popconfirm } from "antd";
-import { useState, useEffect } from "react";
-import { filter } from "smart-array-filter";
 import {
-  Box,
-  Heading,
   Accordion,
-  AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
   Card,
   CardBody,
+  Center,
+  Divider,
+  Drawer,
+  DrawerContent,
+  HStack,
+  Heading,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Skeleton,
   Stack,
   StackDivider,
-  Input,
-  HStack,
-  InputGroup,
-  Divider,
   Text,
-  InputRightElement,
-  Button,
-  Drawer,
-  Skeleton,
-  DrawerContent,
   VStack,
-  Center,
-  useToast,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import {
-  EditIcon,
-  DeleteIcon,
-  RepeatIcon,
-  CheckIcon,
   AddIcon,
   ArrowForwardIcon,
+  CheckIcon,
+  DeleteIcon,
+  EditIcon,
+  RepeatIcon,
 } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+
+import { Popconfirm } from "antd";
+import { filter } from "smart-array-filter";
 
 export default function SecurenotesContent({ functions, credArr }) {
   console.log(credArr);
@@ -60,6 +61,10 @@ export default function SecurenotesContent({ functions, credArr }) {
   //   }
   // }, [credentialsArr]);
 
+  useEffect(() => {
+    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
+  }, []);
+
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
     // message.success("Site copied to clipboard");
@@ -75,9 +80,7 @@ export default function SecurenotesContent({ functions, credArr }) {
   async function getNotesCredentials() {
     setLoading(true);
     await functions.getSitesCredentials("Notes");
-    // const recv = await functions.getCredentials("Notes");
-    // setCredentialsArr(recv);
-    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
+
     setLoading(false);
   }
 
@@ -92,12 +95,12 @@ export default function SecurenotesContent({ functions, credArr }) {
     await getNotesCredentials();
   }
 
-  function handleApplyChange() {
-    const filteredData = filter(origCredentialsArr, {
-      keywords: search,
-    });
-    // setCredentialsArr(filteredData);
-  }
+  // function handleApplyChange() {
+  //   const filteredData = filter(origCredentialsArr, {
+  //     keywords: search,
+  //   });
+  //   credArr = filteredData;
+  // }
 
   function handleAddChange() {
     setCredentials({});
@@ -200,15 +203,16 @@ export default function SecurenotesContent({ functions, credArr }) {
       </Drawer>
       <Heading size="2xl">Secure Notes</Heading>
       <Divider borderWidth="1px" borderColor="gray.200" />
-      <Box pt="20px">
-        <HStack
-          p="5px"
-          spacing="10px"
+      <Box>
+        <VStack
           rounded="10px"
           bg="gray.200"
+          marginTop="20px"
+          p="10px"
+          spacing="20px"
           marginBottom="10px"
         >
-          <InputGroup size="lg">
+          <HStack width="100%">
             <Input
               onChange={handleSearchChange}
               size="lg"
@@ -217,42 +221,46 @@ export default function SecurenotesContent({ functions, credArr }) {
               borderColor="rgba(0, 0, 0, 0.1)"
               borderWidth="2px"
             />
-            <InputRightElement width="120px">
-              <Button rightIcon={<CheckIcon />} onClick={handleApplyChange}>
-                Apply
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <Button
-            rightIcon={<AddIcon />}
-            colorScheme={"gray"}
-            variant="solid"
-            onClick={handleAddChange}
-          >
-            Add notes
-          </Button>
-          <Button
-            rightIcon={<RepeatIcon />}
-            colorScheme={"gray"}
-            variant="solid"
-            onClick={handleRefreshChange}
-          >
-            Refresh
-          </Button>
-          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
             <Button
-              rightIcon={<ArrowForwardIcon />}
-              colorScheme={"red"}
-              variant="outline"
+              rightIcon={<AddIcon />}
+              colorScheme={"gray"}
+              variant="solid"
+              size="lg"
+              onClick={handleAddChange}
             >
-              Logout
+              Add notes
             </Button>
-          </Popconfirm>
-        </HStack>
+            <Button
+              rightIcon={<RepeatIcon />}
+              colorScheme={"gray"}
+              size="lg"
+              variant="solid"
+              onClick={handleRefreshChange}
+            >
+              Refresh
+            </Button>
+            <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
+              <Button
+                rightIcon={<ArrowForwardIcon />}
+                colorScheme={"red"}
+                size="lg"
+                variant="outline"
+              >
+                Logout
+              </Button>
+            </Popconfirm>
+          </HStack>
+          <Text mx="5px" fontSize="18px">
+            Welcome to your personal vault for thoughts and ideas - our secure
+            notes page.
+          </Text>
+        </VStack>
         <Skeleton isLoaded={!loading}>
           <Box rounded="10px" bg="gray.200">
             <Accordion py="" allowToggle>
-              {credArr?.map((note) => (
+              {filter(credArr, {
+                keywords: search,
+              })?.map((note) => (
                 <AccordionItem key={note.id}>
                   <h2>
                     <AccordionButton p="20px">
