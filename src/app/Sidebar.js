@@ -26,9 +26,15 @@ const LinkItems = [
 ];
 
 export default function SimpleSidebar({ functions }) {
+  functions.getCredentialsThroughSidebar = getSitesCredentials;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentialsArr, setCredentialsArr] = useState([]);
+  const [isEdited, setIsEdited] = useState(false);
   const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
+
+  async function changeEditVal() {
+    setIsEdited(true);
+  }
 
   useEffect(() => {
     if (credentialsArr.length == 0) {
@@ -41,18 +47,17 @@ export default function SimpleSidebar({ functions }) {
     const recv = await functions.getCredentials("Sites");
     setCredentialsArr(recv);
     console.log(recv);
-    
+
     // setLoading(false);
   }
 
-  useEffect(()=> {
-    if(credentialsArr.length !== 0){
-      console.log(credentialsArr);
-      setRenderComponent(
-        <SitesContent functions={functions} credentialsArr={credentialsArr} />
-      );
-    }
-  },[credentialsArr.length]);
+  useEffect(() => {
+    console.log(credentialsArr);
+    setRenderComponent(
+      <SitesContent functions={functions} credentialsArr={credentialsArr} />
+    );
+    setIsEdited(false);
+  }, [credentialsArr.length, isEdited]);
 
   const SidebarContent = ({ onClose, ...rest }) => {
     return (
