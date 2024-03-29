@@ -1,18 +1,18 @@
 import {
   Box,
-  Input,
-  Heading,
-  Divider,
+  Button,
   Card,
   CardBody,
+  Divider,
+  Heading,
+  Input,
   Stack,
   StackDivider,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-export default function AccDetails({ functions,credArr }) {
+export default function AccDetails({ functions, credArr }) {
   const [data, setData] = useState(null);
-
   useEffect(() => {
     const fetchData = async () => {
       const connectionData = await functions.connectionInfo();
@@ -66,7 +66,11 @@ export default function AccDetails({ functions,credArr }) {
                 </Heading>
                 <Input
                   variant="filled"
-                  value={data ? Number(BigInt(data.balance))*0.000000000000000001 : ""}
+                  value={
+                    data
+                      ? Number(BigInt(data.balance)) * 0.000000000000000001
+                      : ""
+                  }
                   readOnly
                 />
               </Box>
