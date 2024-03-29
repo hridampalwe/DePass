@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardBody,
@@ -7,21 +6,23 @@ import {
   Flex,
   Heading,
   Image,
-  Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
 
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import getColorValues from "./colorValues";
 
 export default function Login({ handleConnectWallet }) {
+  const colorValues = getColorValues();
+
   return (
     <Flex
       width={"100vw"}
       height={"100vh"}
       alignContent={"center"}
       justifyContent={"center"}
-      bgGradient="linear-gradient(to left, #efefbb, #d4d3dd);"
+      bgGradient={colorValues.gradientLoginUI}
     >
       <Center>
         <Card
@@ -31,12 +32,12 @@ export default function Login({ handleConnectWallet }) {
           boxShadow="dark-lg"
           p="6"
           rounded="md"
-          bg="white"
+          bg={colorValues.mainCardBg}
         >
           <Image
             objectFit="cover"
             maxW={{ base: "100%", sm: "300px" }}
-            src="DePass_LOGO.svg"
+            src={colorValues.dePass_logo}
             alt="DePass Logo"
           />
           <Stack>
@@ -69,7 +70,8 @@ export default function Login({ handleConnectWallet }) {
                   <Button
                     // leftIcon={<EmailIcon />}
                     size="lg"
-                    colorScheme="teal"
+                    // colorScheme="teal"
+                    bg={colorValues.normalButtonBg}
                     variant="solid"
                     onClick={handleConnectWallet}
                     width="50%"
@@ -78,7 +80,7 @@ export default function Login({ handleConnectWallet }) {
                   </Button>
                   <Button
                     // rightIcon={<ArrowForwardIcon />}
-                    colorScheme="teal"
+                    // colorScheme="teal"
                     width="50%"
                     variant="outline"
                     size="lg"
@@ -91,7 +93,6 @@ export default function Login({ handleConnectWallet }) {
                 </Stack>
               </Center>
             </CardBody>
-            {/* <CardFooter></CardFooter> */}
           </Stack>
         </Card>
       </Center>

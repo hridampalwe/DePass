@@ -4,11 +4,21 @@ import {
   Flex,
   Icon,
   Image,
+  useColorMode,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FaCreditCard, FaGlobe } from "react-icons/fa";
-import { FiBookOpen, FiInfo, FiUser } from "react-icons/fi";
-import React, { useEffect, useState } from "react";
+import {
+  FaCreditCard,
+  FaFilePen,
+  FaGlobe,
+  FaHeart,
+  FaIdCard,
+  FaMoon,
+  FaPassport,
+  FaSun,
+} from "react-icons/fa6";
+import { useEffect, useState } from "react";
 
 import AccDetails from "./Info";
 import CardsContents from "./CardsContents";
@@ -16,13 +26,14 @@ import IdentityContent from "./IdentityContent";
 import LoadingScreen from "./LoadingScreen";
 import SecureNotesContent from "./SecureNotesContent";
 import SitesContent from "./SitesContent";
+import getColorValues from "./colorValues";
 
 const LinkItems = [
   { name: "Sites", icon: FaGlobe, render: SitesContent },
   { name: "Cards", icon: FaCreditCard, render: CardsContents },
-  { name: "Notes", icon: FiBookOpen, render: SecureNotesContent },
-  { name: "Identities", icon: FiUser, render: IdentityContent },
-  { name: "Info", icon: FiInfo, render: AccDetails },
+  { name: "Notes", icon: FaFilePen, render: SecureNotesContent },
+  { name: "Identities", icon: FaPassport, render: IdentityContent },
+  { name: "Info", icon: FaHeart, render: AccDetails },
 ];
 
 export default function SimpleSidebar({ functions }) {
@@ -33,12 +44,14 @@ export default function SimpleSidebar({ functions }) {
     Identities: [],
     Info: [{}],
   });
-
+  const { colorMode, toggleColorMode } = useColorMode();
+  const colorValues = getColorValues();
   const [componentType, setComponentType] = useState("Sites");
   const [credentialsArr, setCredentialsArr] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
   const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const colorModeButton = useColorModeValue(FaMoon, FaSun);
   functions.getSitesCredentials = getSitesCredentials;
 
   // 1. stateVariable OBJ = { site :[] , card : [] , notes : [] , identities: []}
@@ -100,7 +113,7 @@ export default function SimpleSidebar({ functions }) {
     return (
       <Box w={{ base: "full", md: 60 }} pos="fixed" {...rest}>
         <Center py="5px">
-          <Image boxSize="200px" src="DePass_LOGO.png" />
+          <Image boxSize="200px" src={colorValues.dePass_logo} />
         </Center>
         {/* <Divider /> */}
         {LinkItems.map((link) => (
@@ -117,6 +130,13 @@ export default function SimpleSidebar({ functions }) {
             {link.name}
           </NavItem>
         ))}
+        <NavItem
+          key="colorMode"
+          icon={colorModeButton}
+          onClick={toggleColorMode}
+        >
+          Color Mode
+        </NavItem>
       </Box>
     );
   };
@@ -137,8 +157,8 @@ export default function SimpleSidebar({ functions }) {
           role="group"
           cursor="pointer"
           _hover={{
-            bg: "blackAlpha.300",
-            color: "black",
+            bg: "blackAlpha.200",
+            // color: colorValues.black,
           }}
           {...rest}
         >
@@ -147,7 +167,8 @@ export default function SimpleSidebar({ functions }) {
               mr="4"
               fontSize="26"
               _groupHover={{
-                color: "black",
+                // color: "gray.700",
+                color: colorValues.black,
               }}
               as={icon}
             />
@@ -166,7 +187,7 @@ export default function SimpleSidebar({ functions }) {
 
       <Box
         borderLeft="2px"
-        borderLeftColor="gray.200"
+        borderLeftColor={colorValues.dividerColor}
         height="100%"
         ml={{ base: 0, md: 60 }}
         p="10px"

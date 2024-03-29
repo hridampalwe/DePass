@@ -15,11 +15,8 @@ import {
   HStack,
   Heading,
   Input,
-  InputGroup,
-  InputRightElement,
   Skeleton,
   Stack,
-  StackDivider,
   Text,
   VStack,
   useDisclosure,
@@ -37,13 +34,12 @@ import { useEffect, useState } from "react";
 
 import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
+import getColorValues from "./colorValues";
 
 export default function SecurenotesContent({ functions, credArr }) {
-  console.log(credArr);
-
+  const colorValues = getColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -53,13 +49,6 @@ export default function SecurenotesContent({ functions, credArr }) {
   };
 
   const handleSearchChange = (event) => setSearch(event.target.value);
-
-  // Effect for loading the credentials when the contract is set.
-  // useEffect(() => {
-  //   if (credentialsArr == null) {
-  //     getNotesCredentials();
-  //   }
-  // }, [credentialsArr]);
 
   useEffect(() => {
     setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
@@ -95,13 +84,6 @@ export default function SecurenotesContent({ functions, credArr }) {
     await getNotesCredentials();
   }
 
-  // function handleApplyChange() {
-  //   const filteredData = filter(origCredentialsArr, {
-  //     keywords: search,
-  //   });
-  //   credArr = filteredData;
-  // }
-
   function handleAddChange() {
     setCredentials({});
     onOpen();
@@ -134,8 +116,8 @@ export default function SecurenotesContent({ functions, credArr }) {
           <Heading pt="10px" pl="5px" size="xl">
             Details
           </Heading>
-          <Divider borderColor="gray.200" />
-          <Box bg="gray.100" rounded="10px" p="20px">
+          <Divider borderColor={colorValues.gray200} />
+          <Box bg={colorValues.valueCardBg} rounded="10px" p="20px">
             <Text
               style={{ fontWeight: "bold" }}
               pt="10px"
@@ -148,6 +130,7 @@ export default function SecurenotesContent({ functions, credArr }) {
               type="text"
               name="name"
               placeholder="Enter the Notes Name"
+              size="lg"
               value={credentials?.name || ""}
               onChange={handleInputChange}
             />
@@ -193,20 +176,16 @@ export default function SecurenotesContent({ functions, credArr }) {
         onClose={onClose}
         size="sm"
       >
-        <DrawerContent
-          bg={
-            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
-          }
-        >
+        <DrawerContent bg={colorValues.bgGradientMainUI}>
           {notesAddDrawerContent()}
         </DrawerContent>
       </Drawer>
       <Heading size="2xl">Secure Notes</Heading>
-      <Divider borderWidth="1px" borderColor="gray.200" />
+      <Divider borderWidth="1px" borderColor={colorValues.gray200} />
       <Box>
         <VStack
           rounded="10px"
-          bg="gray.200"
+          bg={colorValues.gray200}
           marginTop="20px"
           p="10px"
           spacing="20px"
@@ -223,7 +202,6 @@ export default function SecurenotesContent({ functions, credArr }) {
             />
             <Button
               rightIcon={<AddIcon />}
-              colorScheme={"gray"}
               variant="solid"
               size="lg"
               onClick={handleAddChange}
@@ -232,7 +210,6 @@ export default function SecurenotesContent({ functions, credArr }) {
             </Button>
             <Button
               rightIcon={<RepeatIcon />}
-              colorScheme={"gray"}
               size="lg"
               variant="solid"
               onClick={handleRefreshChange}
@@ -256,12 +233,12 @@ export default function SecurenotesContent({ functions, credArr }) {
           </Text>
         </VStack>
         <Skeleton isLoaded={!loading}>
-          <Box rounded="10px" bg="gray.200">
+          <Box rounded="10px" bg={colorValues.gray200}>
             <Accordion py="" allowToggle>
               {filter(credArr, {
                 keywords: search,
               })?.map((note) => (
-                <AccordionItem key={note.id}>
+                <AccordionItem border="0px" key={note.id}>
                   <h2>
                     <AccordionButton p="20px">
                       <Heading textAlign="left" flex="1" size="md">
@@ -271,7 +248,7 @@ export default function SecurenotesContent({ functions, credArr }) {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={4}>
-                    <Card maxW="700px">
+                    <Card bg={colorValues.valueCardBg} maxW="700px">
                       <CardBody>
                         <Stack spacing="20px">
                           <Box>
@@ -283,7 +260,7 @@ export default function SecurenotesContent({ functions, credArr }) {
                               p="10px"
                               rounded="10px"
                               border="1px"
-                              bg="gray.100"
+                              bg={colorValues.gray200}
                             >
                               <Text>{note.notes}</Text>
                             </Box>
@@ -294,7 +271,6 @@ export default function SecurenotesContent({ functions, credArr }) {
                               onClick={() => handleEditChange(note)}
                               leftIcon={<EditIcon />}
                             >
-                              {" "}
                               Edit
                             </Button>
                             <Popconfirm

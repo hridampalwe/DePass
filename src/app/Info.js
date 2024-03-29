@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardBody,
   Divider,
@@ -11,7 +10,10 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
+import getColorValues from "./colorValues";
+
 export default function AccDetails({ functions, credArr }) {
+  const colorValues = getColorValues();
   const [data, setData] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
@@ -25,9 +27,9 @@ export default function AccDetails({ functions, credArr }) {
   return (
     <Box>
       <Heading size="2xl"> About</Heading>
-      <Divider border="1px" borderColor="gray.200" />
-      <Box rounded="10px" mt="10px">
-        <Card maxW="700px">
+      <Divider border="1px" borderColor={colorValues.dividerColor} />
+      <Box rounded="10px" ml="10px" mt="20px">
+        <Card bg={colorValues.valueCardBg} maxW="700px">
           <CardBody>
             <Stack divider={<StackDivider />} spacing="20px">
               <Box>
