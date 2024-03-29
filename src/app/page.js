@@ -8,10 +8,10 @@ import Dashboard from "./Dashboard.js";
 // import Head from "next/head";
 import Lit from "./lib/lit.js";
 import Login from "./Login.js";
+import Web3 from "web3";
 import { Web3Provider } from "@ethersproject/providers";
 import { notification } from "antd";
 import { useRouter } from "next/navigation";
-import Web3 from "web3";
 
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
