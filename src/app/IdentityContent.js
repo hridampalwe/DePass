@@ -15,8 +15,6 @@ import {
   HStack,
   Heading,
   Input,
-  InputGroup,
-  InputRightElement,
   Skeleton,
   Stack,
   Text,
@@ -36,12 +34,12 @@ import { useEffect, useState } from "react";
 
 import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
+import getColorValues from "./colorValues";
 
 export default function IdentityContent({ functions, credArr }) {
-  console.log(credArr);
+  const colorValues = getColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -85,12 +83,6 @@ export default function IdentityContent({ functions, credArr }) {
     await getIdentitiesCredentials();
   }
 
-  // function handleApplyChange() {
-  //   const filteredData = filter(origCredentialsArr, {
-  //     keywords: search,
-  //   });
-  // }
-
   function handleAddChange() {
     setCredentials({});
     onOpen();
@@ -123,8 +115,8 @@ export default function IdentityContent({ functions, credArr }) {
           <Heading pt="10px" pl="5px" size="xl">
             Details
           </Heading>
-          <Divider borderColor="gray.200" />
-          <Box bg="gray.100" rounded="10px" p="20px">
+          <Divider borderColor={colorValues.gray200} />
+          <Box bg={colorValues.valueCardBg} rounded="10px" p="20px">
             <Text
               style={{ fontWeight: "bold" }}
               pt="10px"
@@ -152,6 +144,7 @@ export default function IdentityContent({ functions, credArr }) {
             <Input
               type="text"
               name="firstName"
+              size="lg"
               placeholder="Enter the First Name"
               value={credentials?.firstName || ""}
               onChange={handleInputChange}
@@ -162,7 +155,7 @@ export default function IdentityContent({ functions, credArr }) {
               px="10px"
               fontSize="lg"
             >
-              Last Name{" "}
+              Last Name
             </Text>
             <Input
               type="text"
@@ -183,6 +176,7 @@ export default function IdentityContent({ functions, credArr }) {
             <Input
               type="text"
               name="age"
+              size="lg"
               placeholder="Enter the age"
               value={credentials?.age || ""}
               onChange={handleInputChange}
@@ -277,20 +271,16 @@ export default function IdentityContent({ functions, credArr }) {
         onClose={onClose}
         size="sm"
       >
-        <DrawerContent
-          bg={
-            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
-          }
-        >
+        <DrawerContent bg={colorValues.bgGradientMainUI}>
           {IdentityAddDrawerContent()}
         </DrawerContent>
       </Drawer>
       <Heading size="2xl">Identities</Heading>
-      <Divider borderWidth="1px" borderColor="gray.200" />
+      <Divider borderWidth="1px" borderColor={colorValues.gray200} />
       <Box>
         <VStack
           rounded="10px"
-          bg="gray.200"
+          bg={colorValues.gray200}
           marginTop="20px"
           p="10px"
           spacing="20px"
@@ -340,12 +330,12 @@ export default function IdentityContent({ functions, credArr }) {
           </Text>
         </VStack>
         <Skeleton isLoaded={!loading}>
-          <Box rounded="10px" bg="gray.200">
+          <Box rounded="10px" bg={colorValues.gray200}>
             <Accordion maxWidth="100%" allowToggle>
               {filter(credArr, {
                 keywords: search,
               })?.map((identity) => (
-                <AccordionItem key={identity.id}>
+                <AccordionItem border="0px" key={identity.id}>
                   <h2>
                     <AccordionButton p="20px">
                       <Heading textAlign="left" flex="1" size="md">
@@ -355,29 +345,29 @@ export default function IdentityContent({ functions, credArr }) {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={4}>
-                    <Card maxW="700px">
+                    <Card bg={colorValues.valueCardBg} maxW="700px">
                       <CardBody>
                         <Stack spacing="20px">
                           <HStack>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                {" "}
                                 First Name
                               </Heading>
                               <Input
                                 variant="filled"
                                 value={identity.firstName}
                                 readOnly
+                                size="lg"
                                 onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                {" "}
-                                lastName{" "}
+                                lastName
                               </Heading>
                               <Input
                                 variant="filled"
+                                size="lg"
                                 value={identity.lastName}
                                 readOnly
                                 onClick={(e) => copyToClipboard(e)}
@@ -391,6 +381,7 @@ export default function IdentityContent({ functions, credArr }) {
                               </Heading>
                               <Input
                                 variant="filled"
+                                size="lg"
                                 value={identity.age}
                                 readOnly
                                 onClick={(e) => copyToClipboard(e)}
@@ -403,6 +394,7 @@ export default function IdentityContent({ functions, credArr }) {
                               <Input
                                 value={identity.dob}
                                 readOnly
+                                size="lg"
                                 onClick={(e) => copyToClipboard(e)}
                                 variant="filled"
                                 type="text"
@@ -417,16 +409,17 @@ export default function IdentityContent({ functions, credArr }) {
                               variant="filled"
                               value={identity.contact}
                               readOnly
+                              size="lg"
                               onClick={(e) => copyToClipboard(e)}
                             />
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              {" "}
                               Email Address
                             </Heading>
                             <Input
                               variant="filled"
+                              size="lg"
                               value={identity.email}
                               readOnly
                               onClick={(e) => copyToClipboard(e)}
@@ -434,13 +427,13 @@ export default function IdentityContent({ functions, credArr }) {
                           </Box>
                           <Box>
                             <Heading size="xs" textTransform="uppercase">
-                              {" "}
                               {identity.title} number
                             </Heading>
                             <Input
                               variant="filled"
                               value={identity.number}
                               readOnly
+                              size="lg"
                               onClick={(e) => copyToClipboard(e)}
                             />
                           </Box>
@@ -450,7 +443,6 @@ export default function IdentityContent({ functions, credArr }) {
                               onClick={() => handleEditChange(identity)}
                               leftIcon={<EditIcon />}
                             >
-                              {" "}
                               Edit
                             </Button>
                             <Popconfirm

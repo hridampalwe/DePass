@@ -1,4 +1,3 @@
-import { Input as AInput, Popconfirm } from "antd";
 import {
   Accordion,
   AccordionButton,
@@ -16,8 +15,6 @@ import {
   HStack,
   Heading,
   Input,
-  InputGroup,
-  InputRightElement,
   Skeleton,
   Stack,
   StackDivider,
@@ -34,12 +31,15 @@ import {
   EditIcon,
   RepeatIcon,
 } from "@chakra-ui/icons";
+import { PasswordInput, PasswordInputDrawer } from "./PasswordInput";
 import { useEffect, useState } from "react";
 
+import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
+import getColorValues from "./colorValues";
 
 export default function SitesContent({ functions, credArr }) {
-  console.log(credArr);
+  const colorValues = getColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
 
@@ -49,28 +49,22 @@ export default function SitesContent({ functions, credArr }) {
   const [search, setSearch] = useState("");
   const toast = useToast();
   const handleInputChange = (event) => {
+    console.log(event.target.name);
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
 
-  useEffect(() => {
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
-  }, []);
-
-  // Effect for loading the credentials when the contract is set.
   // useEffect(() => {
-  //   if (credentialsArr == null) {
-  //     getSitesCredentials();
+  //   if (!credArr) {
+  //     setLoading(true);
+  //   } else {
+  //     setLoading(false);
   //   }
-  // }, [credentialsArr]);
+  // }, []);
 
   async function getSitesCredentials() {
     setLoading(true);
-    // functions.changeEditVal();
     await functions.getSitesCredentials("Sites");
-    // const recv = await functions.getCredentials("Sites");
-    // // setCredentialsArr(recv);
-    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -84,15 +78,6 @@ export default function SitesContent({ functions, credArr }) {
     onClose();
     await getSitesCredentials();
   }
-
-  // function handleApplyChange() {
-  //   const filteredData = filter(credArr, {
-  //     keywords: search,
-  //   });
-  //   console.log(filteredData);
-  //   setOrigCredentialsArr(filteredData);
-  //   // setCredentialsArr(filteredData);
-  // }
 
   function handleAddChange() {
     setCredentials({});
@@ -137,8 +122,8 @@ export default function SitesContent({ functions, credArr }) {
           <Heading pt="10px" pl="5px" size="xl">
             Details
           </Heading>
-          <Divider borderColor="gray.200" />
-          <Box bg="gray.100" rounded="10px" p="20px">
+          <Divider borderColor={colorValues.gray200} />
+          <Box bg={colorValues.valueCardBg} rounded="10px" p="20px">
             <Text
               style={{ fontWeight: "bold" }}
               pt="10px"
@@ -150,6 +135,7 @@ export default function SitesContent({ functions, credArr }) {
             <Input
               type="text"
               name="site"
+              size="lg"
               placeholder="Enter the Site Name"
               value={credentials?.site || ""}
               onChange={handleInputChange}
@@ -194,14 +180,11 @@ export default function SitesContent({ functions, credArr }) {
             >
               Password
             </Text>
-            <AInput.Password
-              size="large"
-              type="text"
-              name="password"
+            <PasswordInputDrawer
               value={credentials?.password || ""}
-              placeholder="Enter the Password"
-              onChange={handleInputChange}
-              variant="filled"
+              handleInputChange={handleInputChange}
+              key="password"
+              placeholder="Enter the password"
             />
             <Center pt="20px">
               <Button
@@ -221,11 +204,24 @@ export default function SitesContent({ functions, credArr }) {
   }
   return (
     <Box width={"95%"} px="10px" height={"100%"}>
-      <Heading size="2xl">Sites</Heading>
-      <Divider borderWidth="1px" borderColor="gray.200" />
+      <Drawer
+        trapFocus="true"
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        size="sm"
+      >
+        <DrawerContent bg={colorValues.bgGradientMainUI}>
+          {SiteAddDrawerContent()}
+        </DrawerContent>
+      </Drawer>
+      <HStack>
+        <Heading size="2xl">Sites </Heading>
+      </HStack>
+      <Divider borderWidth="1px" borderColor={colorValues.dividerColor} />
       <VStack
         rounded="10px"
-        bg="gray.200"
+        bg={colorValues.gray200}
         marginTop="20px"
         p="10px"
         spacing="20px"
@@ -241,28 +237,16 @@ export default function SitesContent({ functions, credArr }) {
             borderWidth="2px"
             placeholder="Search Filter"
           />
-          {/* <InputRightElement width="120px">
-              <Button
-                size="md"
-                // variant="outline"
-                rightIcon={<CheckIcon />}
-                onClick={handleApplyChange}
-              >
-                Apply
-              </Button>
-            </InputRightElement> */}
           <Button
             rightIcon={<AddIcon />}
-            colorScheme={"gray"}
-            variant="solid"
             size="lg"
+            variant="solid"
             onClick={handleAddChange}
           >
             Add Site
           </Button>
           <Button
             rightIcon={<RepeatIcon />}
-            colorScheme={"gray"}
             size="lg"
             variant="solid"
             onClick={handleRefreshChange}
@@ -286,12 +270,12 @@ export default function SitesContent({ functions, credArr }) {
         </Text>
       </VStack>
       <Skeleton isLoaded={!loading}>
-        <Box rounded="10px" bg="gray.200">
-          <Accordion rounded="10px" allowToggle>
+        <Box rounded="10px" bg={colorValues.gray200}>
+          <Accordion allowToggle>
             {filter(credArr, {
               keywords: search,
             })?.map((site) => (
-              <AccordionItem key={site.id}>
+              <AccordionItem border="0px" key={site.id}>
                 <h2>
                   <AccordionButton p="20px">
                     <Heading textAlign="left" flex="1" size="md">
@@ -301,29 +285,29 @@ export default function SitesContent({ functions, credArr }) {
                   </AccordionButton>
                 </h2>
                 <AccordionPanel pb={4}>
-                  <Card maxW="700px">
+                  <Card bg={colorValues.valueCardBg} maxW="700px">
                     <CardBody>
                       <Stack divider={<StackDivider />} spacing="20px">
                         <Box>
                           <Heading size="xs" textTransform="uppercase">
-                            {" "}
                             Site URL
                           </Heading>
                           <Input
                             variant="filled"
                             value={site.url}
+                            size="lg"
                             readOnly
                             onClick={(e) => copyToClipboard(e)}
                           />
                         </Box>
                         <Box>
                           <Heading size="xs" textTransform="uppercase">
-                            {" "}
                             Username
                           </Heading>
                           <Input
                             onClick={(e) => copyToClipboard(e)}
                             variant="filled"
+                            size="lg"
                             value={site.username}
                             readOnly
                           />
@@ -332,12 +316,9 @@ export default function SitesContent({ functions, credArr }) {
                           <Heading size="xs" textTransform="uppercase">
                             Password
                           </Heading>
-                          <AInput.Password
-                            variant="filled"
-                            size="large"
-                            readOnly
-                            onClick={(e) => copyToClipboard(e)}
+                          <PasswordInput
                             value={site.password}
+                            copyToClipboard={copyToClipboard}
                           />
                         </Box>
                         <HStack justifyContent={"right"} width="100%">
@@ -348,7 +329,6 @@ export default function SitesContent({ functions, credArr }) {
                             }}
                             leftIcon={<EditIcon />}
                           >
-                            {" "}
                             Edit
                           </Button>
                           <Popconfirm
@@ -379,21 +359,6 @@ export default function SitesContent({ functions, credArr }) {
         <Skeleton isLoaded={!loading} height="20px" />
         <Skeleton isLoaded={!loading} height="20px" />
       </Stack>
-      <Drawer
-        trapFocus="true"
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        size="sm"
-      >
-        <DrawerContent
-          bg={
-            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
-          }
-        >
-          {SiteAddDrawerContent()}
-        </DrawerContent>
-      </Drawer>
     </Box>
   );
 }

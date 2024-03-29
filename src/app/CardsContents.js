@@ -1,4 +1,3 @@
-import { Input as AInput, Popconfirm } from "antd";
 import {
   Accordion,
   AccordionButton,
@@ -16,8 +15,6 @@ import {
   HStack,
   Heading,
   Input,
-  InputGroup,
-  InputRightElement,
   Skeleton,
   Stack,
   StackDivider,
@@ -34,16 +31,16 @@ import {
   EditIcon,
   RepeatIcon,
 } from "@chakra-ui/icons";
+import { PasswordInput, PasswordInputDrawer } from "./PasswordInput";
 import { useEffect, useState } from "react";
 
+import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
+import getColorValues from "./colorValues";
 
 export default function CardsContents({ functions, credArr }) {
-  console.log(credArr);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  // const [credentialsArr, setCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [search, setSearch] = useState(null);
@@ -52,6 +49,7 @@ export default function CardsContents({ functions, credArr }) {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
+  const colorValues = getColorValues();
 
   useEffect(() => {
     setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
@@ -60,9 +58,6 @@ export default function CardsContents({ functions, credArr }) {
   async function getCardsCredentials() {
     setLoading(true);
     await functions.getSitesCredentials("Cards");
-    // const recv = await functions.getCredentials("Cards");
-    // setCredentialsArr(recv);
-    // setOrigCredentialsArr(JSON.parse(JSON.stringify(recv)));
     setLoading(false);
   }
 
@@ -88,13 +83,6 @@ export default function CardsContents({ functions, credArr }) {
     });
   }
 
-  // function handleApplyChange() {
-  //   const filteredData = filter(origCredentialsArr, {
-  //     keywords: search,
-  //   });
-  //   // setCredentialsArr(filteredData);
-  // }
-
   function handleAddChange() {
     setCredentials({});
     onOpen();
@@ -105,7 +93,6 @@ export default function CardsContents({ functions, credArr }) {
   }
 
   async function handleLogoutChange() {
-    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
@@ -127,8 +114,8 @@ export default function CardsContents({ functions, credArr }) {
           <Heading pt="10px" pl="5px" size="xl">
             Details
           </Heading>
-          <Divider borderColor="gray.200" />
-          <Box bg="gray.100" rounded="10px" p="20px">
+          <Divider borderColor={colorValues.gray200} />
+          <Box bg={colorValues.valueCardBg} rounded="10px" p="20px">
             <Text
               style={{ fontWeight: "bold" }}
               pt="10px"
@@ -143,6 +130,7 @@ export default function CardsContents({ functions, credArr }) {
               placeholder="Enter the Card Name"
               value={credentials?.cardName || ""}
               onChange={handleInputChange}
+              size="lg"
             />
             <Text
               style={{ fontWeight: "bold" }}
@@ -184,13 +172,12 @@ export default function CardsContents({ functions, credArr }) {
             >
               CVV
             </Text>
-            <AInput.Password
-              size="large"
-              name="cvv"
-              value={credentials?.cvv || ""}
+
+            <PasswordInputDrawer
               placeholder="Enter the CVV"
-              onChange={handleInputChange}
-              variant="filled"
+              value={credentials?.cvv || ""}
+              handleInputChange={handleInputChange}
+              keyVal="cvv"
             />
             <Text
               style={{ fontWeight: "bold" }}
@@ -233,20 +220,16 @@ export default function CardsContents({ functions, credArr }) {
         onClose={onClose}
         size="sm"
       >
-        <DrawerContent
-          bg={
-            "radial-gradient(328px at 2.9% 15%, rgb(191, 224, 251) 0%, rgb(232, 233, 251) 25.8%, rgb(252, 239, 250) 50.8%, rgb(234, 251, 251) 77.6%, rgb(240, 251, 244) 100.7%);"
-          }
-        >
+        <DrawerContent bg={colorValues.bgGradientMainUI}>
           {cardsAddDrawerContent()}
         </DrawerContent>
       </Drawer>
       <Heading size="2xl">Cards</Heading>
-      <Divider borderWidth="1px" borderColor="gray.200" />
+      <Divider borderWidth="1px" borderColor={colorValues.gray200} />
       <Box>
         <VStack
           rounded="10px"
-          bg="gray.200"
+          bg={colorValues.gray200}
           marginTop="20px"
           p="10px"
           spacing="20px"
@@ -297,12 +280,12 @@ export default function CardsContents({ functions, credArr }) {
         </VStack>
 
         <Skeleton isLoaded={!loading}>
-          <Box rounded="10px" bg="gray.200">
+          <Box rounded="10px" bg={colorValues.gray200}>
             <Accordion py="" allowToggle>
               {filter(credArr, {
                 keywords: search,
               })?.map((card) => (
-                <AccordionItem key={card.id}>
+                <AccordionItem border="0px" key={card.id}>
                   <h2>
                     <AccordionButton p="20px">
                       <Heading textAlign="left" flex="1" size="md">
@@ -312,7 +295,7 @@ export default function CardsContents({ functions, credArr }) {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={4}>
-                    <Card maxW="700px">
+                    <Card bg={colorValues.valueCardBg} maxW="700px">
                       <CardBody>
                         <Stack divider={<StackDivider />} spacing="20px">
                           <Box>
@@ -323,6 +306,7 @@ export default function CardsContents({ functions, credArr }) {
                             <Input
                               variant="filled"
                               value={card.accNo}
+                              size="lg"
                               readOnly
                               onClick={(e) => copyToClipboard(e)}
                             />
@@ -334,6 +318,7 @@ export default function CardsContents({ functions, credArr }) {
                               </Heading>
                               <Input
                                 variant="filled"
+                                size="lg"
                                 value={card.expiry}
                                 readOnly
                                 onClick={(e) => copyToClipboard(e)}
@@ -343,12 +328,9 @@ export default function CardsContents({ functions, credArr }) {
                               <Heading size="xs" textTransform="uppercase">
                                 CVV
                               </Heading>
-                              <AInput.Password
-                                variant="filled"
+                              <PasswordInput
                                 value={card.cvv}
-                                readOnly
-                                onClick={(e) => copyToClipboard(e)}
-                                size="large"
+                                copyToClipboard={copyToClipboard}
                               />
                             </Box>
                           </HStack>
@@ -357,6 +339,7 @@ export default function CardsContents({ functions, credArr }) {
                               Card Holder's Name
                             </Heading>
                             <Input
+                              size="lg"
                               readOnly
                               onClick={(e) => copyToClipboard(e)}
                               variant="filled"
@@ -370,7 +353,6 @@ export default function CardsContents({ functions, credArr }) {
                               onClick={() => handleEditChange(card)}
                               leftIcon={<EditIcon />}
                             >
-                              {" "}
                               Edit
                             </Button>
                             <Popconfirm
