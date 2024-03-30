@@ -38,10 +38,10 @@ const LinkItems = [
 
 export default function SimpleSidebar({ functions }) {
   const [obj, setObj] = useState({
-    Sites: [],
-    Cards: [],
-    Notes: [],
-    Identities: [],
+    Sites: null,
+    Cards: null,
+    Notes: null,
+    Identities: null,
     Info: [{}],
   });
   const { colorMode, toggleColorMode } = useColorMode();
@@ -49,7 +49,9 @@ export default function SimpleSidebar({ functions }) {
   const [componentType, setComponentType] = useState("Sites");
   const [credentialsArr, setCredentialsArr] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
-  const [renderComponent, setRenderComponent] = useState(<LoadingScreen />);
+  const [renderComponent, setRenderComponent] = useState(
+    <SitesContent functions={functions} credArr={obj[componentType]} />
+  );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const colorModeButton = useColorModeValue(FaMoon, FaSun);
   functions.getSitesCredentials = getSitesCredentials;
@@ -66,20 +68,18 @@ export default function SimpleSidebar({ functions }) {
   // 10. When mapping the nav items add the setVariable for componentType and currentComponent
 
   useEffect(() => {
-    if (obj[componentType].length === 0) {
+    if (obj[componentType] === null) {
       getSitesCredentials(componentType);
     }
-  }, [obj[componentType].length]);
+  }, [obj[componentType]?.length]);
 
   async function getSitesCredentials(compType) {
-    // setLoading(true);
     const recv = await functions.getCredentials(compType);
     setIsEdited(true);
     setObj((prevState) => ({ ...prevState, [compType]: recv }));
     setRenderComponent(
       <SitesContent functions={functions} credArr={obj[componentType]} />
     );
-    // setLoading(false);
   }
 
   useEffect(() => {

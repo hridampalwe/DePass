@@ -15,7 +15,7 @@ import {
   HStack,
   Heading,
   Input,
-  Skeleton,
+  SkeletonText,
   Stack,
   Text,
   VStack,
@@ -62,8 +62,12 @@ export default function IdentityContent({ functions, credArr }) {
   }
 
   useEffect(() => {
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
-  }, []);
+    if (!credArr) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [credArr?.length]);
 
   async function getIdentitiesCredentials() {
     setLoading(true);
@@ -329,33 +333,93 @@ export default function IdentityContent({ functions, credArr }) {
             for safeguarding personal information.
           </Text>
         </VStack>
-        <Skeleton isLoaded={!loading}>
+
+        <SkeletonText
+          isLoaded={!loading}
+          mt="4"
+          noOfLines={4}
+          spacing="4"
+          skeletonHeight="10"
+        >
           <Box rounded="10px" bg={colorValues.gray200}>
             <Accordion maxWidth="100%" allowToggle>
-              {filter(credArr, {
-                keywords: search,
-              })?.map((identity) => (
-                <AccordionItem border="0px" key={identity.id}>
-                  <h2>
-                    <AccordionButton p="20px">
-                      <Heading textAlign="left" flex="1" size="md">
-                        {identity.title}
-                      </Heading>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <Card bg={colorValues.valueCardBg} maxW="700px">
-                      <CardBody>
-                        <Stack spacing="20px">
-                          <HStack>
+              {credArr &&
+                filter(credArr, {
+                  keywords: search,
+                })?.map((identity) => (
+                  <AccordionItem border="0px" key={identity.id}>
+                    <h2>
+                      <AccordionButton p="20px">
+                        <Heading textAlign="left" flex="1" size="md">
+                          {identity.title}
+                        </Heading>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                      <Card bg={colorValues.valueCardBg} maxW="700px">
+                        <CardBody>
+                          <Stack spacing="20px">
+                            <HStack>
+                              <Box>
+                                <Heading size="xs" textTransform="uppercase">
+                                  First Name
+                                </Heading>
+                                <Input
+                                  variant="filled"
+                                  value={identity.firstName}
+                                  readOnly
+                                  size="lg"
+                                  onClick={(e) => copyToClipboard(e)}
+                                />
+                              </Box>
+                              <Box>
+                                <Heading size="xs" textTransform="uppercase">
+                                  lastName
+                                </Heading>
+                                <Input
+                                  variant="filled"
+                                  size="lg"
+                                  value={identity.lastName}
+                                  readOnly
+                                  onClick={(e) => copyToClipboard(e)}
+                                />
+                              </Box>
+                            </HStack>
+                            <HStack>
+                              <Box>
+                                <Heading size="xs" textTransform="uppercase">
+                                  Age
+                                </Heading>
+                                <Input
+                                  variant="filled"
+                                  size="lg"
+                                  value={identity.age}
+                                  readOnly
+                                  onClick={(e) => copyToClipboard(e)}
+                                />
+                              </Box>
+                              <Box>
+                                <Heading size="xs" textTransform="uppercase">
+                                  Date of Birth
+                                </Heading>
+                                <Input
+                                  value={identity.dob}
+                                  readOnly
+                                  size="lg"
+                                  onClick={(e) => copyToClipboard(e)}
+                                  variant="filled"
+                                  type="text"
+                                />
+                              </Box>
+                            </HStack>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                First Name
+                                Contact No.
                               </Heading>
                               <Input
                                 variant="filled"
-                                value={identity.firstName}
+                                value={identity.contact}
                                 readOnly
                                 size="lg"
                                 onClick={(e) => copyToClipboard(e)}
@@ -363,118 +427,61 @@ export default function IdentityContent({ functions, credArr }) {
                             </Box>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                lastName
+                                Email Address
                               </Heading>
                               <Input
                                 variant="filled"
                                 size="lg"
-                                value={identity.lastName}
-                                readOnly
-                                onClick={(e) => copyToClipboard(e)}
-                              />
-                            </Box>
-                          </HStack>
-                          <HStack>
-                            <Box>
-                              <Heading size="xs" textTransform="uppercase">
-                                Age
-                              </Heading>
-                              <Input
-                                variant="filled"
-                                size="lg"
-                                value={identity.age}
+                                value={identity.email}
                                 readOnly
                                 onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                Date of Birth
+                                {identity.title} number
                               </Heading>
                               <Input
-                                value={identity.dob}
+                                variant="filled"
+                                value={identity.number}
                                 readOnly
                                 size="lg"
                                 onClick={(e) => copyToClipboard(e)}
-                                variant="filled"
-                                type="text"
                               />
                             </Box>
-                          </HStack>
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              Contact No.
-                            </Heading>
-                            <Input
-                              variant="filled"
-                              value={identity.contact}
-                              readOnly
-                              size="lg"
-                              onClick={(e) => copyToClipboard(e)}
-                            />
-                          </Box>
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              Email Address
-                            </Heading>
-                            <Input
-                              variant="filled"
-                              size="lg"
-                              value={identity.email}
-                              readOnly
-                              onClick={(e) => copyToClipboard(e)}
-                            />
-                          </Box>
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              {identity.title} number
-                            </Heading>
-                            <Input
-                              variant="filled"
-                              value={identity.number}
-                              readOnly
-                              size="lg"
-                              onClick={(e) => copyToClipboard(e)}
-                            />
-                          </Box>
-                          <HStack justifyContent={"right"} width="100%">
-                            <Button
-                              type="primary"
-                              onClick={() => handleEditChange(identity)}
-                              leftIcon={<EditIcon />}
-                            >
-                              Edit
-                            </Button>
-                            <Popconfirm
-                              title="Are you sure?"
-                              onConfirm={async () =>
-                                handleDeleteChange(identity)
-                              }
-                            >
+                            <HStack justifyContent={"right"} width="100%">
                               <Button
-                                colorScheme={"red"}
                                 type="primary"
-                                leftIcon={<DeleteIcon />}
-                                variant="outline"
+                                onClick={() => handleEditChange(identity)}
+                                leftIcon={<EditIcon />}
                               >
-                                Delete
+                                Edit
                               </Button>
-                            </Popconfirm>
-                          </HStack>
-                        </Stack>
-                      </CardBody>
-                    </Card>
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
+                              <Popconfirm
+                                title="Are you sure?"
+                                onConfirm={async () =>
+                                  handleDeleteChange(identity)
+                                }
+                              >
+                                <Button
+                                  colorScheme={"red"}
+                                  type="primary"
+                                  leftIcon={<DeleteIcon />}
+                                  variant="outline"
+                                >
+                                  Delete
+                                </Button>
+                              </Popconfirm>
+                            </HStack>
+                          </Stack>
+                        </CardBody>
+                      </Card>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
             </Accordion>
           </Box>
-        </Skeleton>
-        <Stack>
-          <Skeleton isLoaded={!loading} height="20px" />
-          <Skeleton isLoaded={!loading} height="20px" />
-          <Skeleton isLoaded={!loading} height="20px" />
-        </Stack>
+        </SkeletonText>
       </Box>
     </Box>
   );

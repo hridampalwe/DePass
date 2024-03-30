@@ -16,6 +16,7 @@ import {
   Heading,
   Input,
   Skeleton,
+  SkeletonText,
   Stack,
   StackDivider,
   Text,
@@ -49,18 +50,17 @@ export default function SitesContent({ functions, credArr }) {
   const [search, setSearch] = useState("");
   const toast = useToast();
   const handleInputChange = (event) => {
-    console.log(event.target.name);
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
 
-  // useEffect(() => {
-  //   if (!credArr) {
-  //     setLoading(true);
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!credArr) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [credArr?.length]);
 
   async function getSitesCredentials() {
     setLoading(true);
@@ -183,7 +183,7 @@ export default function SitesContent({ functions, credArr }) {
             <PasswordInputDrawer
               value={credentials?.password || ""}
               handleInputChange={handleInputChange}
-              key="password"
+              keyVal="password"
               placeholder="Enter the password"
             />
             <Center pt="20px">
@@ -269,96 +269,98 @@ export default function SitesContent({ functions, credArr }) {
           storing access keys to your online world.
         </Text>
       </VStack>
-      <Skeleton isLoaded={!loading}>
+      <SkeletonText
+        mt="4"
+        isLoaded={!loading}
+        noOfLines={4}
+        spacing="4"
+        skeletonHeight="10"
+      >
         <Box rounded="10px" bg={colorValues.gray200}>
           <Accordion allowToggle>
-            {filter(credArr, {
-              keywords: search,
-            })?.map((site) => (
-              <AccordionItem border="0px" key={site.id}>
-                <h2>
-                  <AccordionButton p="20px">
-                    <Heading textAlign="left" flex="1" size="md">
-                      {site.site}
-                    </Heading>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                  <Card bg={colorValues.valueCardBg} maxW="700px">
-                    <CardBody>
-                      <Stack divider={<StackDivider />} spacing="20px">
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Site URL
-                          </Heading>
-                          <Input
-                            variant="filled"
-                            value={site.url}
-                            size="lg"
-                            readOnly
-                            onClick={(e) => copyToClipboard(e)}
-                          />
-                        </Box>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Username
-                          </Heading>
-                          <Input
-                            onClick={(e) => copyToClipboard(e)}
-                            variant="filled"
-                            size="lg"
-                            value={site.username}
-                            readOnly
-                          />
-                        </Box>
-                        <Box>
-                          <Heading size="xs" textTransform="uppercase">
-                            Password
-                          </Heading>
-                          <PasswordInput
-                            value={site.password}
-                            copyToClipboard={copyToClipboard}
-                          />
-                        </Box>
-                        <HStack justifyContent={"right"} width="100%">
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              handleEditChange(site);
-                            }}
-                            leftIcon={<EditIcon />}
-                          >
-                            Edit
-                          </Button>
-                          <Popconfirm
-                            title="Are you sure?"
-                            onConfirm={() => handleDeleteChange(site)}
-                          >
+            {credArr &&
+              filter(credArr, {
+                keywords: search,
+              })?.map((site) => (
+                <AccordionItem border="0px" key={site.id}>
+                  <h2>
+                    <AccordionButton p="20px">
+                      <Heading textAlign="left" flex="1" size="md">
+                        {site.site}
+                      </Heading>
+                      <AccordionIcon />
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel pb={4}>
+                    <Card bg={colorValues.valueCardBg} maxW="700px">
+                      <CardBody>
+                        <Stack divider={<StackDivider />} spacing="20px">
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              Site URL
+                            </Heading>
+                            <Input
+                              variant="filled"
+                              value={site.url}
+                              size="lg"
+                              readOnly
+                              onClick={(e) => copyToClipboard(e)}
+                            />
+                          </Box>
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              Username
+                            </Heading>
+                            <Input
+                              onClick={(e) => copyToClipboard(e)}
+                              variant="filled"
+                              size="lg"
+                              value={site.username}
+                              readOnly
+                            />
+                          </Box>
+                          <Box>
+                            <Heading size="xs" textTransform="uppercase">
+                              Password
+                            </Heading>
+                            <PasswordInput
+                              value={site.password}
+                              copyToClipboard={copyToClipboard}
+                            />
+                          </Box>
+                          <HStack justifyContent={"right"} width="100%">
                             <Button
-                              colorScheme={"red"}
                               type="primary"
-                              leftIcon={<DeleteIcon />}
-                              variant="outline"
+                              onClick={() => {
+                                handleEditChange(site);
+                              }}
+                              leftIcon={<EditIcon />}
                             >
-                              Delete
+                              Edit
                             </Button>
-                          </Popconfirm>
-                        </HStack>
-                      </Stack>
-                    </CardBody>
-                  </Card>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
+                            <Popconfirm
+                              title="Are you sure?"
+                              onConfirm={() => handleDeleteChange(site)}
+                            >
+                              <Button
+                                colorScheme={"red"}
+                                type="primary"
+                                leftIcon={<DeleteIcon />}
+                                variant="outline"
+                              >
+                                Delete
+                              </Button>
+                            </Popconfirm>
+                          </HStack>
+                        </Stack>
+                      </CardBody>
+                    </Card>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
           </Accordion>
         </Box>
-      </Skeleton>
-      <Stack>
-        <Skeleton isLoaded={!loading} height="20px" />
-        <Skeleton isLoaded={!loading} height="20px" />
-        <Skeleton isLoaded={!loading} height="20px" />
-      </Stack>
+      </SkeletonText>
     </Box>
   );
 }
