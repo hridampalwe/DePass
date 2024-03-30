@@ -125,7 +125,7 @@ export default function Home() {
     {
       contractAddress: "",
       standardContractType: "",
-      chain: "ethereum",
+      chain: "mumbai",
       method: "",
       parameters: [":userAddress"],
       returnValueTest: {
@@ -167,7 +167,6 @@ export default function Home() {
         const signer = provider.getSigner();
         const contract = new Contract(contractAddress, abi, signer); // To be discussed further. Why are we using signer here.
         setContract(contract);
-        console.log(contract);
         setLog({
           type: "info",
           message: "Connected",
@@ -203,7 +202,6 @@ export default function Home() {
   //Gets credential details and fetch it to CredentialsArr
   const getCredentials = async (credentialsType) => {
     let data = await contract.getMyKeys();
-    console.log(data);
     const credentialsArr = [];
     //Data is array of credentials object access the object one by one.
     for (let i of data) {
@@ -238,7 +236,6 @@ export default function Home() {
       const options = JSON.stringify({
         cidVersion: 0,
       });
-      console.log(formData);
       const res = await fetch(
         `https://${process.env.NEXT_PUBLIC_PINATA_API}/pinning/pinFileToIPFS`,
         {
@@ -282,7 +279,6 @@ export default function Home() {
 
   //Handler function for editing the credentials and updating to the network.
   const handleEditCredentials = async (credential) => {
-    console.log(credential);
     let encryptedData = await Lit.encrypt(
       JSON.stringify(credential),
       accessControlConditions

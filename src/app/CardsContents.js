@@ -16,6 +16,7 @@ import {
   Heading,
   Input,
   Skeleton,
+  SkeletonText,
   Stack,
   StackDivider,
   Text,
@@ -52,8 +53,12 @@ export default function CardsContents({ functions, credArr }) {
   const colorValues = getColorValues();
 
   useEffect(() => {
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
-  }, []);
+    if (!credArr) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [credArr?.length]);
 
   async function getCardsCredentials() {
     setLoading(true);
@@ -279,110 +284,112 @@ export default function CardsContents({ functions, credArr }) {
           </Text>
         </VStack>
 
-        <Skeleton isLoaded={!loading}>
+        <SkeletonText
+          isLoaded={!loading}
+          mt="4"
+          noOfLines={4}
+          spacing="4"
+          skeletonHeight="10"
+        >
           <Box rounded="10px" bg={colorValues.gray200}>
             <Accordion py="" allowToggle>
-              {filter(credArr, {
-                keywords: search,
-              })?.map((card) => (
-                <AccordionItem border="0px" key={card.id}>
-                  <h2>
-                    <AccordionButton p="20px">
-                      <Heading textAlign="left" flex="1" size="md">
-                        {card.cardName}
-                      </Heading>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <Card bg={colorValues.valueCardBg} maxW="700px">
-                      <CardBody>
-                        <Stack divider={<StackDivider />} spacing="20px">
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              {" "}
-                              Account Number
-                            </Heading>
-                            <Input
-                              variant="filled"
-                              value={card.accNo}
-                              size="lg"
-                              readOnly
-                              onClick={(e) => copyToClipboard(e)}
-                            />
-                          </Box>
-                          <HStack>
+              {credArr &&
+                filter(credArr, {
+                  keywords: search,
+                })?.map((card) => (
+                  <AccordionItem border="0px" key={card.id}>
+                    <h2>
+                      <AccordionButton p="20px">
+                        <Heading textAlign="left" flex="1" size="md">
+                          {card.cardName}
+                        </Heading>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                      <Card bg={colorValues.valueCardBg} maxW="700px">
+                        <CardBody>
+                          <Stack divider={<StackDivider />} spacing="20px">
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                Expiry Date
+                                {" "}
+                                Account Number
                               </Heading>
                               <Input
                                 variant="filled"
+                                value={card.accNo}
                                 size="lg"
-                                value={card.expiry}
                                 readOnly
                                 onClick={(e) => copyToClipboard(e)}
                               />
                             </Box>
+                            <HStack>
+                              <Box>
+                                <Heading size="xs" textTransform="uppercase">
+                                  Expiry Date
+                                </Heading>
+                                <Input
+                                  variant="filled"
+                                  size="lg"
+                                  value={card.expiry}
+                                  readOnly
+                                  onClick={(e) => copyToClipboard(e)}
+                                />
+                              </Box>
+                              <Box>
+                                <Heading size="xs" textTransform="uppercase">
+                                  CVV
+                                </Heading>
+                                <PasswordInput
+                                  value={card.cvv}
+                                  copyToClipboard={copyToClipboard}
+                                />
+                              </Box>
+                            </HStack>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                CVV
+                                Card Holder's Name
                               </Heading>
-                              <PasswordInput
-                                value={card.cvv}
-                                copyToClipboard={copyToClipboard}
+                              <Input
+                                size="lg"
+                                readOnly
+                                onClick={(e) => copyToClipboard(e)}
+                                variant="filled"
+                                value={card.accholderName}
+                                textTransform="uppercase"
                               />
                             </Box>
-                          </HStack>
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              Card Holder's Name
-                            </Heading>
-                            <Input
-                              size="lg"
-                              readOnly
-                              onClick={(e) => copyToClipboard(e)}
-                              variant="filled"
-                              value={card.accholderName}
-                              textTransform="uppercase"
-                            />
-                          </Box>
-                          <HStack justifyContent={"right"} width="100%">
-                            <Button
-                              type="primary"
-                              onClick={() => handleEditChange(card)}
-                              leftIcon={<EditIcon />}
-                            >
-                              Edit
-                            </Button>
-                            <Popconfirm
-                              title="Are you sure?"
-                              onConfirm={() => handleDeleteChange(card)}
-                            >
+                            <HStack justifyContent={"right"} width="100%">
                               <Button
-                                colorScheme={"red"}
                                 type="primary"
-                                leftIcon={<DeleteIcon />}
-                                variant="outline"
+                                onClick={() => handleEditChange(card)}
+                                leftIcon={<EditIcon />}
                               >
-                                Delete
+                                Edit
                               </Button>
-                            </Popconfirm>
-                          </HStack>
-                        </Stack>
-                      </CardBody>
-                    </Card>
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
+                              <Popconfirm
+                                title="Are you sure?"
+                                onConfirm={() => handleDeleteChange(card)}
+                              >
+                                <Button
+                                  colorScheme={"red"}
+                                  type="primary"
+                                  leftIcon={<DeleteIcon />}
+                                  variant="outline"
+                                >
+                                  Delete
+                                </Button>
+                              </Popconfirm>
+                            </HStack>
+                          </Stack>
+                        </CardBody>
+                      </Card>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
             </Accordion>
           </Box>
-        </Skeleton>
-        <Stack>
-          <Skeleton isLoaded={!loading} height="20px" />
-          <Skeleton isLoaded={!loading} height="20px" />
-          <Skeleton isLoaded={!loading} height="20px" />
-        </Stack>
+        </SkeletonText>
       </Box>
     </Box>
   );

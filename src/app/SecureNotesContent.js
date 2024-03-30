@@ -15,7 +15,7 @@ import {
   HStack,
   Heading,
   Input,
-  Skeleton,
+  SkeletonText,
   Stack,
   Text,
   VStack,
@@ -51,8 +51,12 @@ export default function SecurenotesContent({ functions, credArr }) {
   const handleSearchChange = (event) => setSearch(event.target.value);
 
   useEffect(() => {
-    setOrigCredentialsArr(JSON.parse(JSON.stringify(credArr)));
-  }, []);
+    if (!credArr) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [credArr?.length]);
 
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
@@ -232,75 +236,78 @@ export default function SecurenotesContent({ functions, credArr }) {
             notes page.
           </Text>
         </VStack>
-        <Skeleton isLoaded={!loading}>
+
+        <SkeletonText
+          isLoaded={!loading}
+          mt="4"
+          noOfLines={4}
+          spacing="4"
+          skeletonHeight="10"
+        >
           <Box rounded="10px" bg={colorValues.gray200}>
             <Accordion py="" allowToggle>
-              {filter(credArr, {
-                keywords: search,
-              })?.map((note) => (
-                <AccordionItem border="0px" key={note.id}>
-                  <h2>
-                    <AccordionButton p="20px">
-                      <Heading textAlign="left" flex="1" size="md">
-                        {note.name}
-                      </Heading>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <Card bg={colorValues.valueCardBg} maxW="700px">
-                      <CardBody>
-                        <Stack spacing="20px">
-                          <Box>
-                            <Heading size="xs" textTransform="uppercase">
-                              Notes
-                            </Heading>
-                            <Box
-                              mt="5px"
-                              p="10px"
-                              rounded="10px"
-                              border="1px"
-                              bg={colorValues.gray200}
-                            >
-                              <Text>{note.notes}</Text>
-                            </Box>
-                          </Box>
-                          <HStack justifyContent={"right"} width="100%">
-                            <Button
-                              type="primary"
-                              onClick={() => handleEditChange(note)}
-                              leftIcon={<EditIcon />}
-                            >
-                              Edit
-                            </Button>
-                            <Popconfirm
-                              title="Are you sure?"
-                              onConfirm={async () => handleDeleteChange(note)}
-                            >
-                              <Button
-                                colorScheme={"red"}
-                                type="primary"
-                                leftIcon={<DeleteIcon />}
-                                variant="outline"
+              {credArr &&
+                filter(credArr, {
+                  keywords: search,
+                })?.map((note) => (
+                  <AccordionItem border="0px" key={note.id}>
+                    <h2>
+                      <AccordionButton p="20px">
+                        <Heading textAlign="left" flex="1" size="md">
+                          {note.name}
+                        </Heading>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                      <Card bg={colorValues.valueCardBg} maxW="700px">
+                        <CardBody>
+                          <Stack spacing="20px">
+                            <Box>
+                              <Heading size="xs" textTransform="uppercase">
+                                Notes
+                              </Heading>
+                              <Box
+                                mt="5px"
+                                p="10px"
+                                rounded="10px"
+                                border="1px"
+                                bg={colorValues.gray200}
                               >
-                                Delete
+                                <Text>{note.notes}</Text>
+                              </Box>
+                            </Box>
+                            <HStack justifyContent={"right"} width="100%">
+                              <Button
+                                type="primary"
+                                onClick={() => handleEditChange(note)}
+                                leftIcon={<EditIcon />}
+                              >
+                                Edit
                               </Button>
-                            </Popconfirm>
-                          </HStack>
-                        </Stack>
-                      </CardBody>
-                    </Card>
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
+                              <Popconfirm
+                                title="Are you sure?"
+                                onConfirm={async () => handleDeleteChange(note)}
+                              >
+                                <Button
+                                  colorScheme={"red"}
+                                  type="primary"
+                                  leftIcon={<DeleteIcon />}
+                                  variant="outline"
+                                >
+                                  Delete
+                                </Button>
+                              </Popconfirm>
+                            </HStack>
+                          </Stack>
+                        </CardBody>
+                      </Card>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
             </Accordion>
           </Box>
-        </Skeleton>
-        <Stack>
-          <Skeleton isLoaded={!loading} height="20px" />
-          <Skeleton isLoaded={!loading} height="20px" />
-          <Skeleton isLoaded={!loading} height="20px" />
-        </Stack>
+        </SkeletonText>
       </Box>
     </Box>
   );
