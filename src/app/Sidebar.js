@@ -12,10 +12,9 @@ import {
   FaCreditCard,
   FaFilePen,
   FaGlobe,
-  FaHeart,
-  FaIdCard,
   FaMoon,
-  FaPassport,
+  FaAddressCard,
+  FaCircleInfo,
   FaSun,
 } from "react-icons/fa6";
 import { useEffect, useState } from "react";
@@ -23,7 +22,6 @@ import { useEffect, useState } from "react";
 import AccDetails from "./Info";
 import CardsContents from "./CardsContents";
 import IdentityContent from "./IdentityContent";
-import LoadingScreen from "./LoadingScreen";
 import SecureNotesContent from "./SecureNotesContent";
 import SitesContent from "./SitesContent";
 import getColorValues from "./colorValues";
@@ -32,8 +30,8 @@ const LinkItems = [
   { name: "Sites", icon: FaGlobe, render: SitesContent },
   { name: "Cards", icon: FaCreditCard, render: CardsContents },
   { name: "Notes", icon: FaFilePen, render: SecureNotesContent },
-  { name: "Identities", icon: FaPassport, render: IdentityContent },
-  { name: "Info", icon: FaHeart, render: AccDetails },
+  { name: "Identities", icon: FaAddressCard, render: IdentityContent },
+  { name: "Info", icon: FaCircleInfo, render: AccDetails },
 ];
 
 export default function SimpleSidebar({ functions }) {
@@ -47,7 +45,6 @@ export default function SimpleSidebar({ functions }) {
   const { colorMode, toggleColorMode } = useColorMode();
   const colorValues = getColorValues();
   const [componentType, setComponentType] = useState("Sites");
-  const [credentialsArr, setCredentialsArr] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
   const [renderComponent, setRenderComponent] = useState(
     <SitesContent functions={functions} credArr={obj[componentType]} />
@@ -75,18 +72,11 @@ export default function SimpleSidebar({ functions }) {
 
   async function getSitesCredentials(compType) {
     const recv = await functions.getCredentials(compType);
-    // console.log(recv);
     setObj((prevState) => ({ ...prevState, [compType]: recv }));
     setIsEdited(true);
-    // console.log(compType);
-    // console.log(isEdited);
-    // setRenderComponent(
-    //   <SitesContent functions={functions} credArr={obj[componentType]} />
-    // );
   }
 
   useEffect(() => {
-    // console.log(credentialsArr);
     if (isEdited === true) {
       if (componentType === "Sites") {
         setRenderComponent(
@@ -97,7 +87,6 @@ export default function SimpleSidebar({ functions }) {
           <CardsContents functions={functions} credArr={obj[componentType]} />
         );
       } else if (componentType === "Notes") {
-        // console.log(obj);
         setRenderComponent(
           <SecureNotesContent
             functions={functions}
@@ -119,7 +108,6 @@ export default function SimpleSidebar({ functions }) {
         <Center py="5px">
           <Image boxSize="200px" src={colorValues.dePass_logo} />
         </Center>
-        {/* <Divider /> */}
         {LinkItems.map((link) => (
           <NavItem
             key={link.name}
@@ -162,7 +150,6 @@ export default function SimpleSidebar({ functions }) {
           cursor="pointer"
           _hover={{
             bg: "blackAlpha.200",
-            // color: colorValues.black,
           }}
           {...rest}
         >
@@ -171,7 +158,6 @@ export default function SimpleSidebar({ functions }) {
               mr="4"
               fontSize="26"
               _groupHover={{
-                // color: "gray.700",
                 color: colorValues.black,
               }}
               as={icon}

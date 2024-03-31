@@ -43,9 +43,6 @@ export default function Login({ handleConnectWallet }) {
           <Stack>
             <CardBody py="10" maxWidth="800px">
               <Heading
-                // style={{ color: "#A370AF" }}
-                //
-
                 align="center"
                 size="xl"
                 bgGradient="linear(to-l, #7928CA, #FF0080)"
@@ -68,9 +65,7 @@ export default function Login({ handleConnectWallet }) {
               <Center>
                 <Stack width="100%" pt="5%" direction="row" spacing={4}>
                   <Button
-                    // leftIcon={<EmailIcon />}
                     size="lg"
-                    // colorScheme="teal"
                     bg={colorValues.normalButtonBg}
                     variant="solid"
                     onClick={handleConnectWallet}
@@ -79,8 +74,7 @@ export default function Login({ handleConnectWallet }) {
                     Login using MetaMask
                   </Button>
                   <Button
-                    // rightIcon={<ArrowForwardIcon />}
-                    // colorScheme="teal"
+                    colorScheme="teal"
                     width="50%"
                     variant="outline"
                     size="lg"

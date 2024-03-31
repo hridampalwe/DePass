@@ -1,8 +1,6 @@
 "use client";
-
 import { ChakraProvider, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-
 import { Contract } from "@ethersproject/contracts";
 import Dashboard from "./Dashboard.js";
 import Lit from "./lib/lit.js";
@@ -12,6 +10,7 @@ import { Web3Provider } from "@ethersproject/providers";
 
 //Fetch the contract address from env.
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+
 //Using the contract ABI from the compiled contract.
 const abi = [
   {
@@ -150,7 +149,6 @@ export default function Home() {
   ];
 
   const connectionInfo = async () => {
-    // const web3 = new Web3(window.ethereum);
     const web3 = new Web3(window.ethereum);
     const chainId = await web3.eth.getChainId();
     const balance = await web3.eth.getBalance(account);
@@ -163,6 +161,7 @@ export default function Home() {
       count,
     };
   };
+
   //Handle the connection of wallet through meta mask account.
   const handleConnectWallet = async () => {
     try {
@@ -186,7 +185,6 @@ export default function Home() {
           message: "Connected",
           description: "Wallet Connected Successfully",
         });
-        // setLoading(false);
       } else {
         console.log("Please use Web3 enabled browser");
         setLog({
@@ -282,14 +280,12 @@ export default function Home() {
     console.log("Add Tx-->", tx.hash);
     console.log(ipfsHash);
     await tx.wait();
-    // await credId.wait();
     let credId = await contract.getCredId();
     setLog({
       type: "success",
       message: "Updated",
       description: "Credentials saved successfully to the network.",
     });
-    // console.log(credId);
     credId=Number(BigInt(credId));
     console.log(credId);
     return credId;
@@ -301,11 +297,10 @@ export default function Home() {
       JSON.stringify(credential),
       accessControlConditions
     );
+    console.log(credential.id);
     const ipfsHash = pinFileToIPFS(encryptedData);
     const tx = await contract.updateKey(credential.id, ipfsHash);
     await tx.wait();
-    await getCredentials();
-
     setLog({
       type: "success",
       message: "Saved",
@@ -317,7 +312,6 @@ export default function Home() {
   const handleDeleteCredentials = async (rowId) => {
     const tx = await contract.deleteKey(rowId);
     await tx.wait();
-
     await getCredentials();
     setLog({
       type: "success",

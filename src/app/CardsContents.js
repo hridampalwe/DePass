@@ -15,7 +15,6 @@ import {
   HStack,
   Heading,
   Input,
-  Skeleton,
   SkeletonText,
   Stack,
   StackDivider,
@@ -43,7 +42,6 @@ export default function CardsContents({ functions, credArr }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [search, setSearch] = useState(null);
   const toast = useToast();
   const handleInputChange = (event) => {
@@ -68,16 +66,16 @@ export default function CardsContents({ functions, credArr }) {
 
   async function handleClickSaveCredentials() {
     setLoading(true);
-    if (credentials?.id) {
+    if (credentials?.id || (credentials && credentials.id === 0)) {
       await functions.handleEditCredentials(credentials);
       let getCredAtId = credArr.find(
         (element) => element.id === credentials.id
       );
-      getCredAtId.cardName = credentials.cardName;
-      getCredAtId.accNo = credentials.accNo;
-      getCredAtId.expiry = credentials.expiry;
-      getCredAtId.cvv = credentials.cvv;
-      getCredAtId.accholderName = credentials.accholderName;
+      for (const key in credentials) {
+        if (Object.prototype.hasOwnProperty.call(credentials, key)) {
+          getCredAtId[key] = credentials[key];
+        }
+      }
     } else {
       const credId = await functions.handleSaveCredentials(
         credentials,
@@ -91,7 +89,6 @@ export default function CardsContents({ functions, credArr }) {
   }
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
-    // message.success("Site copied to clipboard");
     toast({
       title: "Copied to clipboard",
       status: "success",

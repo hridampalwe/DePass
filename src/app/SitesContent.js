@@ -15,7 +15,6 @@ import {
   HStack,
   Heading,
   Input,
-  Skeleton,
   SkeletonText,
   Stack,
   StackDivider,
@@ -38,15 +37,11 @@ import { useEffect, useState } from "react";
 import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
 import getColorValues from "./colorValues";
-import { userAgent } from "next/server";
 
 export default function SitesContent({ functions, credArr }) {
   const colorValues = getColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-
-  // const [credentialsArr, setCredentialsArr] = useState(null);
-  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const toast = useToast();
@@ -71,15 +66,16 @@ export default function SitesContent({ functions, credArr }) {
 
   async function handleClickSaveCredentials() {
     setLoading(true);
-    if (credentials?.id) {
+    if (credentials?.id || (credentials && credentials.id === 0)) {
       await functions.handleEditCredentials(credentials);
       let getCredAtId = credArr.find(
         (element) => element.id === credentials.id
       );
-      getCredAtId.site = credentials.site;
-      getCredAtId.url = credentials.url;
-      getCredAtId.username = credentials.username;
-      getCredAtId.password = credentials.password;
+      for (const key in credentials) {
+        if (Object.prototype.hasOwnProperty.call(credentials, key)) {
+          getCredAtId[key] = credentials[key];
+        }
+      }
     } else {
       const credId = await functions.handleSaveCredentials(
         credentials,
@@ -90,7 +86,6 @@ export default function SitesContent({ functions, credArr }) {
     }
     setLoading(false);
     onClose();
-    // await getSitesCredentials();
   }
 
   function handleAddChange() {
@@ -99,7 +94,6 @@ export default function SitesContent({ functions, credArr }) {
   }
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
-    // message.success("Site copied to clipboard");
     toast({
       title: "Copied to clipboard",
       status: "success",
@@ -114,7 +108,6 @@ export default function SitesContent({ functions, credArr }) {
   }
 
   async function handleLogoutChange() {
-    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
@@ -240,7 +233,6 @@ export default function SitesContent({ functions, credArr }) {
         p="10px"
         spacing="20px"
         marginBottom="10px"
-        // alignItems="left"
       >
         <HStack width="100%">
           <Input
