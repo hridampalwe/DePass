@@ -70,11 +70,24 @@ export default function CardsContents({ functions, credArr }) {
     setLoading(true);
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
+      let getCredAtId = credArr.find(
+        (element) => element.id === credentials.id
+      );
+      getCredAtId.cardName = credentials.cardName;
+      getCredAtId.accNo = credentials.accNo;
+      getCredAtId.expiry = credentials.expiry;
+      getCredAtId.cvv = credentials.cvv;
+      getCredAtId.accholderName = credentials.accholderName;
     } else {
-      await functions.handleSaveCredentials(credentials, "Cards");
+      const credId = await functions.handleSaveCredentials(
+        credentials,
+        "Sites"
+      );
+      credentials.id = credId;
+      credArr.push(credentials);
     }
+    setLoading(false);
     onClose();
-    await getCardsCredentials();
   }
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);

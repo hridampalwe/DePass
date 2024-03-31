@@ -75,11 +75,14 @@ export default function SimpleSidebar({ functions }) {
 
   async function getSitesCredentials(compType) {
     const recv = await functions.getCredentials(compType);
+    // console.log(recv);
     setIsEdited(true);
     setObj((prevState) => ({ ...prevState, [compType]: recv }));
-    setRenderComponent(
-      <SitesContent functions={functions} credArr={obj[componentType]} />
-    );
+    // console.log(compType);
+    // console.log(isEdited);
+    // setRenderComponent(
+    //   <SitesContent functions={functions} credArr={obj[componentType]} />
+    // );
   }
 
   useEffect(() => {
@@ -94,6 +97,7 @@ export default function SimpleSidebar({ functions }) {
           <CardsContents functions={functions} credArr={obj[componentType]} />
         );
       } else if (componentType === "Notes") {
+        // console.log(obj);
         setRenderComponent(
           <SecureNotesContent
             functions={functions}

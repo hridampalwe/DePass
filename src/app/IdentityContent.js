@@ -80,11 +80,27 @@ export default function IdentityContent({ functions, credArr }) {
     setLoading(true);
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
+      let getCredAtId = credArr.find(
+        (element) => element.id === credentials.id
+      );
+      getCredAtId.title = credentials.title;
+      getCredAtId.firstName = credentials.firstName;
+      getCredAtId.lastName = credentials.lastName;
+      getCredAtId.age = credentials.age;
+      getCredAtId.dob = credentials.dob;
+      getCredAtId.contact = credentials.contact;
+      getCredAtId.email = credentials.email;
+      getCredAtId.number = credentials.number;
     } else {
-      await functions.handleSaveCredentials(credentials, "Identities");
+      const credId = await functions.handleSaveCredentials(
+        credentials,
+        "Sites"
+      );
+      credentials.id = credId;
+      credArr.push(credentials);
     }
+    setLoading(false);
     onClose();
-    await getIdentitiesCredentials();
   }
 
   function handleAddChange() {
