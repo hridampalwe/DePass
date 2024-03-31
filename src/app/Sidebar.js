@@ -76,8 +76,8 @@ export default function SimpleSidebar({ functions }) {
   async function getSitesCredentials(compType) {
     const recv = await functions.getCredentials(compType);
     // console.log(recv);
-    setIsEdited(true);
     setObj((prevState) => ({ ...prevState, [compType]: recv }));
+    setIsEdited(true);
     // console.log(compType);
     // console.log(isEdited);
     // setRenderComponent(
