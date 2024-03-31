@@ -45,6 +45,17 @@ export default function SitesContent({ functions, credArr }) {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const toast = useToast();
+
+  const generateRandomPassword = () => {
+    const charStr =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=/?";
+    let password = "";
+    for (let i = 0; i < 8; i++) {
+      password += charStr[Math.floor(Math.random() * charStr.length)];
+    }
+    return password;
+  };
+
   const handleInputChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
@@ -122,6 +133,12 @@ export default function SitesContent({ functions, credArr }) {
     getSitesCredentials();
   }
 
+  function handleAddPasswordChange(){
+    const passStr = generateRandomPassword();
+    console.log(passStr);
+    setCredentials({...credentials, password:passStr})
+  }
+
   function SiteAddDrawerContent() {
     return (
       <Box width="100%" height="100%" padding="20px">
@@ -194,15 +211,23 @@ export default function SitesContent({ functions, credArr }) {
               placeholder="Enter the password"
             />
             <Center pt="20px">
-              <Button
-                colorScheme="blue"
-                isLoading={loading}
-                loadingText="Submitting"
-                leftIcon={<CheckIcon />}
-                onClick={handleClickSaveCredentials}
-              >
-                Save Credentials
-              </Button>
+              <HStack width="100%">
+                <Button
+                  colorScheme="blue"
+                  onClick={handleAddPasswordChange}
+                >
+                  Suggest Password
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  isLoading={loading}
+                  loadingText="Submitting"
+                  leftIcon={<CheckIcon />}
+                  onClick={handleClickSaveCredentials}
+                >
+                  Save Credentials
+                </Button>
+              </HStack>
             </Center>
           </Box>
         </VStack>
