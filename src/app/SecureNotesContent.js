@@ -81,11 +81,21 @@ export default function SecurenotesContent({ functions, credArr }) {
     setLoading(true);
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
+      let getCredAtId = credArr.find(
+        (element) => element.id === credentials.id
+      );
+      getCredAtId.name = credentials.name;
+      getCredAtId.notes = credentials.notes;
     } else {
-      await functions.handleSaveCredentials(credentials, "Notes");
+      const credId = await functions.handleSaveCredentials(
+        credentials,
+        "Sites"
+      );
+      credentials.id = credId;
+      credArr.push(credentials);
     }
+    setLoading(false);
     onClose();
-    await getNotesCredentials();
   }
 
   function handleAddChange() {

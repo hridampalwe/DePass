@@ -50,4 +50,7 @@ contract Keymanager {
     function getMyKeys() public view returns (Key[] memory) {
         return keys[msg.sender];
     }
+    function getCredId() public view returns (uint) {
+        return keys[msg.sender].length -1;
+    }
 }

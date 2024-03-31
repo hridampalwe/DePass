@@ -38,6 +38,7 @@ import { useEffect, useState } from "react";
 import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
 import getColorValues from "./colorValues";
+import { userAgent } from "next/server";
 
 export default function SitesContent({ functions, credArr }) {
   const colorValues = getColorValues();
@@ -72,11 +73,24 @@ export default function SitesContent({ functions, credArr }) {
     setLoading(true);
     if (credentials?.id) {
       await functions.handleEditCredentials(credentials);
+      let getCredAtId = credArr.find(
+        (element) => element.id === credentials.id
+      );
+      getCredAtId.site = credentials.site;
+      getCredAtId.url = credentials.url;
+      getCredAtId.username = credentials.username;
+      getCredAtId.password = credentials.password;
     } else {
-      await functions.handleSaveCredentials(credentials, "Sites");
+      const credId = await functions.handleSaveCredentials(
+        credentials,
+        "Sites"
+      );
+      credentials.id = credId;
+      credArr.push(credentials);
     }
+    setLoading(false);
     onClose();
-    await getSitesCredentials();
+    // await getSitesCredentials();
   }
 
   function handleAddChange() {
