@@ -1,5 +1,4 @@
 import { Button, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-
 import { useState } from "react";
 
 export function PasswordInput({ value, copyToClipboard }) {
@@ -57,5 +56,3 @@ export function PasswordInputDrawer({
     </InputGroup>
   );
 }
-
-// export default { PasswordInput, PasswordInputDrawer };

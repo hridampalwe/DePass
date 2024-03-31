@@ -40,7 +40,6 @@ export default function IdentityContent({ functions, credArr }) {
   const colorValues = getColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
-  const [origCredentialsArr, setOrigCredentialsArr] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const toast = useToast();
@@ -51,7 +50,6 @@ export default function IdentityContent({ functions, credArr }) {
 
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
-    // message.success("Site copied to clipboard");
     toast({
       title: "Copied to clipboard",
       status: "success",
@@ -78,19 +76,16 @@ export default function IdentityContent({ functions, credArr }) {
 
   async function handleClickSaveCredentials() {
     setLoading(true);
-    if (credentials?.id) {
+    if (credentials?.id || (credentials && credentials.id === 0)) {
       await functions.handleEditCredentials(credentials);
       let getCredAtId = credArr.find(
         (element) => element.id === credentials.id
       );
-      getCredAtId.title = credentials.title;
-      getCredAtId.firstName = credentials.firstName;
-      getCredAtId.lastName = credentials.lastName;
-      getCredAtId.age = credentials.age;
-      getCredAtId.dob = credentials.dob;
-      getCredAtId.contact = credentials.contact;
-      getCredAtId.email = credentials.email;
-      getCredAtId.number = credentials.number;
+      for (const key in credentials) {
+        if (Object.prototype.hasOwnProperty.call(credentials, key)) {
+          getCredAtId[key] = credentials[key];
+        }
+      }
     } else {
       const credId = await functions.handleSaveCredentials(
         credentials,
@@ -113,7 +108,6 @@ export default function IdentityContent({ functions, credArr }) {
   }
 
   async function handleLogoutChange() {
-    // setCredentialsArr([]);
     functions.handleLogout();
   }
 
