@@ -94,7 +94,7 @@ export default function IdentityContent({ functions, credArr }) {
     } else {
       const credId = await functions.handleSaveCredentials(
         credentials,
-        "Sites"
+        "Identities"
       );
       credentials.id = credId;
       credArr.push(credentials);
