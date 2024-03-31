@@ -81,7 +81,7 @@ export default function CardsContents({ functions, credArr }) {
     } else {
       const credId = await functions.handleSaveCredentials(
         credentials,
-        "Sites"
+        "Cards"
       );
       credentials.id = credId;
       credArr.push(credentials);

@@ -89,7 +89,7 @@ export default function SecurenotesContent({ functions, credArr }) {
     } else {
       const credId = await functions.handleSaveCredentials(
         credentials,
-        "Sites"
+        "Notes"
       );
       credentials.id = credId;
       credArr.push(credentials);
