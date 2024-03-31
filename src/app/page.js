@@ -14,104 +14,104 @@ const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 //Using the contract ABI from the compiled contract.
 const abi = [
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "_ipfsHash",
-        "type": "string"
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
       },
       {
-        "internalType": "string",
-        "name": "_credentialType",
-        "type": "string"
-      }
+        internalType: "string",
+        name: "_credentialType",
+        type: "string",
+      },
     ],
-    "name": "addKey",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "addKey",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "_id",
-        "type": "uint256"
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
       },
       {
-        "internalType": "string",
-        "name": "_ipfsHash",
-        "type": "string"
-      }
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
     ],
-    "name": "updateKey",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "updateKey",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "_id",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
+      },
     ],
-    "name": "deleteKey",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "deleteKey",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "getMyKeys",
-    "outputs": [
+    inputs: [],
+    name: "getMyKeys",
+    outputs: [
       {
-        "components": [
+        components: [
           {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
           },
           {
-            "internalType": "string",
-            "name": "credentialType",
-            "type": "string"
+            internalType: "string",
+            name: "credentialType",
+            type: "string",
           },
           {
-            "internalType": "string",
-            "name": "ipfsHash",
-            "type": "string"
+            internalType: "string",
+            name: "ipfsHash",
+            type: "string",
           },
           {
-            "internalType": "bool",
-            "name": "isDeleted",
-            "type": "bool"
-          }
+            internalType: "bool",
+            name: "isDeleted",
+            type: "bool",
+          },
         ],
-        "internalType": "struct Keymanager.Key[]",
-        "name": "",
-        "type": "tuple[]"
-      }
+        internalType: "struct Keymanager.Key[]",
+        name: "",
+        type: "tuple[]",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    stateMutability: "view",
+    type: "function",
+    constant: true,
   },
   {
-    "inputs": [],
-    "name": "getCredId",
-    "outputs": [
+    inputs: [],
+    name: "getCredId",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  }
+    stateMutability: "view",
+    type: "function",
+    constant: true,
+  },
 ];
 
 export default function Home() {
@@ -286,7 +286,7 @@ export default function Home() {
       message: "Updated",
       description: "Credentials saved successfully to the network.",
     });
-    credId=Number(BigInt(credId));
+    credId = Number(BigInt(credId));
     console.log(credId);
     return credId;
   };
