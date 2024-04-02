@@ -1,6 +1,8 @@
 "use client";
+
 import { ChakraProvider, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+
 import { Contract } from "@ethersproject/contracts";
 import Dashboard from "./Dashboard.js";
 import Lit from "./lib/lit.js";
@@ -276,10 +278,19 @@ export default function Home() {
     );
     const ipfsHash = pinFileToIPFS(encryptedData);
     // Adding the hash to the ethereum network.
-    let tx = await contract.addKey(ipfsHash, credentialsType);
-    console.log("Add Tx-->", tx.hash);
-    console.log(ipfsHash);
-    await tx.wait();
+    try {
+      let tx = await contract.addKey(ipfsHash, credentialsType);
+      console.log("Add Tx-->", tx.hash);
+      console.log(ipfsHash);
+      await tx.wait();
+    } catch (error) {
+      setLog({
+        type: "error",
+        message: "Failed",
+        description: "Transaction rejected",
+      });
+      return -1;
+    }
     let credId = await contract.getCredId();
     setLog({
       type: "success",
@@ -299,25 +310,44 @@ export default function Home() {
     );
     console.log(credential.id);
     const ipfsHash = pinFileToIPFS(encryptedData);
-    const tx = await contract.updateKey(credential.id, ipfsHash);
-    await tx.wait();
-    setLog({
-      type: "success",
-      message: "Saved",
-      description: "Updated successfully credentials saved to the network",
-    });
+    try {
+      const tx = await contract.updateKey(credential.id, ipfsHash);
+      await tx.wait();
+      setLog({
+        type: "success",
+        message: "Saved",
+        description: "Updated successfully credentials saved to the network",
+      });
+    } catch (error) {
+      setLog({
+        type: "error",
+        message: "Failed",
+        description: "Transaction was rejected",
+      });
+      return false;
+    }
+    return true;
   };
 
   //Handler function for the deletion of the credential from the network.
   const handleDeleteCredentials = async (rowId) => {
-    const tx = await contract.deleteKey(rowId);
-    await tx.wait();
-    await getCredentials();
-    setLog({
-      type: "success",
-      message: "Deleted",
-      description: "Credentials deleted successfully from the network.",
-    });
+    try {
+      const tx = await contract.deleteKey(rowId);
+      await tx.wait();
+      setLog({
+        type: "success",
+        message: "Deleted",
+        description: "Credentials deleted successfully from the network.",
+      });
+    } catch (error) {
+      setLog({
+        type: "error",
+        message: "Failed",
+        description: "Transaction was rejected",
+      });
+      return false;
+    }
+    return true;
   };
 
   //Effect for handling the notifications once log is set call the notification.
@@ -329,6 +359,11 @@ export default function Home() {
 
   function handleLogout() {
     setProvider(null);
+    setLog({
+      type: "success",
+      message: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
   }
 
   return (
