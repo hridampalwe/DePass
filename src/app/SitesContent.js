@@ -15,6 +15,15 @@ import {
   HStack,
   Heading,
   Input,
+  Popover,
+  PopoverAnchor,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
   SkeletonText,
   Stack,
   StackDivider,
@@ -32,7 +41,11 @@ import {
   FaPlus,
   FaTrashCan,
 } from "react-icons/fa6";
-import { PasswordInput, PasswordInputDrawer } from "./PasswordInput";
+import {
+  PasswordInput,
+  PasswordInputDrawer,
+  UsePopover,
+} from "./utilComponents";
 import { useEffect, useState } from "react";
 
 import { Popconfirm } from "antd";
@@ -297,16 +310,14 @@ export default function SitesContent({ functions, credArr }) {
           >
             Refresh
           </Button>
-          <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
-            <Button
-              rightIcon={<FaArrowRightFromBracket />}
-              size="lg"
-              colorScheme={"red"}
-              variant="outline"
-            >
-              Logout
-            </Button>
-          </Popconfirm>
+          {/* <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}> */}
+          <UsePopover
+            onClickFunction={handleLogoutChange}
+            buttonSize="lg"
+            buttonText="Logout"
+            buttonIcon={<FaArrowRightFromBracket />}
+          />
+          {/* </Popconfirm> */}
         </HStack>
         <Text mx="5px" fontSize="18px">
           Welcome to our secure login information page, your digital vault for
@@ -382,20 +393,26 @@ export default function SitesContent({ functions, credArr }) {
                             >
                               Edit
                             </Button>
-                            <Popconfirm
+                            {/* <Popconfirm
                               title="Are you sure?"
                               onConfirm={() => handleDeleteChange(site)}
+                            > */}
+                            {/* <Button
+                              colorScheme={"red"}
+                              type="primary"
+                              leftIcon={<FaTrashCan />}
+                              variant="outline"
+                              onClick={() => {}}
                             >
-                              <Button
-                                colorScheme={"red"}
-                                type="primary"
-                                leftIcon={<FaTrashCan />}
-                                variant="outline"
-                                onClick={() => {}}
-                              >
-                                Delete
-                              </Button>
-                            </Popconfirm>
+                              Delete
+                            </Button> */}
+                            <UsePopover
+                              onClickFunction={() => handleDeleteChange(site)}
+                              buttonText="Delete"
+                              buttonSize="md"
+                              buttonIcon={<FaTrashCan />}
+                            />
+                            {/* </Popconfirm> */}
                           </HStack>
                         </Stack>
                       </CardBody>
