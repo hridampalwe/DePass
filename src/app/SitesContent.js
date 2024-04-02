@@ -48,7 +48,6 @@ import {
 } from "./utilComponents";
 import { useEffect, useState } from "react";
 
-import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
 import getColorValues from "./colorValues";
 

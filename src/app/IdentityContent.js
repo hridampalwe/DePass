@@ -32,7 +32,7 @@ import {
 } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 
-import { Popconfirm } from "antd";
+import { UsePopover } from "./utilComponents";
 import { filter } from "smart-array-filter";
 import getColorValues from "./colorValues";
 
@@ -337,16 +337,12 @@ export default function IdentityContent({ functions, credArr }) {
             >
               Refresh
             </Button>
-            <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
-              <Button
-                rightIcon={<FaArrowRightFromBracket />}
-                colorScheme={"red"}
-                variant="outline"
-                size="lg"
-              >
-                Logout
-              </Button>
-            </Popconfirm>
+            <UsePopover
+              onClickFunction={handleLogoutChange}
+              buttonSize="lg"
+              buttonText="Logout"
+              buttonIcon={<FaArrowRightFromBracket />}
+            />
           </HStack>
           <Text mx="5px" fontSize="18px">
             Welcome to our secure identity repository - your digital guardian
@@ -477,21 +473,14 @@ export default function IdentityContent({ functions, credArr }) {
                               >
                                 Edit
                               </Button>
-                              <Popconfirm
-                                title="Are you sure?"
-                                onConfirm={async () =>
+                              <UsePopover
+                                onClickFunction={() =>
                                   handleDeleteChange(identity)
                                 }
-                              >
-                                <Button
-                                  colorScheme={"red"}
-                                  type="primary"
-                                  leftIcon={<FaTrashCan />}
-                                  variant="outline"
-                                >
-                                  Delete
-                                </Button>
-                              </Popconfirm>
+                                buttonText="Delete"
+                                buttonSize="md"
+                                buttonIcon={<FaTrashCan />}
+                              />
                             </HStack>
                           </Stack>
                         </CardBody>
