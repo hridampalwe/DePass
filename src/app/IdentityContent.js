@@ -23,13 +23,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import {
-  AddIcon,
-  ArrowForwardIcon,
-  CheckIcon,
-  DeleteIcon,
-  EditIcon,
-  RepeatIcon,
-} from "@chakra-ui/icons";
+  FaArrowRightFromBracket,
+  FaArrowRotateRight,
+  FaFloppyDisk,
+  FaPenToSquare,
+  FaPlus,
+  FaTrashCan,
+} from "react-icons/fa6";
 import { useEffect, useState } from "react";
 
 import { Popconfirm } from "antd";
@@ -76,14 +76,16 @@ export default function IdentityContent({ functions, credArr }) {
 
   async function handleClickSaveCredentials() {
     setLoading(true);
-    if (credentials?.id || (credentials && credentials.id === 0)) {
-      await functions.handleEditCredentials(credentials);
-      let getCredAtId = credArr.find(
-        (element) => element.id === credentials.id
-      );
-      for (const key in credentials) {
-        if (Object.prototype.hasOwnProperty.call(credentials, key)) {
-          getCredAtId[key] = credentials[key];
+    if (credentials?.id !== undefined) {
+      let status = await functions.handleEditCredentials(credentials);
+      if (status) {
+        let getCredAtId = credArr.find(
+          (element) => element.id === credentials.id
+        );
+        for (const key in credentials) {
+          if (Object.prototype.hasOwnProperty.call(credentials, key)) {
+            getCredAtId[key] = credentials[key];
+          }
         }
       }
     } else {
@@ -91,11 +93,25 @@ export default function IdentityContent({ functions, credArr }) {
         credentials,
         "Identities"
       );
-      credentials.id = credId;
-      credArr.push(credentials);
+      if (credId !== -1) {
+        credentials.id = credId;
+        credArr.push(credentials);
+      }
     }
     setLoading(false);
     onClose();
+  }
+
+  async function handleDeleteChange(identity) {
+    setLoading(true);
+    let status = await functions.handleDeleteCredentials(identity.id);
+    if (status) {
+      credArr.splice(
+        credArr.findIndex((a) => a.id === identity.id),
+        1
+      );
+    }
+    setLoading(false);
   }
 
   function handleAddChange() {
@@ -114,12 +130,6 @@ export default function IdentityContent({ functions, credArr }) {
   async function handleEditChange(identity) {
     setCredentials(identity);
     onOpen();
-  }
-
-  async function handleDeleteChange(identity) {
-    setLoading(true);
-    await functions.handleDeleteCredentials(identity.id);
-    getIdentitiesCredentials();
   }
 
   function IdentityAddDrawerContent() {
@@ -261,10 +271,10 @@ export default function IdentityContent({ functions, credArr }) {
             />
             <Center pt="20px">
               <Button
-                colorScheme="blue"
+                // colorScheme="blue"
                 isLoading={loading}
                 loadingText="Submitting"
-                leftIcon={<CheckIcon />}
+                leftIcon={<FaFloppyDisk />}
                 onClick={handleClickSaveCredentials}
               >
                 Save Credentials
@@ -310,7 +320,7 @@ export default function IdentityContent({ functions, credArr }) {
               placeholder="Search Filter"
             />
             <Button
-              rightIcon={<AddIcon />}
+              rightIcon={<FaPlus />}
               colorScheme={"gray"}
               size="lg"
               variant="solid"
@@ -319,7 +329,7 @@ export default function IdentityContent({ functions, credArr }) {
               Add Identity
             </Button>
             <Button
-              rightIcon={<RepeatIcon />}
+              rightIcon={<FaArrowRotateRight />}
               colorScheme={"gray"}
               size="lg"
               variant="solid"
@@ -329,7 +339,7 @@ export default function IdentityContent({ functions, credArr }) {
             </Button>
             <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
               <Button
-                rightIcon={<ArrowForwardIcon />}
+                rightIcon={<FaArrowRightFromBracket />}
                 colorScheme={"red"}
                 variant="outline"
                 size="lg"
@@ -463,7 +473,7 @@ export default function IdentityContent({ functions, credArr }) {
                               <Button
                                 type="primary"
                                 onClick={() => handleEditChange(identity)}
-                                leftIcon={<EditIcon />}
+                                leftIcon={<FaPenToSquare />}
                               >
                                 Edit
                               </Button>
@@ -476,7 +486,7 @@ export default function IdentityContent({ functions, credArr }) {
                                 <Button
                                   colorScheme={"red"}
                                   type="primary"
-                                  leftIcon={<DeleteIcon />}
+                                  leftIcon={<FaTrashCan />}
                                   variant="outline"
                                 >
                                   Delete

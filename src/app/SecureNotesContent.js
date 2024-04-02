@@ -23,13 +23,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import {
-  AddIcon,
-  ArrowForwardIcon,
-  CheckIcon,
-  DeleteIcon,
-  EditIcon,
-  RepeatIcon,
-} from "@chakra-ui/icons";
+  FaArrowRightFromBracket,
+  FaArrowRotateRight,
+  FaFloppyDisk,
+  FaPenToSquare,
+  FaPlus,
+  FaTrashCan,
+} from "react-icons/fa6";
 import { useEffect, useState } from "react";
 
 import { Popconfirm } from "antd";
@@ -77,14 +77,16 @@ export default function SecurenotesContent({ functions, credArr }) {
 
   async function handleClickSaveCredentials() {
     setLoading(true);
-    if (credentials?.id || (credentials && credentials.id === 0)) {
-      await functions.handleEditCredentials(credentials);
-      let getCredAtId = credArr.find(
-        (element) => element.id === credentials.id
-      );
-      for (const key in credentials) {
-        if (Object.prototype.hasOwnProperty.call(credentials, key)) {
-          getCredAtId[key] = credentials[key];
+    if (credentials?.id !== undefined) {
+      let status = await functions.handleEditCredentials(credentials);
+      if (status) {
+        let getCredAtId = credArr.find(
+          (element) => element.id === credentials.id
+        );
+        for (const key in credentials) {
+          if (Object.prototype.hasOwnProperty.call(credentials, key)) {
+            getCredAtId[key] = credentials[key];
+          }
         }
       }
     } else {
@@ -92,11 +94,24 @@ export default function SecurenotesContent({ functions, credArr }) {
         credentials,
         "Notes"
       );
-      credentials.id = credId;
-      credArr.push(credentials);
+      if (credId !== -1) {
+        credentials.id = credId;
+        credArr.push(credentials);
+      }
     }
     setLoading(false);
     onClose();
+  }
+  async function handleDeleteChange(note) {
+    setLoading(true);
+    let status = await functions.handleDeleteCredentials(note.id);
+    if (status) {
+      credArr.splice(
+        credArr.findIndex((a) => a.id === note.id),
+        1
+      );
+    }
+    setLoading(false);
   }
 
   function handleAddChange() {
@@ -115,12 +130,6 @@ export default function SecurenotesContent({ functions, credArr }) {
   async function handleEditChange(note) {
     setCredentials(note);
     onOpen();
-  }
-
-  async function handleDeleteChange(note) {
-    setLoading(true);
-    await functions.handleDeleteCredentials(note.id);
-    getNotesCredentials();
   }
 
   function notesAddDrawerContent() {
@@ -166,10 +175,10 @@ export default function SecurenotesContent({ functions, credArr }) {
             />
             <Center pt="20px">
               <Button
-                colorScheme="blue"
+                // colorScheme="blue"
                 isLoading={loading}
                 loadingText="Submitting"
-                leftIcon={<CheckIcon />}
+                leftIcon={<FaFloppyDisk />}
                 onClick={handleClickSaveCredentials}
               >
                 Save Credentials
@@ -215,7 +224,7 @@ export default function SecurenotesContent({ functions, credArr }) {
               borderWidth="2px"
             />
             <Button
-              rightIcon={<AddIcon />}
+              rightIcon={<FaPlus />}
               variant="solid"
               size="lg"
               onClick={handleAddChange}
@@ -223,7 +232,7 @@ export default function SecurenotesContent({ functions, credArr }) {
               Add notes
             </Button>
             <Button
-              rightIcon={<RepeatIcon />}
+              rightIcon={<FaArrowRotateRight />}
               size="lg"
               variant="solid"
               onClick={handleRefreshChange}
@@ -232,7 +241,7 @@ export default function SecurenotesContent({ functions, credArr }) {
             </Button>
             <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
               <Button
-                rightIcon={<ArrowForwardIcon />}
+                rightIcon={<FaArrowRightFromBracket />}
                 colorScheme={"red"}
                 size="lg"
                 variant="outline"
@@ -284,14 +293,16 @@ export default function SecurenotesContent({ functions, credArr }) {
                                 border="1px"
                                 bg={colorValues.gray200}
                               >
-                                <Text onClick={(e) => copyToClipboard(e)}>{note.notes}</Text>
+                                <Text onClick={(e) => copyToClipboard(e)}>
+                                  {note.notes}
+                                </Text>
                               </Box>
                             </Box>
                             <HStack justifyContent={"right"} width="100%">
                               <Button
                                 type="primary"
                                 onClick={() => handleEditChange(note)}
-                                leftIcon={<EditIcon />}
+                                leftIcon={<FaPenToSquare />}
                               >
                                 Edit
                               </Button>
@@ -302,7 +313,7 @@ export default function SecurenotesContent({ functions, credArr }) {
                                 <Button
                                   colorScheme={"red"}
                                   type="primary"
-                                  leftIcon={<DeleteIcon />}
+                                  leftIcon={<FaTrashCan />}
                                   variant="outline"
                                 >
                                   Delete

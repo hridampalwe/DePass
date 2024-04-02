@@ -24,13 +24,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import {
-  AddIcon,
-  ArrowForwardIcon,
-  CheckIcon,
-  DeleteIcon,
-  EditIcon,
-  RepeatIcon,
-} from "@chakra-ui/icons";
+  FaArrowRightFromBracket,
+  FaArrowRotateRight,
+  FaFloppyDisk,
+  FaPenToSquare,
+  FaPlus,
+  FaTrashCan,
+} from "react-icons/fa6";
 import { PasswordInput, PasswordInputDrawer } from "./PasswordInput";
 import { useEffect, useState } from "react";
 
@@ -66,14 +66,16 @@ export default function CardsContents({ functions, credArr }) {
 
   async function handleClickSaveCredentials() {
     setLoading(true);
-    if (credentials?.id || (credentials && credentials.id === 0)) {
-      await functions.handleEditCredentials(credentials);
-      let getCredAtId = credArr.find(
-        (element) => element.id === credentials.id
-      );
-      for (const key in credentials) {
-        if (Object.prototype.hasOwnProperty.call(credentials, key)) {
-          getCredAtId[key] = credentials[key];
+    if (credentials?.id !== undefined) {
+      let status = await functions.handleEditCredentials(credentials);
+      if (status) {
+        let getCredAtId = credArr.find(
+          (element) => element.id === credentials.id
+        );
+        for (const key in credentials) {
+          if (Object.prototype.hasOwnProperty.call(credentials, key)) {
+            getCredAtId[key] = credentials[key];
+          }
         }
       }
     } else {
@@ -81,11 +83,24 @@ export default function CardsContents({ functions, credArr }) {
         credentials,
         "Cards"
       );
-      credentials.id = credId;
-      credArr.push(credentials);
+      if (credId !== -1) {
+        credentials.id = credId;
+        credArr.push(credentials);
+      }
     }
     setLoading(false);
     onClose();
+  }
+  async function handleDeleteChange(card) {
+    setLoading(true);
+    let status = await functions.handleDeleteCredentials(card.id);
+    if (status) {
+      credArr.splice(
+        credArr.findIndex((a) => a.id === card.id),
+        1
+      );
+    }
+    setLoading(false);
   }
   function copyToClipboard(e) {
     navigator.clipboard.writeText(e.target.value);
@@ -114,12 +129,6 @@ export default function CardsContents({ functions, credArr }) {
   async function handleEditChange(card) {
     setCredentials(card);
     onOpen();
-  }
-
-  async function handleDeleteChange(card) {
-    setLoading(true);
-    await functions.handleDeleteCredentials(card.id);
-    getCardsCredentials();
   }
 
   function cardsAddDrawerContent() {
@@ -212,10 +221,10 @@ export default function CardsContents({ functions, credArr }) {
             />
             <Center pt="20px">
               <Button
-                colorScheme="blue"
+                // colorScheme="blue"
                 isLoading={loading}
                 loadingText="Submitting"
-                leftIcon={<CheckIcon />}
+                leftIcon={<FaFloppyDisk />}
                 onClick={handleClickSaveCredentials}
               >
                 Save Credentials
@@ -260,7 +269,7 @@ export default function CardsContents({ functions, credArr }) {
               borderWidth="2px"
             />
             <Button
-              rightIcon={<AddIcon />}
+              rightIcon={<FaPlus />}
               size="lg"
               onClick={handleAddChange}
               colorScheme={"gray"}
@@ -269,7 +278,7 @@ export default function CardsContents({ functions, credArr }) {
               Add Card
             </Button>
             <Button
-              rightIcon={<RepeatIcon />}
+              rightIcon={<FaArrowRotateRight />}
               colorScheme={"gray"}
               size="lg"
               variant="solid"
@@ -279,7 +288,7 @@ export default function CardsContents({ functions, credArr }) {
             </Button>
             <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
               <Button
-                rightIcon={<ArrowForwardIcon />}
+                rightIcon={<FaArrowRightFromBracket />}
                 colorScheme={"red"}
                 size="lg"
                 variant="outline"
@@ -373,7 +382,7 @@ export default function CardsContents({ functions, credArr }) {
                               <Button
                                 type="primary"
                                 onClick={() => handleEditChange(card)}
-                                leftIcon={<EditIcon />}
+                                leftIcon={<FaPenToSquare />}
                               >
                                 Edit
                               </Button>
@@ -384,7 +393,7 @@ export default function CardsContents({ functions, credArr }) {
                                 <Button
                                   colorScheme={"red"}
                                   type="primary"
-                                  leftIcon={<DeleteIcon />}
+                                  leftIcon={<FaTrashCan />}
                                   variant="outline"
                                 >
                                   Delete

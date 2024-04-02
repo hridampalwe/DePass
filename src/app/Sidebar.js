@@ -9,12 +9,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import {
+  FaAddressCard,
+  FaCircleInfo,
   FaCreditCard,
   FaFilePen,
   FaGlobe,
   FaMoon,
-  FaAddressCard,
-  FaCircleInfo,
   FaSun,
 } from "react-icons/fa6";
 import { useEffect, useState } from "react";
@@ -71,8 +71,10 @@ export default function SimpleSidebar({ functions }) {
   }, [obj[componentType]?.length]);
 
   async function getSitesCredentials(compType) {
-    const recv = await functions.getCredentials(compType);
-    setObj((prevState) => ({ ...prevState, [compType]: recv }));
+    for (const key in obj) {
+      const recv = await functions.getCredentials(key);
+      setObj((prevState) => ({ ...prevState, [key]: recv }));
+    }
     setIsEdited(true);
   }
 
