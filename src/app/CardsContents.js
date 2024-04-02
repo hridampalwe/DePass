@@ -1,3 +1,5 @@
+import {} from "./utilComponents";
+
 import {
   Accordion,
   AccordionButton,
@@ -31,10 +33,13 @@ import {
   FaPlus,
   FaTrashCan,
 } from "react-icons/fa6";
-import { PasswordInput, PasswordInputDrawer } from "./utilComponents";
+import {
+  PasswordInput,
+  PasswordInputDrawer,
+  UsePopover,
+} from "./utilComponents";
 import { useEffect, useState } from "react";
 
-import { Popconfirm } from "antd";
 import { filter } from "smart-array-filter";
 import getColorValues from "./colorValues";
 
@@ -286,16 +291,12 @@ export default function CardsContents({ functions, credArr }) {
             >
               Refresh
             </Button>
-            <Popconfirm title="Are you sure?" onConfirm={handleLogoutChange}>
-              <Button
-                rightIcon={<FaArrowRightFromBracket />}
-                colorScheme={"red"}
-                size="lg"
-                variant="outline"
-              >
-                Logout
-              </Button>
-            </Popconfirm>
+            <UsePopover
+              onClickFunction={handleLogoutChange}
+              buttonSize="lg"
+              buttonText="Logout"
+              buttonIcon={<FaArrowRightFromBracket />}
+            />
           </HStack>
           <Text mx="5px" fontSize="18px">
             Welcome to your digital cardholder, where every card is securely
@@ -386,7 +387,7 @@ export default function CardsContents({ functions, credArr }) {
                               >
                                 Edit
                               </Button>
-                              <Popconfirm
+                              {/* <Popconfirm
                                 title="Are you sure?"
                                 onConfirm={() => handleDeleteChange(card)}
                               >
@@ -398,7 +399,13 @@ export default function CardsContents({ functions, credArr }) {
                                 >
                                   Delete
                                 </Button>
-                              </Popconfirm>
+                              </Popconfirm> */}
+                              <UsePopover
+                                onClickFunction={() => handleDeleteChange(card)}
+                                buttonText="Delete"
+                                buttonSize="md"
+                                buttonIcon={<FaTrashCan />}
+                              />
                             </HStack>
                           </Stack>
                         </CardBody>

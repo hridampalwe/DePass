@@ -9,14 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@lit-protocol/lit-node-client": "^4.1.0",
-    "antd": "^5.15.3",
     "framer-motion": "^11.0.20",
     "fs": "^0.0.1-security",
     "jose": "^5.2.3",
