@@ -20,6 +20,7 @@ function getColorValues() {
       "DePass_Logo_Dark.png"
     ),
     popoverColor: useColorModeValue("white", "#14201A"),
+    darkMode: useColorModeValue("Dark", "Light"),
   };
 }
 
