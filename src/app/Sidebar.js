@@ -129,7 +129,7 @@ export default function SimpleSidebar({ functions }) {
           icon={colorModeButton}
           onClick={toggleColorMode}
         >
-          Color Mode
+          {colorValues.darkMode} Mode
         </NavItem>
       </Box>
     );
