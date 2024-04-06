@@ -1,18 +1,6 @@
-// import {
-//   LitNodeClient,
-//   checkAndSignAuthMessage,
-//   decryptToString,
-//   encryptString,
-// } from "@lit-proto";
-// //  LitJsSdk from "@lit-protocol/lit-node-client";
-import {
-  LitNodeClient,
-  checkAndSignAuthMessage,
-  decryptToString,
-  encryptString,
-} from "@lit-protocol/lit-node-client";
+import * as LitJsSdk from "@lit-protocol/lit-node-client";
 
-const client = new LitNodeClient();
+const client = new LitNodeClient({ debug: false });
 const chain = "ethereum";
 
 class Lit {
@@ -27,40 +15,47 @@ class Lit {
       await this.connect();
     }
 
-    const authSig = await checkAndSignAuthMessage({ chain });
-    const { ciphertext, dataToEncryptHash } = await encryptString(
-      {
-        accessControlConditions,
-        authSig,
-        chain: "ethereum",
-        dataToEncrypt: message,
-      },
-      litNodeClient
+    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
+    let { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
+      message
     );
+    const encryptedSymmetricKey = await litNodeClient.saveEncryptionKey({
+      accessControlConditions,
+      symmetricKey,
+      authSig,
+      chain,
+    });
 
     return {
-      ciphertext,
-      dataToEncryptHash,
+      encryptedString: await LitJsSdk.blobToBase64String(encryptedString),
+      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(
+        encryptedSymmetricKey,
+        "base16"
+      ),
     };
   }
-  async decrypt(ciphertext, dataToEncryptHash, accessControlConditions) {
+  async decrypt(
+    encryptedString,
+    encryptedSymmetricKey,
+    accessControlConditions
+  ) {
     if (!this.litNodeClient) {
       await this.connect();
     }
 
-    const authSig = await checkAndSignAuthMessage({
-      chain: "ethereum",
+    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
+    const symmetricKey = await this.litNodeClient.getEncryptionKey({
+      accessControlConditions,
+      toDecrypt: encryptedSymmetricKey,
+      chain,
+      authSig,
     });
-    const decryptedString = await decryptToString(
-      {
-        accessControlConditions,
-        ciphertext,
-        dataToEncryptHash,
-        authSig,
-        chain: "ethereum",
-      },
-      litNodeClient
+
+    const decryptedString = await LitJsSdk.decryptString(
+      LitJsSdk.base64StringToBlob(encryptedString),
+      symmetricKey
     );
+
     return { decryptedString };
   }
 }

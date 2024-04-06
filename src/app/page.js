@@ -220,12 +220,13 @@ export default function Home() {
     //Data is array of credentials object access the object one by one.
     for (let i of data) {
       if (!i.isDeleted && i.credentialType === credentialsType) {
-        let { ciphertext, dataToEncryptHash } = await fetchCredentials(
+        let { encryptedString, encryptedSymmetricKey } = await fetchCredentials(
           i.ipfsHash
         );
+
         let decryptedCred = await Lit.decrypt(
-          ciphertext,
-          dataToEncryptHash,
+          encryptedString,
+          encryptedSymmetricKey,
           accessControlConditions
         );
         let decryptedCredObj = await JSON.parse(decryptedCred.decryptedString);
@@ -245,11 +246,8 @@ export default function Home() {
       const formData = new FormData();
       // API only supports working with File and Blob. Therefore converting the JSON data to blob here.
       const blob = new Blob([JSON.stringify(data)], { type: "text/plain" });
-      console.log(blob);
       formData.append("file", blob);
-      const options = JSON.stringify({
-        cidVersion: 0,
-      });
+      console.log(formData);
       const res = await fetch(
         `https://${process.env.NEXT_PUBLIC_PINATA_API}/pinning/pinFileToIPFS`,
         {
@@ -273,11 +271,14 @@ export default function Home() {
   // This function is responsible for saving data in the blockchain contract and create the transactions.
   const handleSaveCredentials = async (credentials, credentialsType) => {
     // Calling the LIT Protocol defined library to encrypt the credentials.
-    let encryptedData = await Lit.encrypt(
+    let { encryptedString, encryptedSymmetricKey } = await Lit.encrypt(
       JSON.stringify(credentials),
       accessControlConditions
     );
-    const ipfsHash = pinFileToIPFS(encryptedData);
+    const ipfsHash = await pinFileToIPFS({
+      encryptedString,
+      encryptedSymmetricKey,
+    });
     // Adding the hash to the ethereum network.
     try {
       let tx = await contract.addKey(ipfsHash, credentialsType);
@@ -299,7 +300,6 @@ export default function Home() {
       description: "Credentials saved successfully to the network.",
     });
     credId = Number(BigInt(credId));
-    console.log(credId);
     return credId;
   };
 
@@ -309,7 +309,6 @@ export default function Home() {
       JSON.stringify(credential),
       accessControlConditions
     );
-    console.log(credential.id);
     const ipfsHash = pinFileToIPFS(encryptedData);
     try {
       const tx = await contract.updateKey(credential.id, ipfsHash);
