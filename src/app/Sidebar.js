@@ -21,10 +21,10 @@ import { useEffect, useState } from "react";
 
 import AccDetails from "./Info";
 import CardsContents from "./CardsContents";
+import GetColorValues from "./colorValues";
 import IdentityContent from "./IdentityContent";
 import SecureNotesContent from "./SecureNotesContent";
 import SitesContent from "./SitesContent";
-import getColorValues from "./colorValues";
 
 const LinkItems = [
   { name: "Sites", icon: FaGlobe, render: SitesContent },
@@ -43,7 +43,7 @@ export default function SimpleSidebar({ functions }) {
     Info: [{}],
   });
   const { colorMode, toggleColorMode } = useColorMode();
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
   const [componentType, setComponentType] = useState("Sites");
   const [isEdited, setIsEdited] = useState(false);
   const [renderComponent, setRenderComponent] = useState(

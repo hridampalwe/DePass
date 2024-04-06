@@ -1,6 +1,18 @@
-import * as LitJsSdk from "@lit-protocol/lit-node-client";
+// import {
+//   LitNodeClient,
+//   checkAndSignAuthMessage,
+//   decryptToString,
+//   encryptString,
+// } from "@lit-proto";
+// //  LitJsSdk from "@lit-protocol/lit-node-client";
+import {
+  LitNodeClient,
+  checkAndSignAuthMessage,
+  decryptToString,
+  encryptString,
+} from "@lit-protocol/lit-node-client";
 
-const client = new LitJsSdk.LitNodeClient({ debug: false });
+const client = new LitNodeClient();
 const chain = "ethereum";
 
 class Lit {
@@ -15,8 +27,8 @@ class Lit {
       await this.connect();
     }
 
-    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
-    const { ciphertext, dataToEncryptHash } = await LitJsSdk.encryptString(
+    const authSig = await checkAndSignAuthMessage({ chain });
+    const { ciphertext, dataToEncryptHash } = await encryptString(
       {
         accessControlConditions,
         authSig,
@@ -36,10 +48,10 @@ class Lit {
       await this.connect();
     }
 
-    const authSig = await LitJsSdk.checkAndSignAuthMessage({
+    const authSig = await checkAndSignAuthMessage({
       chain: "ethereum",
     });
-    const decryptedString = await LitJsSdk.decryptToString(
+    const decryptedString = await decryptToString(
       {
         accessControlConditions,
         ciphertext,

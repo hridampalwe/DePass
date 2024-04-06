@@ -10,10 +10,10 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import getColorValues from "./colorValues";
+import GetColorValues from "./colorValues";
 
 export default function AccDetails({ functions, credArr }) {
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
   const [data, setData] = useState(null);
   useEffect(() => {
     const fetchData = async () => {

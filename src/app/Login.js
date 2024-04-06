@@ -10,11 +10,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import getColorValues from "./colorValues";
+import { FaLink } from "react-icons/fa6";
+import GetColorValues from "./colorValues";
 
 export default function Login({ handleConnectWallet }) {
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
 
   return (
     <Flex
@@ -82,7 +82,7 @@ export default function Login({ handleConnectWallet }) {
                     href="https://metamask.io/download/"
                     target="_blank"
                   >
-                    Download Metamask <ExternalLinkIcon mx="4px" />
+                    Download Metamask <FaLink mx="4px" />
                   </Button>
                 </Stack>
               </Center>

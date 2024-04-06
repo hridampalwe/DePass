@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-import getColorValues from "./colorValues";
+import GetColorValues from "./colorValues";
 import { useState } from "react";
 
 export function PasswordInput({ value, copyToClipboard }) {
@@ -78,7 +78,7 @@ export function UsePopover({
   buttonIcon,
 }) {
   const { isOpen, onToggle, onClose } = useDisclosure();
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
   return (
     <Popover placement="top" isOpen={isOpen} onClose={onClose}>
       <PopoverTrigger>
