@@ -32,12 +32,12 @@ import {
 } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 
+import GetColorValues from "./colorValues";
 import { UsePopover } from "./utilComponents";
 import { filter } from "smart-array-filter";
-import getColorValues from "./colorValues";
 
 export default function SecurenotesContent({ functions, credArr }) {
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [loading, setLoading] = useState(false);

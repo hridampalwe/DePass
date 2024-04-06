@@ -40,8 +40,8 @@ import {
 } from "./utilComponents";
 import { useEffect, useState } from "react";
 
+import GetColorValues from "./colorValues";
 import { filter } from "smart-array-filter";
-import getColorValues from "./colorValues";
 
 export default function CardsContents({ functions, credArr }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,7 +53,7 @@ export default function CardsContents({ functions, credArr }) {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
   const handleSearchChange = (event) => setSearch(event.target.value);
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
 
   useEffect(() => {
     if (!credArr) {
@@ -214,7 +214,7 @@ export default function CardsContents({ functions, credArr }) {
               px="10px"
               fontSize="lg"
             >
-              Account Holder's Name
+              Account Holder&apos;s Name
             </Text>
             <Input
               type="text"
@@ -368,7 +368,7 @@ export default function CardsContents({ functions, credArr }) {
                             </HStack>
                             <Box>
                               <Heading size="xs" textTransform="uppercase">
-                                Card Holder's Name
+                                Card Holder&apos;s Name
                               </Heading>
                               <Input
                                 size="lg"

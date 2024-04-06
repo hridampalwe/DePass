@@ -48,11 +48,11 @@ import {
 } from "./utilComponents";
 import { useEffect, useState } from "react";
 
+import GetColorValues from "./colorValues";
 import { filter } from "smart-array-filter";
-import getColorValues from "./colorValues";
 
 export default function SitesContent({ functions, credArr }) {
-  const colorValues = getColorValues();
+  const colorValues = GetColorValues();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [credentials, setCredentials] = useState(null);
   const [loading, setLoading] = useState(false);

@@ -260,6 +260,7 @@ export default function Home() {
           body: formData,
         }
       );
+
       //Using post request to send the data to Pinata API.
       const resData = await res.json();
       console.log(resData);
