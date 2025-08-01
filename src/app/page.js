@@ -247,21 +247,14 @@ export default function Home() {
       const blob = new Blob([JSON.stringify(data)], { type: "text/plain" });
       console.log(blob);
       formData.append("file", blob);
-      const options = JSON.stringify({
-        cidVersion: 0,
+      
+      // Use our secure API route instead of calling Pinata directly
+      const res = await fetch('/api/pinata', {
+        method: "POST",
+        body: formData,
       });
-      const res = await fetch(
-        `https://${process.env.NEXT_PUBLIC_PINATA_API}/pinning/pinFileToIPFS`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT_KEY}`,
-          },
-          body: formData,
-        }
-      );
 
-      //Using post request to send the data to Pinata API.
+      //Using post request to send the data to our API route.
       const resData = await res.json();
       console.log(resData);
       return resData.IpfsHash;
